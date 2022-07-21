@@ -2,12 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Support\Str;
-use App\Http\Resources\ItemTypeResource;
-use App\Http\Resources\ItemUnitResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ItemResource extends JsonResource
+class ItemUnitResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,12 +15,9 @@ class ItemResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' =>$this->id,
-            'name' =>  Str::upper($this->name),
-            'type_id' => $this->type_id,
-            'unit_id' => $this->unit_id,
-            'type' => new ItemTypeResource($this->type_id),
-            // 'unit'=> ItemUnitResource::collection($this->unit),
+            'id' => $this->id,
+            'name' => $this->name,
+            'abbreviation' => $this->abbreviation,
             'created_at' => $this->created_at->format('m/d/Y'),
             'updated_at' => $this->updated_at->format('m/d/Y'),
         ];
