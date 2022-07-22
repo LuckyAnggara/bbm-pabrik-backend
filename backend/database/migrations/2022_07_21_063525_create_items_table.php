@@ -16,8 +16,10 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('type_id')->nullable();
-            $table->text('unit_id')->nullable();
+            $table->integer('type_id')->nullable();
+            $table->integer('unit_id')->nullable();
+            $table->integer('warehouse_id')->nullable();
+            $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
         });

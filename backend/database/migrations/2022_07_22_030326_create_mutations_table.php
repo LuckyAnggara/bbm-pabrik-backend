@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('item_types', function (Blueprint $table) {
+        Schema::create('mutations', function (Blueprint $table) {
             $table->id();
-            $table->String('name');
+            $table->integer('item_id');
+            $table->integer('warehouse_id');
+            $table->double('debit')->default(0);
+            $table->double('kredit')->default(0);
+            $table->double('saldo')->default(0);
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_types');
+        Schema::dropIfExists('mutations');
     }
 };

@@ -11,10 +11,19 @@ use App\Http\Controllers\Api\BaseController;
 class ItemController extends BaseController
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $item = Item::all();
-        return $this->sendResponse(ItemResource::collection($item), 'Posts fetched');
+        // $item = Item::all();
+        $limit = $request->input('limit', 5);
+        $name = $request->input('name');
+
+        $item = Item::with(['type','unit','warehouse']);
+        if($name)
+        {
+            $item->where('name','like','%'.$name.'%');
+        }
+
+        return $this->sendResponse($item->latest()->paginate($limit), 'Posts fetched');
     }
 
     public function store(Request $request)
@@ -33,7 +42,7 @@ class ItemController extends BaseController
 
     public function show($id)
     {
-        $item = Item::find($id);
+        $item = Item::find($id)->with(['type','unit','warehouse']);
         if(is_null($item))
         {
             return $this->sendError('Post does not exist.');

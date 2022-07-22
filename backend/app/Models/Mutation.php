@@ -6,23 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Item extends Model
+class Mutation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes, HasFactory;
     protected $fillable = [
-        'name', 
-        'type_id',
-        'unit_id',
+        'item_id',
+        'warehouse_id',
+        'debit',
+        'kredit',
+        'saldo',
     ];
 
-    public function type()
+    public function item()
     {
-        return $this->hasOne(ItemType::class, 'id', 'type_id');
-    }
-
-    public function unit()
-    {
-        return $this->hasOne(ItemUnit::class, 'id', 'unit_id');
+        return $this->hasOne(Item::class, 'id', 'item_id');
     }
 
     public function warehouse()
