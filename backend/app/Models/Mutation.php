@@ -15,6 +15,7 @@ class Mutation extends Model
         'debit',
         'kredit',
         'saldo',
+        'created_by'
     ];
 
     public function item()
@@ -26,4 +27,13 @@ class Mutation extends Model
     {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'created_by');
+    }
+
+
+
+
 }

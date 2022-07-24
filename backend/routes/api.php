@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\ItemTypeController;
 use App\Http\Controllers\Api\ItemUnitController;
+use App\Http\Controllers\Api\MutationController;
+use App\Http\Controllers\Api\WarehouseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::resource('items', ItemController::class);
     Route::resource('item-types', ItemTypeController::class);
     Route::resource('item-units', ItemUnitController::class);
+    Route::resource('warehouses', WarehouseController::class);
+    Route::resource('mutations', MutationController::class);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

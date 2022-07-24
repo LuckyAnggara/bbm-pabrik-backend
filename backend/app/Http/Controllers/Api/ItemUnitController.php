@@ -2,85 +2,74 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\ItemUnit;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ItemUnitResource;
+use Illuminate\Support\Facades\Validator;
 
-class ItemUnitController extends Controller
+class ItemUnitController extends BaseController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $limit = $request->input('limit', 5);
+        $name = $request->input('name');
+
+        $itemUnit = ItemUnit::with(['user']);
+        if($name)
+        {
+            $itemUnit->where('name','like','%'.$name.'%');
+        }
+
+        return $this->sendResponse($itemUnit->latest()->paginate($limit), 'Data fetched');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => 'required',
+        ]);
+        if($validator->fails())
+        {
+            return $this->sendError($validator->errors());
+        }
+        $itemType = ItemUnit::create($input);
+        return $this->sendResponse(new ItemUnitResource($itemType), 'Data created');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\ItemUnit  $itemUnit
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ItemUnit $itemUnit)
+   
+    public function show($id)
     {
-        //
+        $itemUnit = ItemUnit::with(['user'])->where('id', $id)->first();
+        if(is_null($itemUnit))
+        {
+            return $this->sendError('Data does not exist.');
+        }
+        return $this->sendResponse(new ItemUnitResource($itemUnit), 'Data fetched');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ItemUnit  $itemUnit
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(ItemUnit $itemUnit)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ItemUnit  $itemUnit
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, ItemUnit $itemUnit)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => 'required',
+        ]);
+        
+        if($validator->fails())
+        {
+            return $this->sendError($validator->errors());
+        }
+        $itemUnit->name = $input['name'];
+        $itemUnit->abbreviation = $input['abbreviation'];
+        $itemUnit->save();
+
+        return $this->sendResponse(new ItemUnitResource($itemUnit), 'Data updated');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ItemUnit  $itemUnit
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(ItemUnit $itemUnit)
     {
-        //
+        $itemUnit->delete();
+        return $this->sendResponse(new ItemUnitResource($itemUnit), 'Data deleted');
     }
 }

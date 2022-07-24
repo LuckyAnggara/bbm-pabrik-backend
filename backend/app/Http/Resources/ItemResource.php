@@ -23,6 +23,12 @@ class ItemResource extends JsonResource
             'name' =>  Str::upper($this->name),
             'type_id' => $this->type_id,
             'unit_id' => $this->unit_id,
+            'warehouse_id' => $this->warehouse_id,
+            'type'=> $this->type,
+            'unit'=> $this->unit,
+            // 'mutation'=> $this->mutation,
+            'created_by' => $this->created_by,
+            'user'=> $this->user,
             'created_at' => $this->created_at->format('m/d/Y'),
             'updated_at' => $this->updated_at->format('m/d/Y'),
         ];

@@ -13,17 +13,16 @@ class ItemController extends BaseController
 
     public function index(Request $request)
     {
-        // $item = Item::all();
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
 
-        $item = Item::with(['type','unit','warehouse']);
+        $item = Item::with(['type','unit','warehouse','user']);
         if($name)
         {
             $item->where('name','like','%'.$name.'%');
         }
 
-        return $this->sendResponse($item->latest()->paginate($limit), 'Posts fetched');
+        return $this->sendResponse($item->latest()->paginate($limit), 'Data fetched');
     }
 
     public function store(Request $request)
@@ -37,17 +36,17 @@ class ItemController extends BaseController
             return $this->sendError($validator->errors());
         }
         $item = Item::create($input);
-        return $this->sendResponse(new ItemResource($item), 'Post created');
+        return $this->sendResponse(new ItemResource($item), 'Data created');
     }
 
     public function show($id)
     {
-        $item = Item::find($id)->with(['type','unit','warehouse']);
+        $item = Item::with(['type','unit','warehouse','user',])->where('id', $id)->first();
         if(is_null($item))
         {
-            return $this->sendError('Post does not exist.');
+            return $this->sendError('Data does not exist.');
         }
-        return $this->sendResponse(new ItemResource($item), 'Post fetched');
+        return $this->sendResponse(new ItemResource($item), 'Data fetched');
     }
 
     public function update(Request $request, Item $item)
@@ -64,12 +63,12 @@ class ItemController extends BaseController
         $item->name = $input['name'];
         $item->save();
 
-        return $this->sendResponse(new ItemResource($item), 'Post updated');
+        return $this->sendResponse(new ItemResource($item), 'Data updated');
     }
 
     public function destroy(Item $item)
     {
         $item->delete();
-        return $this->sendResponse([], 'Post deleted');
+        return $this->sendResponse([], 'Data deleted');
     }
 }

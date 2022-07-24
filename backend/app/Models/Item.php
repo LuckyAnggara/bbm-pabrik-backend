@@ -13,6 +13,8 @@ class Item extends Model
         'name', 
         'type_id',
         'unit_id',
+        'warehouse_id',
+        'created_by',
     ];
 
     public function type()
@@ -29,4 +31,18 @@ class Item extends Model
     {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'created_by');
+    }
+
+    public function mutation()
+    {
+        return $this->hasMany(Mutation::class, 'item_id', 'id')->orderBy('created_at');
+    }
+
+
+
+
 }

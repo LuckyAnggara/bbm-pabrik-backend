@@ -3,6 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\User;
+use App\Models\ItemType;
+use App\Models\ItemUnit;
+use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,9 +21,56 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::factory()->create([
+            'name' => 'lucky',
+            'email' => 'lucky@gmail.com',
+            'password' => '123',
+        ]);
+
+        ItemType::factory()->create([
+            'name' => 'barang mentah',
+            'created_by'=> '1'
+        ]);
+
+        
+        ItemType::factory()->create([
+            'name' => 'barang jadi',
+            'created_by'=> '1'
+        ]);
+
+        ItemType::factory()->create([
+            'name' => 'lainnya',
+            'created_by'=> '1'
+        ]);
+
+        ItemUnit::factory()->create([
+            'name' => 'kilogram',
+            'abbreviation' => 'kg',
+            'created_by'=> '1'
+        ]);
+
+        ItemUnit::factory()->create([
+            'name' => 'meter',
+            'abbreviation' => 'mtr',
+            'created_by'=> '1'
+        ]);
+
+        ItemUnit::factory()->create([
+            'name' => 'buah',
+            'abbreviation' => 'buah',
+            'created_by'=> '1'
+        ]);
+
+        ItemUnit::factory()->create([
+            'name' => 'ton',
+            'abbreviation' => 'ton',
+            'created_by'=> '1'
+        ]);
+
+        Warehouse::factory()->create([
+            'name' => 'gudang pusat',
+            'location' => 'limbangan jawa barat',
+            'created_by'=> '1'
+        ]);
     }
 }

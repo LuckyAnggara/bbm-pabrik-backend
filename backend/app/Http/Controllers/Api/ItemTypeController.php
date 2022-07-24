@@ -10,10 +10,18 @@ use App\Http\Controllers\Api\BaseController;
 
 class ItemTypeController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $itemType = ItemType::all();
-        return $this->sendResponse(ItemTypeResource::collection($itemType), 'Posts fetched');
+        $limit = $request->input('limit', 5);
+        $name = $request->input('name');
+
+        $itemType = ItemType::with(['user']);
+        if($name)
+        {
+            $itemType->where('name','like','%'.$name.'%');
+        }
+
+        return $this->sendResponse($itemType->latest()->paginate($limit), 'Data fetched');
     }
 
     public function store(Request $request)
@@ -27,17 +35,17 @@ class ItemTypeController extends BaseController
             return $this->sendError($validator->errors());
         }
         $itemType = ItemType::create($input);
-        return $this->sendResponse(new ItemTypeResource($itemType), 'Post created');
+        return $this->sendResponse(new ItemTypeResource($itemType), 'Data created');
     }
 
     public function show($id)
     {
-        $itemType = ItemType::find($id);
+        $itemType = ItemType::with(['user'])->where('id', $id)->first();
         if(is_null($itemType))
         {
-            return $this->sendError('Post does not exist.');
+            return $this->sendError('Data does not exist.');
         }
-        return $this->sendResponse(new ItemTypeResource($itemType), 'Post fetched');
+        return $this->sendResponse(new ItemTypeResource($itemType), 'Data fetched');
     }
 
     public function update(Request $request, ItemType $itemType)
@@ -54,12 +62,12 @@ class ItemTypeController extends BaseController
         $itemType->name = $input['name'];
         $itemType->save();
 
-        return $this->sendResponse(new ItemTypeResource($itemType), 'Post updated');
+        return $this->sendResponse(new ItemTypeResource($itemType), 'Data updated');
     }
 
     public function destroy(ItemType $itemType)
     {
         $itemType->delete();
-        return $this->sendResponse([], 'Post deleted');
+        return $this->sendResponse(new ItemTypeResource($itemType), 'Data deleted');
     }
 }

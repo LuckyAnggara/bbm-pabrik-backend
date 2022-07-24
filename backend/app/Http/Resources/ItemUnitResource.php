@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ItemUnitResource extends JsonResource
@@ -16,8 +17,9 @@ class ItemUnitResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => Str::upper($this->name),
             'abbreviation' => $this->abbreviation,
+            'user'=> $this->user,
             'created_at' => $this->created_at->format('m/d/Y'),
             'updated_at' => $this->updated_at->format('m/d/Y'),
         ];
