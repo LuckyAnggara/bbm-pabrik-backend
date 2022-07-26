@@ -15,7 +15,14 @@ return new class extends Migration
     {
         Schema::create('production_orders', function (Blueprint $table) {
             $table->id();
+            $table->string('no_production');
+            $table->integer('target')->nullable();
+            $table->integer('pic_id')->nullable();
+            $table->enum('status', ['NEW ORDER', 'WORK IN PROGRESS', 'DONE', 'WAREHOUSE', 'SHIPPING'])->default('NEW ORDER');
+            $table->dateTime('target');
+            $table->integer('created_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
