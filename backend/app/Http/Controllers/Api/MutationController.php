@@ -17,14 +17,14 @@ class MutationController extends BaseController
 {
     public function index(Request $request)
     {
+        $warehouseId = $request->input('warehouse_id');
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
 
-        $item = Item::with(['type','unit','warehouse','user','mutation']);
-        
-        if($name)
-        {
-            $item->where('name','like','%'.$name.'%');
+        $item = Item::with(['type', 'unit', 'warehouse', 'user', 'mutation']);
+
+        if ($name) {
+            $item->where('name', 'like', '%' . $name . '%');
         }
 
         return $this->sendResponse($item->latest()->paginate($limit), 'Data fetched');
@@ -35,11 +35,10 @@ class MutationController extends BaseController
         $input = $request->all();
         $validator = Validator::make($input, [
             'item_id' => 'required',
-            'created_by'=>'required'
+            'created_by' => 'required'
         ]);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
 
@@ -61,19 +60,19 @@ class MutationController extends BaseController
         $toDate = $request->input('to-date');
 
 
-       
-        $item = Item::with('type','unit','warehouse','user')->with('mutation', function($query) use($warehouseId, $fromDate, $toDate){
+
+        $item = Item::with('type', 'unit', 'warehouse', 'user')->with('mutation', function ($query) use ($warehouseId, $fromDate, $toDate) {
             DB::statement(DB::raw('set @balance=0'));
             $query->selectRaw('warehouse_id, item_id, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
-            if(!is_null($warehouseId)){
-                $query->where('warehouse_id','=', $warehouseId);
-                if(!is_null($fromDate) && !is_null($toDate)){
+            if (!is_null($warehouseId)) {
+                $query->where('warehouse_id', '=', $warehouseId);
+                if (!is_null($fromDate) && !is_null($toDate)) {
                     $query->whereBetween('created_at', [$fromDate, $toDate]);
                 }
                 // $query->with('user');
                 // $query->saldo_akumulasi();
             }
-        })->where('id',$id)->first();      
+        })->where('id', $id)->first();
 
         return $this->sendResponse($item, 'Data fetched');
     }
@@ -84,9 +83,8 @@ class MutationController extends BaseController
         $validator = Validator::make($input, [
             'item_id' => 'required',
         ]);
-        
-        if($validator->fails())
-        {
+
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
 

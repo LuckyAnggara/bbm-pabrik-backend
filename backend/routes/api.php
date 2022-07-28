@@ -24,11 +24,13 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AuthController::class, 'signin']);
 Route::post('register', [AuthController::class, 'signup']);
 
-Route::middleware('auth:sanctum')->group(function(){
+Route::resource('items', ItemController::class);
+Route::resource('item-types', ItemTypeController::class);
+Route::resource('item-units', ItemUnitController::class);
+
+Route::middleware('auth:sanctum')->group(function () {
     Route::resource('blogs', BlogController::class);
-    Route::resource('items', ItemController::class);
-    Route::resource('item-types', ItemTypeController::class);
-    Route::resource('item-units', ItemUnitController::class);
+
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('mutations', MutationController::class);
 });
@@ -36,5 +38,3 @@ Route::middleware('auth:sanctum')->group(function(){
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-

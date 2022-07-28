@@ -32,8 +32,4 @@ class Mutation extends Model
     {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
-
-
-
-
 }

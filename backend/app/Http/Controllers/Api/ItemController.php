@@ -16,10 +16,9 @@ class ItemController extends BaseController
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
 
-        $item = Item::with(['type','unit','warehouse','user']);
-        if($name)
-        {
-            $item->where('name','like','%'.$name.'%');
+        $item = Item::with(['type', 'unit', 'warehouse', 'user',]);
+        if ($name) {
+            $item->where('name', 'like', '%' . $name . '%');
         }
 
         return $this->sendResponse($item->latest()->paginate($limit), 'Data fetched');
@@ -31,8 +30,7 @@ class ItemController extends BaseController
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
         $item = Item::create($input);
@@ -41,9 +39,8 @@ class ItemController extends BaseController
 
     public function show($id)
     {
-        $item = Item::with(['type','unit','warehouse','user',])->where('id', $id)->first();
-        if(is_null($item))
-        {
+        $item = Item::with(['type', 'unit', 'warehouse', 'user',])->where('id', $id)->first();
+        if (is_null($item)) {
             return $this->sendError('Data does not exist.');
         }
         return $this->sendResponse(new ItemResource($item), 'Data fetched');
@@ -55,9 +52,8 @@ class ItemController extends BaseController
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-        
-        if($validator->fails())
-        {
+
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
         $item->name = $input['name'];
