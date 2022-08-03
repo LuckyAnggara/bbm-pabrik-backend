@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('warehouse_id');
             $table->double('debit')->default(0);
             $table->double('kredit')->default(0);
+            $table->text('notes')->nullable();
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
