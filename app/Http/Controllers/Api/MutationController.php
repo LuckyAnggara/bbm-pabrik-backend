@@ -63,7 +63,7 @@ class MutationController extends BaseController
 
         $item = Item::with('type', 'unit', 'warehouse', 'user')->with('mutation', function ($query) use ($warehouseId, $fromDate, $toDate) {
             DB::statement(DB::raw('set @balance=0'));
-            $query->selectRaw('warehouse_id, item_id, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
+            $query->selectRaw('warehouse_id, item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
             if (!is_null($warehouseId)) {
                 $query->where('warehouse_id', '=', $warehouseId);
                 if (!is_null($fromDate) && !is_null($toDate)) {

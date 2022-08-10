@@ -28,12 +28,11 @@ Route::resource('items', ItemController::class);
 Route::resource('item-types', ItemTypeController::class);
 Route::resource('item-units', ItemUnitController::class);
 Route::resource('warehouses', WarehouseController::class);
+Route::resource('mutations', MutationController::class);
 
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('blogs', BlogController::class);
-
-    Route::resource('mutations', MutationController::class);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

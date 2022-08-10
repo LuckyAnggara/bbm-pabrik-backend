@@ -25,7 +25,7 @@ class ItemController extends BaseController
             if (!is_null($fromDate) && !is_null($toDate)) {
                 $query->whereBetween('created_at', [$fromDate, $toDate]);
             }
-            $query->saldo = 0;
+            $query->balance = 0;
         });
 
         if ($name) {
@@ -34,10 +34,14 @@ class ItemController extends BaseController
         if ($warehouseId) {
             $item->where('warehouse_id', $warehouseId);
         }
-        $data = $item->latest()->paginate();
+        $data = $item->latest()->paginate($limit);
 
         foreach ($data as $key => $value) {
-            $value->saldo = 1000;
+            $splitDebitColumn = array_column($value->mutation->toArray(), 'debit');
+            $splitKreditColumn = array_column($value->mutation->toArray(), 'kredit');
+            $debit = array_sum($splitDebitColumn);
+            $kredit = array_sum($splitKreditColumn);
+            $value->balance = $debit - $kredit;
         }
 
         return $this->sendResponse($data, 'Data fetched');

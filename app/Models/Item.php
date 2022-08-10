@@ -18,7 +18,6 @@ class Item extends Model
         'created_by',
     ];
 
-    protected $appends = ['balance'];
 
     public function type()
     {
@@ -43,10 +42,5 @@ class Item extends Model
     public function mutation()
     {
         return $this->hasMany(Mutation::class, 'item_id', 'id')->orderBy('created_at');
-    }
-
-    public function getBalanceAttribute()
-    {
-        return 0;
     }
 }
