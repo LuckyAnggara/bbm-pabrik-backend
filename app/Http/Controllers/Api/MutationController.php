@@ -55,10 +55,8 @@ class MutationController extends BaseController
     public function show($id, Request $request)
     {
         $warehouseId = $request->input('warehouse_id');
-
-        $fromDate = $request->input('from-date');
-        $toDate = $request->input('to-date');
-
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
 
 
         $item = Item::with('type', 'unit', 'warehouse', 'user')->with('mutation', function ($query) use ($warehouseId, $fromDate, $toDate) {
@@ -71,6 +69,10 @@ class MutationController extends BaseController
                 }
                 // $query->with('user');
                 // $query->saldo_akumulasi();
+            } else {
+                if (!is_null($fromDate) && !is_null($toDate)) {
+                    $query->whereBetween('created_at', [$fromDate, $toDate]);
+                }
             }
         })->where('id', $id)->first();
 
