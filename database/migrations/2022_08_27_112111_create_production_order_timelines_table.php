@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('detail_production_orders', function (Blueprint $table) {
+        Schema::create('production_order_timelines', function (Blueprint $table) {
             $table->id();
             $table->string('production_id');
-            $table->string('item_id');
-            $table->double('target_quantity');
-            $table->double('real_quantity');
-            $table->string('created_by');
+            $table->string('status');
+            $table->text('notes');
+            $table->integer('created_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detail_production_orders');
+        Schema::dropIfExists('production_order_timelines');
     }
 };

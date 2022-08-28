@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\ItemTypeController;
 use App\Http\Controllers\Api\ItemUnitController;
 use App\Http\Controllers\Api\MutationController;
+use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,7 @@ Route::resource('item-types', ItemTypeController::class);
 Route::resource('item-units', ItemUnitController::class);
 Route::resource('warehouses', WarehouseController::class);
 Route::resource('mutations', MutationController::class);
+Route::resource('production-order', ProductionOrderController::class);
 
 
 Route::middleware('auth:sanctum')->group(function () {
