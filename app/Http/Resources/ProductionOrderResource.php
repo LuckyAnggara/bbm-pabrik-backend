@@ -29,7 +29,6 @@ class ProductionOrderResource extends JsonResource
             'created_by' => $this->created_by,
             'user' => $this->user,
             'created_at' => $this->created_at->format('m/d/Y'),
-            'updated_at' => $this->updated_at->format('m/d/Y'),
         ];
     }
 }

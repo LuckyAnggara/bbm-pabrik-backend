@@ -32,6 +32,8 @@ Route::resource('warehouses', WarehouseController::class);
 Route::resource('mutations', MutationController::class);
 Route::resource('production-order', ProductionOrderController::class);
 
+Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('blogs', BlogController::class);

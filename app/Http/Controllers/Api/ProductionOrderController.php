@@ -96,6 +96,25 @@ class ProductionOrderController extends BaseController
         return $this->sendResponse(new ProductionOrderResource($productionOrder), 'Data updated');
     }
 
+    public function updateStatus(Request $request)
+    {
+        $input = $request->all();
+        $productionOrder = ProductionOrder::findOrFail($input['id']);
+        if ($productionOrder) {
+            $productionOrder->status = $input['status'];
+            $productionOrder->save();
+
+            $timeline = ProductionOrderTimeline::create([
+                'production_id' => $productionOrder->id,
+                'status' => $input['status'],
+                'notes' =>  'status diperbaharui',
+                'created_by' => $productionOrder->created_by
+            ]);
+            $productionOrder['timeline'] = $timeline;
+        }
+        return $this->sendResponse(new ProductionOrderResource($productionOrder), 'Data updated');
+    }
+
     public function getSequenceNumber()
     {
         $lastNumber = ProductionOrder::latest();
@@ -137,7 +156,7 @@ class ProductionOrderController extends BaseController
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
                 'status' => 'NEW ORDER',
-                'notes' =>  $productionOrder->notes,
+                'notes' =>  'NEW ORDER telah di buat',
                 'created_by' => $productionOrder->created_by
             ]);
 
