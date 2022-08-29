@@ -15,23 +15,23 @@ class ProductionOrderController extends BaseController
 {
     public function index(Request $request)
     {
-       
+
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
         $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'timeline.user', 'user']);
-        if($fromDate && $toDate){
+        if ($fromDate && $toDate) {
             $item->whereBetween('created_at', [$fromDate, $toDate]);
         }
         if ($name) {
             $item->where('sequence', 'like', '%' . $name . '%')
-            ->orWhere('customer_name', 'like', '%' . $name . '%')
-            ->orWhere('status', 'like', '%' . $name . '%')
-            ->orWhere('pic_name', 'like', '%' . $name . '%');
+                ->orWhere('customer_name', 'like', '%' . $name . '%')
+                ->orWhere('status', 'like', '%' . $name . '%')
+                ->orWhere('pic_name', 'like', '%' . $name . '%');
         }
-     
+
         $data = $item->latest()->paginate($limit);
 
         return $this->sendResponse($data, 'Data fetched');
@@ -40,23 +40,73 @@ class ProductionOrderController extends BaseController
     public function show($id)
     {
         $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'timeline.user', 'user')->where('id', $id)->first();
-        if($item){
+        if ($item) {
             return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
-            return $this->sendError('Data not found');
+        return $this->sendError('Data not found');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $input = $request->all();
+
+        $productionOrder = ProductionOrder::findOrFail($id);
+        if ($productionOrder) {
+
+            $productionOrder->order_date = $input['order_date'];
+            $productionOrder->customer_name = $input['customer_name'];
+            $productionOrder->pic_name = $input['pic_name'];
+            $productionOrder->notes = $input['notes'];
+            $productionOrder->target_date = $input['target_date'];
+            $productionOrder->save();
+
+            ProductionOrderInput::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderOutput::where('production_id', $productionOrder->id)->delete();
+
+            $timeline = ProductionOrderTimeline::create([
+                'production_id' => $productionOrder->id,
+                'status' => "UPDATE ORDER",
+                'notes' =>  'data di perbaharui',
+                'created_by' => $productionOrder->created_by
+            ]);
+            $productionOrder['timeline'] = $timeline;
+            $POInput = [];
+            $POOutput = [];
+            foreach ($input['input'] as $key => $value) {
+                $POInput[] = ProductionOrderInput::create([
+                    'production_id' => $productionOrder->id,
+                    'item_id' => $value['id'],
+                    'estimate_quantity' => $value['estimate_quantity'],
+                ]);
+            }
+            $productionOrder['input'] = $POInput;
+            foreach ($input['output'] as $key => $value) {
+                $POOutput[] = ProductionOrderOutput::create([
+                    'production_id' => $productionOrder->id,
+                    'item_id' => $value['id'],
+                    'type_id' => $value['type_id'],
+                    'target_quantity' => $value['target_quantity'],
+                    'real_quantity' => 0,
+                ]);
+            }
+            $productionOrder['output'] = $POOutput;
+            $productionOrder['output'] = $POOutput;
+        }
+
+        return $this->sendResponse(new ProductionOrderResource($productionOrder), 'Data updated');
     }
 
     public function getSequenceNumber()
     {
         $lastNumber = ProductionOrder::latest();
-        if($lastNumber->count() == 0){
+        if ($lastNumber->count() == 0) {
             $lastNumber = 0;
-        }else{
+        } else {
             // $lastNumber = 1;5
             $lastNumber = $lastNumber->first()->id;
         }
         $getDate = date('Ymd');
-        return $getDate.$lastNumber;
+        return $getDate . $lastNumber;
     }
 
     public function store(Request $request)
@@ -73,46 +123,45 @@ class ProductionOrderController extends BaseController
 
         $sequence = $this->getSequenceNumber();
         $productionOrder = ProductionOrder::create([
-            'sequence'=> $sequence,
-            'pic_name'=> $input['pic_name'],
-            'customer_name'=> $input['customer_name'],
-            'notes'=> $input['notes'],
-            'status'=> 'NEW ORDER',
-            'target_date'=> $input['target_date'],
-            'order_date'=> $input['order_date'],
-            'created_by'=> '1'
+            'sequence' => $sequence,
+            'pic_name' => $input['pic_name'],
+            'customer_name' => $input['customer_name'],
+            'notes' => $input['notes'],
+            'status' => 'NEW ORDER',
+            'target_date' => $input['target_date'],
+            'order_date' => $input['order_date'],
+            'created_by' => '1'
         ]);
 
-        if($productionOrder)
-        {
+        if ($productionOrder) {
             $timeline = ProductionOrderTimeline::create([
-                'production_id'=> $productionOrder->id,
+                'production_id' => $productionOrder->id,
                 'status' => 'NEW ORDER',
-                'notes'=>  $productionOrder->notes,
-                'created_by'=> $productionOrder->created_by
+                'notes' =>  $productionOrder->notes,
+                'created_by' => $productionOrder->created_by
             ]);
-            
+
             $productionOrder['timeline'] = $timeline;
             $POInput = [];
             $POOutput = [];
             foreach ($input['input'] as $key => $value) {
-               $POInput[]= ProductionOrderInput::create([
-                    'production_id'=> $productionOrder->id,
-                    'item_id'=> $value['id'],
-                    'estimate_quantity'=> $value['estimate_quantity'],
+                $POInput[] = ProductionOrderInput::create([
+                    'production_id' => $productionOrder->id,
+                    'item_id' => $value['id'],
+                    'estimate_quantity' => $value['estimate_quantity'],
                 ]);
             }
-                $productionOrder['input'] = $POInput;
+            $productionOrder['input'] = $POInput;
             foreach ($input['output'] as $key => $value) {
-                $POOutput[]= ProductionOrderOutput::create([
-                    'production_id'=> $productionOrder->id,
-                    'item_id'=> $value['id'],
-                    'type_id'=> $value['type_id'],
-                    'target_quantity'=> $value['target_quantity'],
-                    'real_quantity'=> 0,
+                $POOutput[] = ProductionOrderOutput::create([
+                    'production_id' => $productionOrder->id,
+                    'item_id' => $value['id'],
+                    'type_id' => $value['type_id'],
+                    'target_quantity' => $value['target_quantity'],
+                    'real_quantity' => 0,
                 ]);
             }
-                $productionOrder['output'] = $POOutput;
+            $productionOrder['output'] = $POOutput;
             $productionOrder['output'] = $POOutput;
         }
         // // PO singkatan Production Order

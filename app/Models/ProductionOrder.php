@@ -36,16 +36,13 @@ class ProductionOrder extends Model
         return $this->hasMany(ProductionOrderOutput::class, 'production_id', 'id')->orderBy('created_at');
     }
 
-    
     public function timeline()
     {
         return $this->hasMany(ProductionOrderTimeline::class, 'production_id', 'id')->orderBy('created_at');
     }
-    
+
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
-
-
 }
