@@ -21,6 +21,11 @@ class ProductionOrder extends Model
         'created_at',
     ];
 
+    protected $dates = [
+        'order_date',
+        'target_date',
+    ];
+
     public function input()
     {
         return $this->hasMany(ProductionOrderInput::class, 'production_id', 'id')->orderBy('created_at');

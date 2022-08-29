@@ -41,7 +41,7 @@ class ProductionOrderController extends BaseController
     {
         $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'timeline.user', 'user')->where('id', $id)->first();
         if($item){
-            return $this->sendResponse($item, 'Data fetched');
+            return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
             return $this->sendError('Data not found');
     }
