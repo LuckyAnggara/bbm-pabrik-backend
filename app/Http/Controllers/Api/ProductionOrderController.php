@@ -39,7 +39,7 @@ class ProductionOrderController extends BaseController
 
     public function show($id)
     {
-        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'timeline.user', 'user')->where('id', $id)->first();
+        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type','timeline.user', 'user')->where('id', $id)->first();
         if ($item) {
             return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
