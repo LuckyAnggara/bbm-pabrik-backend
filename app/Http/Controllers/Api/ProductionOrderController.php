@@ -46,6 +46,7 @@ class ProductionOrderController extends BaseController
         return $this->sendError('Data not found');
     }
 
+    // UPDATE DATA DARI NEW ORDER
     public function update(Request $request, $id)
     {
         $input = $request->all();
@@ -96,6 +97,56 @@ class ProductionOrderController extends BaseController
         return $this->sendResponse(new ProductionOrderResource($productionOrder), 'Data updated');
     }
 
+    // UPDATE DATA SETELAH ORDER BERSTATUS SELESAI
+    public function updateData(Request $request)
+    {
+        $input = $request->all();
+        $dataOrder = $input['data_order'];
+        $updateOrder = $input['update_order'];
+
+        $productionOrder = ProductionOrder::findOrFail($dataOrder['id']);
+        if ($productionOrder) {
+            $updateOutput =[];
+            $newOutput =[];
+            foreach ($dataOrder['output'] as $key => $output) {
+                $data = ProductionOrderOutput::findOrFail($output['id']);
+                if($data){
+                    $data->real_quantity = $output['real_quantity'];
+                    $data->save();
+                    $updateOutput[] = $data;
+                }else{
+                    $updateOutput[] = 'Data ID: '.$output['id']. ' Gagal Update!';
+                }
+            }
+
+            foreach ($updateOrder as $key => $value) {
+                $newOutput[] = ProductionOrderOutput::create([
+                    'production_id' => $productionOrder->id,
+                    'item_id' => $value['id'],
+                    'type_id' => $value['type_id'],
+                    'target_quantity' => 0,
+                    'real_quantity' => $value['real_quantity'],
+                ]);
+            }
+
+            $timeline = ProductionOrderTimeline::create([
+                'production_id' => $productionOrder->id,
+                'status' => "UPDATE ORDER",
+                'notes' =>  'Order telah selesai dikerjakan',
+                'created_by' => $productionOrder->created_by
+            ]);
+            $productionOrder->status = 'DONE';
+            $productionOrder->save();
+
+            $productionOrder->output = $updateOrder;
+            $productionOrder->new_output = $newOutput;
+
+        }
+
+        return $this->sendResponse($productionOrder, 'Data updated');
+    }
+
+    // HANYA UPDATE STATUS
     public function updateStatus(Request $request)
     {
         $input = $request->all();

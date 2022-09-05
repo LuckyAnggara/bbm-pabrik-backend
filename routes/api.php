@@ -33,6 +33,7 @@ Route::resource('mutations', MutationController::class);
 Route::resource('production-order', ProductionOrderController::class);
 
 Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
+Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
