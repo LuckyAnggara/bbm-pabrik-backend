@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\ProductionOrderResource;
+use App\Models\Mutation;
 use App\Models\ProductionOrder;
 use App\Models\ProductionOrderInput;
 use App\Models\ProductionOrderOutput;
@@ -39,7 +40,7 @@ class ProductionOrderController extends BaseController
 
     public function show($id)
     {
-        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type','timeline.user', 'user')->where('id', $id)->first();
+        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type', 'timeline.user', 'user')->where('id', $id)->first();
         if ($item) {
             return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
@@ -106,16 +107,16 @@ class ProductionOrderController extends BaseController
 
         $productionOrder = ProductionOrder::findOrFail($dataOrder['id']);
         if ($productionOrder) {
-            $updateOutput =[];
-            $newOutput =[];
+            $updateOutput = [];
+            $newOutput = [];
             foreach ($dataOrder['output'] as $key => $output) {
                 $data = ProductionOrderOutput::findOrFail($output['id']);
-                if($data){
+                if ($data) {
                     $data->real_quantity = $output['real_quantity'];
                     $data->save();
                     $updateOutput[] = $data;
-                }else{
-                    $updateOutput[] = 'Data ID: '.$output['id']. ' Gagal Update!';
+                } else {
+                    $updateOutput[] = 'Data ID: ' . $output['id'] . ' Gagal Update!';
                 }
             }
 
@@ -140,7 +141,47 @@ class ProductionOrderController extends BaseController
 
             $productionOrder->output = $updateOrder;
             $productionOrder->new_output = $newOutput;
+        }
 
+        return $this->sendResponse($productionOrder, 'Data updated');
+    }
+
+    // UPDATE DATA KE WAREHOUSES
+    public function updateWarehouse(Request $request)
+    {
+        $input = $request->all();
+        $productionOrder = ProductionOrder::findOrFail($input['id']);
+        if ($productionOrder) {
+            foreach ($productionOrder['output'] as $key => $output) {
+                $item = Mutation::create([
+                    'item_id' => $output->item_id,
+                    'debit' => $output->real_quantity,
+                    'kredit' => 0,
+                    'notes' => 'Hasil produksi nomor : ' . $productionOrder->sequence,
+                    'warehouse_id' => 1,
+                    'created_by' => 1,
+                ]);
+            }
+
+            foreach ($productionOrder['input'] as $key => $input) {
+                $item = Mutation::create([
+                    'item_id' => $input->item_id,
+                    'kredit' => $input->estimate_quantity,
+                    'debit' => 0,
+                    'notes' => 'Bahan untuk produksi nomor : ' . $productionOrder->sequence,
+                    'warehouse_id' => 1,
+                    'created_by' => 1,
+                ]);
+            }
+
+            $timeline = ProductionOrderTimeline::create([
+                'production_id' => $productionOrder->id,
+                'status' => "UPDATE ORDER",
+                'notes' =>  'Hasil Produksi telah dikirim ke Gudang',
+                'created_by' => 1,
+            ]);
+            $productionOrder->status = 'WAREHOUSE';
+            $productionOrder->save();
         }
 
         return $this->sendResponse($productionOrder, 'Data updated');
