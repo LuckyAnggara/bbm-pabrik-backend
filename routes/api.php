@@ -22,25 +22,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', [AuthController::class, 'signin']);
-Route::post('register', [AuthController::class, 'signup']);
+// Route::post('login', [AuthController::class, 'signin']);
+// Route::post('register', [AuthController::class, 'signup']);
 
-Route::resource('items', ItemController::class);
-Route::resource('item-types', ItemTypeController::class);
-Route::resource('item-units', ItemUnitController::class);
-Route::resource('warehouses', WarehouseController::class);
-Route::resource('mutations', MutationController::class);
-Route::resource('production-order', ProductionOrderController::class);
 
-Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
-Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
-Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::resource('blogs', BlogController::class);
+    Route::resource('items', ItemController::class);
+    Route::resource('item-types', ItemTypeController::class);
+    Route::resource('item-units', ItemUnitController::class);
+    Route::resource('warehouses', WarehouseController::class);
+    Route::resource('mutations', MutationController::class);
+    Route::resource('production-order', ProductionOrderController::class);
+
+    Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
+    Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
+    Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('register', 'register');
+    Route::post('login', 'login');
 });
