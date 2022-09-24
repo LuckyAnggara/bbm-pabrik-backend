@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Item;
+use App\Models\Mutation;
 use Illuminate\Http\Request;
 use App\Http\Resources\ItemResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
-use App\Models\Mutation;
-use Illuminate\Support\Facades\DB;
 
 class ItemController extends BaseController
 {
@@ -56,7 +56,15 @@ class ItemController extends BaseController
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $item = Item::create($input);
+
+        $item = Item::create([
+            'name' => $request->name,
+            'type_id' => $request->type_id,
+            'unit_id' => $request->unit_id,
+            'warehouse_id' => $request->warehouse_id,
+            'created_by' =>  Auth::id(),
+        ]);
+
         if ($item) {
             //membuat saldo awal
             $mutation = new Mutation;
@@ -65,10 +73,10 @@ class ItemController extends BaseController
             $mutation->debit = 0;
             $mutation->kredit = 0;
             $mutation->notes = 'saldo awal';
-            $mutation->created_by = 1;
+            $mutation->created_by = Auth::id();
             $mutation->save();
         }
-        return $this->sendResponse(new ItemResource($item), 'Data created');
+        return $this->sendResponse((new ItemResource($item)), 'Data created');
     }
 
     public function show($id)

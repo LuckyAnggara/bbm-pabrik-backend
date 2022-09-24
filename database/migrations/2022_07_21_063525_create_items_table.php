@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('type_id')->nullable();
             $table->integer('unit_id')->nullable();
             $table->integer('warehouse_id')->nullable();
-            $table->integer('created_by')->nullable();
+            $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
         });

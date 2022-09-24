@@ -11,6 +11,7 @@ use App\Models\ProductionOrder;
 use App\Models\ProductionOrderInput;
 use App\Models\ProductionOrderOutput;
 use App\Models\ProductionOrderTimeline;
+use Illuminate\Support\Facades\Auth;
 
 class ProductionOrderController extends BaseController
 {
@@ -69,7 +70,7 @@ class ProductionOrderController extends BaseController
                 'production_id' => $productionOrder->id,
                 'status' => "UPDATE ORDER",
                 'notes' =>  'data di perbaharui',
-                'created_by' => $productionOrder->created_by
+                'created_by' => Auth::id()
             ]);
             $productionOrder['timeline'] = $timeline;
             $POInput = [];
@@ -134,7 +135,7 @@ class ProductionOrderController extends BaseController
                 'production_id' => $productionOrder->id,
                 'status' => "UPDATE ORDER",
                 'notes' =>  'Order telah selesai dikerjakan',
-                'created_by' => $productionOrder->created_by
+                'created_by' =>  Auth::id(),
             ]);
             $productionOrder->status = 'DONE';
             $productionOrder->save();
@@ -159,7 +160,7 @@ class ProductionOrderController extends BaseController
                     'kredit' => 0,
                     'notes' => 'Hasil produksi nomor : ' . $productionOrder->sequence,
                     'warehouse_id' => 1,
-                    'created_by' => 1,
+                    'created_by' => Auth::id()
                 ]);
             }
 
@@ -170,7 +171,7 @@ class ProductionOrderController extends BaseController
                     'debit' => 0,
                     'notes' => 'Bahan untuk produksi nomor : ' . $productionOrder->sequence,
                     'warehouse_id' => 1,
-                    'created_by' => 1,
+                    'created_by' => Auth::id()
                 ]);
             }
 
@@ -178,7 +179,7 @@ class ProductionOrderController extends BaseController
                 'production_id' => $productionOrder->id,
                 'status' => "UPDATE ORDER",
                 'notes' =>  'Hasil Produksi telah dikirim ke Gudang',
-                'created_by' => 1,
+                'created_by' => Auth::id()
             ]);
             $productionOrder->status = 'WAREHOUSE';
             $productionOrder->save();
