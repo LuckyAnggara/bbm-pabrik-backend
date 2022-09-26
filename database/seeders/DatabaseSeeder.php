@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'lucky',
-            'username' => 'lucky',
-            'password' => '123',
+            'name' => 'asdasdasd',
+            'username' => '123',
+            'password' => '$2y$10$DoqfCFk9hG8GQGUvoeoOT.XOUSdM4UHAhcehpkDSkBtciH62UcUru',
         ]);
 
         ItemType::factory()->create([

@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mutations', function (Blueprint $table) {
+        Schema::create('detail_incoming_items', function (Blueprint $table) {
             $table->id();
+            $table->integer('master_id');
             $table->integer('item_id');
-            // $table->integer('warehouse_id');
-            $table->double('debit')->default(0);
-            $table->double('kredit')->default(0);
-            $table->text('notes')->nullable();
-            $table->integer('created_by');
+            $table->double('qty');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mutations');
+        Schema::dropIfExists('detail_incoming_items');
     }
 };

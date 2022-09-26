@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\WarehouseResource;
 use Database\Factories\WarehouseFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class MutationController extends BaseController
@@ -35,7 +36,6 @@ class MutationController extends BaseController
         $input = $request->all();
         $validator = Validator::make($input, [
             'item_id' => 'required',
-            'created_by' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +47,7 @@ class MutationController extends BaseController
             'debit' => $request->debit,
             'kredit' => $request->kredit,
             'warehouse_id' => $request->warehouse_id,
-            'created_by' => $request->created_by,
+            'created_by' => Auth::id(),
         ]);
         return $this->sendResponse(new MutationResource($item), 'Data created');
     }

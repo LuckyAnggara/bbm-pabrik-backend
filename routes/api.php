@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ItemUnitController;
 use App\Http\Controllers\Api\MutationController;
 use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
+use App\Models\MasterExitItem;
+use App\Models\MasterIncomingItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
     Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
     Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
+
+    Route::post('mutation/incoming', [MasterIncomingItem::class]);
+    Route::post('mutation/exit', [MasterExitItem::class]);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
