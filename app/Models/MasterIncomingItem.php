@@ -11,6 +11,12 @@ class MasterIncomingItem extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'notes',
+        'data_date',
         'created_by',
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'created_by');
+    }
 }

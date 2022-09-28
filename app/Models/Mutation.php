@@ -11,7 +11,7 @@ class Mutation extends Model
     use SoftDeletes, HasFactory;
     protected $fillable = [
         'item_id',
-        'warehouse_id',
+        // 'warehouse_id',
         'debit',
         'kredit',
         'notes',

@@ -46,7 +46,7 @@ class MutationController extends BaseController
             'item_id' => $request->item_id,
             'debit' => $request->debit,
             'kredit' => $request->kredit,
-            'warehouse_id' => $request->warehouse_id,
+            // 'warehouse_id' => $request->warehouse_id,
             'created_by' => Auth::id(),
         ]);
         return $this->sendResponse(new MutationResource($item), 'Data created');

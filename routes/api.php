@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\API\ItemIncomingController;
 use App\Http\Controllers\Api\ItemTypeController;
 use App\Http\Controllers\Api\ItemUnitController;
 use App\Http\Controllers\Api\MutationController;
@@ -43,8 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
     Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
 
-    Route::post('mutation/incoming', [MasterIncomingItem::class]);
-    Route::post('mutation/exit', [MasterExitItem::class]);
+    Route::post('mutation-incoming/store', [ItemIncomingController::class, 'store']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

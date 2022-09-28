@@ -17,8 +17,8 @@ class MasterItemIncomingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'notes' => $this->user,
-            'tanggal' => $this->created_at->format('m/d/Y'),
+            'notes' => $this->notes,
+            'data_date' => $this->data_date,
             'created_by' => $this->created_by,
             'user' => $this->user,
         ];

@@ -30,29 +30,24 @@ class ItemIncomingController extends BaseController
     public function store(Request $request)
     {
         $data = $request->data;
-        $validator = Validator::make($data, [
-            'tanggal' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+
         $data = MasterIncomingItem::create([
-            'data_date' => $data->tanggal,
-            'notes' => $data->notes,
+            'data_date' => $data['tanggal'],
+            'notes' => $data['notes'],
             'created_by' =>  Auth::id(),
         ]);
 
         if ($data) {
             foreach ($request->detail as $key => $detail) {
-                $detail = DetailIncomingItem::creat([
+                $detail = DetailIncomingItem::create([
                     'master_id' => $data->id,
-                    'item_id' => $detail->item_id,
-                    'qty' => $detail->qty,
+                    'item_id' => $detail['id'],
+                    'qty' => $detail['qty'],
                 ]);
 
                 $item = Mutation::create([
-                    'item_id' => $detail->item_id,
-                    'debit' => $detail->qty,
+                    'item_id' => $detail['id'],
+                    'debit' => $detail['qty'],
                     'kredit' => 0,
                     'warehouse_id' => 1,
                     'created_by' =>  Auth::id(),
