@@ -24,10 +24,10 @@ class Mutation extends Model
         return $this->hasOne(Item::class, 'id', 'item_id');
     }
 
-    public function warehouse()
-    {
-        return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
-    }
+    // public function warehouse()
+    // {
+    //     return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
+    // }
 
     public function user()
     {

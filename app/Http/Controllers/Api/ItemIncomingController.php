@@ -39,19 +39,22 @@ class ItemIncomingController extends BaseController
 
         if ($data) {
             foreach ($request->detail as $key => $detail) {
-                $detail = DetailIncomingItem::create([
-                    'master_id' => $data->id,
-                    'item_id' => $detail['id'],
-                    'qty' => $detail['qty'],
-                ]);
+                if (isset($detail['qty'])) {
+                    $detail = DetailIncomingItem::create([
+                        'master_id' => $data->id,
+                        'item_id' => $detail['id'],
+                        'qty' => !isset($detail['qty']) ? 0 : $detail['qty'],
+                    ]);
 
-                $item = Mutation::create([
-                    'item_id' => $detail['id'],
-                    'debit' => $detail['qty'],
-                    'kredit' => 0,
-                    'warehouse_id' => 1,
-                    'created_by' =>  Auth::id(),
-                ]);
+                    $item = Mutation::create([
+                        'item_id' => $detail['id'],
+                        'debit' => $detail['qty'],
+                        'kredit' => 0,
+                        'warehouse_id' => 1,
+                        'created_by' =>  Auth::id(),
+                        'notes' => $data->notes
+                    ]);
+                }
             }
         }
         return $this->sendResponse(new MasterItemIncomingResource($data), 'Data created');

@@ -21,7 +21,7 @@ class ItemController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $item = Item::with(['type', 'unit', 'warehouse', 'user'])->with('mutation', function ($query) use ($warehouseId, $fromDate, $toDate) {
+        $item = Item::with(['type', 'unit', 'warehouse', 'user'])->with('mutation', function ($query) use ($fromDate, $toDate) {
             if (!is_null($fromDate) && !is_null($toDate)) {
                 $query->whereBetween('created_at', [$fromDate, $toDate]);
             }

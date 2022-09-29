@@ -18,11 +18,11 @@ class MutationController extends BaseController
 {
     public function index(Request $request)
     {
-        $warehouseId = $request->input('warehouse_id');
+        // $warehouseId = $request->input('warehouse_id');
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
 
-        $item = Item::with(['type', 'unit', 'warehouse', 'user', 'mutation']);
+        $item = Item::with(['type', 'unit', 'user', 'mutation']);
 
         if ($name) {
             $item->where('name', 'like', '%' . $name . '%');
@@ -54,26 +54,26 @@ class MutationController extends BaseController
 
     public function show($id, Request $request)
     {
-        $warehouseId = $request->input('warehouse_id');
+        // $warehouseId = $request->input('warehouse_id');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
 
-        $item = Item::with('type', 'unit', 'warehouse', 'user')->with('mutation', function ($query) use ($warehouseId, $fromDate, $toDate) {
+        $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
             DB::statement(DB::raw('set @balance=0'));
-            $query->selectRaw('warehouse_id, item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
-            if (!is_null($warehouseId)) {
-                $query->where('warehouse_id', '=', $warehouseId);
-                if (!is_null($fromDate) && !is_null($toDate)) {
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
-                }
-                // $query->with('user');
-                // $query->saldo_akumulasi();
-            } else {
-                if (!is_null($fromDate) && !is_null($toDate)) {
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
-                }
+            $query->selectRaw(' item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
+            // if (!is_null($warehouseId)) {
+            // $query->where('warehouse_id', '=', $warehouseId);
+            if (!is_null($fromDate) && !is_null($toDate)) {
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
             }
+            // $query->with('user');
+            // $query->saldo_akumulasi();
+            // } else {
+            //     if (!is_null($fromDate) && !is_null($toDate)) {
+            //         $query->whereBetween('created_at', [$fromDate, $toDate]);
+            //     }
+            // }
         })->where('id', $id)->first();
 
         return $this->sendResponse($item, 'Data fetched');
@@ -91,7 +91,7 @@ class MutationController extends BaseController
         }
 
         $mutation->item_id = $input['item_id'];
-        $mutation->warehouse_id = $input['warehouse_id'];
+        // $mutation->warehouse_id = $input['warehouse_id'];
         $mutation->debit = $input['debit'];
         $mutation->kredit = $input['kredit'];
         $mutation->save();
