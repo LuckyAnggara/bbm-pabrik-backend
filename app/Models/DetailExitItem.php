@@ -10,7 +10,13 @@ class DetailExitItem extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        'notes',
-        'created_by',
+        'master_id',
+        'item_id',
+        'qty',
     ];
+
+    public function item()
+    {
+        return $this->hasOne(Item::class, 'id', 'item_id');
+    }
 }

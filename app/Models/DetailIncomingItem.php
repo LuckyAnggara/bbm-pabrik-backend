@@ -14,4 +14,9 @@ class DetailIncomingItem extends Model
         'item_id',
         'qty',
     ];
+
+    public function item()
+    {
+        return $this->hasOne(Item::class, 'id', 'item_id');
+    }
 }

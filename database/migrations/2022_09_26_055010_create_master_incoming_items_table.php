@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('master_incoming_items', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('mutation_code')->unique();
+            $table->string('type')->default('DEBIT');
             $table->text('notes');
             $table->integer('created_by');
             $table->dateTime('data_date');
+            $table->timestamps();
             $table->softDeletes();
         });
     }

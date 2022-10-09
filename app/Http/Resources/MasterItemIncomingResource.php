@@ -17,6 +17,9 @@ class MasterItemIncomingResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'mutation_code' => $this->mutation_code,
+            'type'=> $this->type,
+            'detail'=> $this->detail,
             'notes' => $this->notes,
             'data_date' => $this->data_date,
             'created_by' => $this->created_by,

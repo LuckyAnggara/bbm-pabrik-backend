@@ -11,6 +11,7 @@ use App\Models\Mutation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class ItemIncomingController extends BaseController
 {
@@ -32,6 +33,7 @@ class ItemIncomingController extends BaseController
         $data = $request->data;
 
         $data = MasterIncomingItem::create([
+            'mutation_code'=> Carbon::now()->timestamp,
             'data_date' => $data['tanggal'],
             'notes' => $data['notes'],
             'created_by' =>  Auth::id(),
@@ -40,19 +42,19 @@ class ItemIncomingController extends BaseController
         if ($data) {
             foreach ($request->detail as $key => $detail) {
                 if (isset($detail['qty'])) {
-                    $detail = DetailIncomingItem::create([
+                    $dd = DetailIncomingItem::create([
                         'master_id' => $data->id,
                         'item_id' => $detail['id'],
                         'qty' => !isset($detail['qty']) ? 0 : $detail['qty'],
                     ]);
 
                     $item = Mutation::create([
-                        'item_id' => $detail['id'],
-                        'debit' => $detail['qty'],
+                        'item_id' => $dd->item_id,
+                        'debit' => $dd->qty,
                         'kredit' => 0,
                         'warehouse_id' => 1,
                         'created_by' =>  Auth::id(),
-                        'notes' => $data->notes
+                        'notes' => $data->notes. ' - ' . '#'. $data->mutation_code
                     ]);
                 }
             }

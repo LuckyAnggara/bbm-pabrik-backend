@@ -15,11 +15,14 @@ return new class extends Migration
     {
         Schema::create('master_exit_items', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('mutation_code')->unique();
+            $table->string('type')->default('KREDIT');
             $table->text('notes');
             $table->integer('created_by');
             $table->dateTime('data_date');
+            $table->timestamps();
             $table->softDeletes();
+
         });
     }
 

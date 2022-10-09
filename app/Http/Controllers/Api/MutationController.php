@@ -10,12 +10,61 @@ use App\Http\Resources\MutationResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\WarehouseResource;
+use Illuminate\Support\Collection;
+use App\Models\MasterExitItem;
+use App\Models\MasterIncomingItem;
 use Database\Factories\WarehouseFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class MutationController extends BaseController
 {
+    //MASTER MUTASI
+    public function indexMaster(Request $request)
+    {
+        $limit = $request->input('limit', 5);
+        $name = $request->input('name');
+
+        $incoming = MasterIncomingItem::with('user','detail');
+
+        if ($name) {
+            $incoming->where('mutation_code', 'like', '%' . $name . '%');
+            $incoming->orWhere('created_at', 'like', '%' . $name . '%');
+            $incoming->orWhere('notes', 'like', '%' . $name . '%');
+            $incoming->orWhere('type', 'like', '%' . $name . '%');
+        }
+
+        $exit = MasterExitItem::with('user','detail');
+
+        if ($name) {
+            $exit->where('mutation_code', 'like', '%' . $name . '%');
+            $exit->orWhere('created_at', 'like', '%' . $name . '%');
+            $exit->orWhere('notes', 'like', '%' . $name . '%');
+            $exit->orWhere('type', 'like', '%' . $name . '%');
+        }
+
+        $data = $exit->union($incoming);
+
+
+
+        return $this->sendResponse($data->paginate($limit), 'Data fetched');
+    }
+
+    public function showMaster($id,Request $request)
+    {
+        $type = $request->input('type');
+        if($type == 'debit'){
+            $data = MasterIncomingItem::with('user', 'detail.item')->find($id);
+        }else{
+            $data = MasterExitItem::with('user', 'detail.item')->find($id);
+        }
+        if($data){
+            return $this->sendResponse($data, 'Data fetched');
+        }
+        return $this->sendResponse(null, 'Data not Found');
+    }
+
+    //FOR SATUAN
     public function index(Request $request)
     {
         // $warehouseId = $request->input('warehouse_id');
@@ -61,14 +110,12 @@ class MutationController extends BaseController
 
         $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
             DB::statement(DB::raw('set @balance=0'));
-            $query->selectRaw(' item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
+            $query->selectRaw('id,item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
             // if (!is_null($warehouseId)) {
             // $query->where('warehouse_id', '=', $warehouseId);
             if (!is_null($fromDate) && !is_null($toDate)) {
                 $query->whereBetween('created_at', [$fromDate, $toDate]);
             }
-            // $query->with('user');
-            // $query->saldo_akumulasi();
             // } else {
             //     if (!is_null($fromDate) && !is_null($toDate)) {
             //         $query->whereBetween('created_at', [$fromDate, $toDate]);

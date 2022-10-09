@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Route;
 // Route::post('register', [AuthController::class, 'signup']);
 
 
+Route::get('mutations/master', [MutationController::class, 'indexMaster']);
+Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
