@@ -14,6 +14,9 @@ class MasterExitItem extends Model
         'mutation_code',
         'data_date',
         'type',
+        'admin_name',
+        'no_pol',
+        'driver_name',
         'created_by',
     ];
 

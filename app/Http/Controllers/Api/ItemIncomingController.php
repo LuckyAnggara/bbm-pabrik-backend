@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Api\BaseController;
-use App\Http\Controllers\Controller;
 use App\Http\Resources\MasterItemIncomingResource;
 use App\Models\DetailIncomingItem;
 use App\Models\MasterIncomingItem;
@@ -33,7 +32,7 @@ class ItemIncomingController extends BaseController
         $data = $request->data;
 
         $data = MasterIncomingItem::create([
-            'mutation_code'=> Carbon::now()->timestamp,
+            'mutation_code' => Carbon::now()->timestamp,
             'data_date' => $data['tanggal'],
             'notes' => $data['notes'],
             'created_by' =>  Auth::id(),
@@ -54,7 +53,7 @@ class ItemIncomingController extends BaseController
                         'kredit' => 0,
                         'warehouse_id' => 1,
                         'created_by' =>  Auth::id(),
-                        'notes' => $data->notes. ' - ' . '#'. $data->mutation_code
+                        'notes' => $data->notes . ' - ' . '#' . $data->mutation_code
                     ]);
                 }
             }

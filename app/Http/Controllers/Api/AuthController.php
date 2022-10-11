@@ -49,8 +49,9 @@ class AuthController extends BaseController
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
             $user = Auth::user();
             $user->tokens()->delete();
-            $success['access_token'] =  $user->createToken('MyApp')->plainTextToken;
-            $success['token_type'] = 'Bearer';
+            $success['token']['access_token'] =  $user->createToken('MyApp')->plainTextToken;
+            $success['token']['token_type'] = 'Bearer';
+            $success['user'] =  Auth::user();
             return $this->sendResponse($success, 'User login successfully.');
         } else {
             return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);

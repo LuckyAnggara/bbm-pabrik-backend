@@ -25,7 +25,7 @@ class MutationController extends BaseController
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
 
-        $incoming = MasterIncomingItem::with('user','detail');
+        $incoming = MasterIncomingItem::with('user', 'detail');
 
         if ($name) {
             $incoming->where('mutation_code', 'like', '%' . $name . '%');
@@ -34,7 +34,7 @@ class MutationController extends BaseController
             $incoming->orWhere('type', 'like', '%' . $name . '%');
         }
 
-        $exit = MasterExitItem::with('user','detail');
+        $exit = MasterExitItem::with('user', 'detail');
 
         if ($name) {
             $exit->where('mutation_code', 'like', '%' . $name . '%');
@@ -50,15 +50,15 @@ class MutationController extends BaseController
         return $this->sendResponse($data->paginate($limit), 'Data fetched');
     }
 
-    public function showMaster($id,Request $request)
+    public function showMaster($id, Request $request)
     {
         $type = $request->input('type');
-        if($type == 'debit'){
+        if ($type == 'debit') {
             $data = MasterIncomingItem::with('user', 'detail.item')->find($id);
-        }else{
+        } else {
             $data = MasterExitItem::with('user', 'detail.item')->find($id);
         }
-        if($data){
+        if ($data) {
             return $this->sendResponse($data, 'Data fetched');
         }
         return $this->sendResponse(null, 'Data not Found');

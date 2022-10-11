@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Support\Str;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MasterItemIncomingResource extends JsonResource
+class MasterExitResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

@@ -3,14 +3,13 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\API\ItemExitController;
 use App\Http\Controllers\API\ItemIncomingController;
 use App\Http\Controllers\Api\ItemTypeController;
 use App\Http\Controllers\Api\ItemUnitController;
 use App\Http\Controllers\Api\MutationController;
 use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
-use App\Models\MasterExitItem;
-use App\Models\MasterIncomingItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,10 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
 
     Route::post('mutation-incoming/store', [ItemIncomingController::class, 'store']);
+    Route::post('mutation-exit/store', [ItemExitController::class, 'store']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return Auth::id();
+    return Auth::user();
 });
 
 Route::controller(AuthController::class)->group(function () {

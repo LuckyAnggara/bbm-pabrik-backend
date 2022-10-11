@@ -17,12 +17,14 @@ return new class extends Migration
             $table->id();
             $table->string('mutation_code')->unique();
             $table->string('type')->default('KREDIT');
+            $table->string('no_pol')->nullable();
+            $table->string('admin_name')->nullable();
+            $table->string('driver_name')->nullable();
             $table->text('notes');
             $table->integer('created_by');
             $table->dateTime('data_date');
             $table->timestamps();
             $table->softDeletes();
-
         });
     }
 
