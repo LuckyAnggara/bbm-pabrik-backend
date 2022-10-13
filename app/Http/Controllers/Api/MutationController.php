@@ -23,6 +23,7 @@ class MutationController extends BaseController
     public function indexMaster(Request $request)
     {
         $limit = $request->input('limit', 5);
+        $typeData = $request->input('type-data', 'debit');
         $name = $request->input('name');
 
         $incoming = MasterIncomingItem::with('user', 'detail');
@@ -43,11 +44,14 @@ class MutationController extends BaseController
             $exit->orWhere('type', 'like', '%' . $name . '%');
         }
 
-        $data = $exit->union($incoming);
+        // $data = $exit->union($incoming);
 
-
-
-        return $this->sendResponse($data->paginate($limit), 'Data fetched');
+        if ($typeData == 'debit') {
+            $data = $incoming->latest()->paginate($limit);
+            return $this->sendResponse($data, 'Data fetched');
+        }
+        $data = $exit->latest()->paginate($limit);
+        return $this->sendResponse($data, 'Data fetched');
     }
 
     public function showMaster($id, Request $request)

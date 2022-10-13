@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('master_incoming_items', function (Blueprint $table) {
             $table->id();
             $table->string('mutation_code')->unique();
-            $table->string('type')->default('DEBIT');
+            $table->string('type')->default('MASUK');
             $table->text('notes');
             $table->integer('created_by');
             $table->dateTime('data_date');

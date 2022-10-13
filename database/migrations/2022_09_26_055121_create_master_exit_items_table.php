@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('master_exit_items', function (Blueprint $table) {
             $table->id();
             $table->string('mutation_code')->unique();
-            $table->string('type')->default('KREDIT');
+            $table->string('type')->default('KELUAR');
             $table->string('no_pol')->nullable();
             $table->string('admin_name')->nullable();
             $table->string('driver_name')->nullable();
