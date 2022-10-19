@@ -26,7 +26,7 @@ class MutationController extends BaseController
         $typeData = $request->input('type-data', 'debit');
         $name = $request->input('name');
 
-        $incoming = MasterIncomingItem::with('user', 'detail');
+        $incoming = MasterIncomingItem::with('user', 'detail.item.unit');
 
         if ($name) {
             $incoming->where('mutation_code', 'like', '%' . $name . '%');
@@ -35,7 +35,7 @@ class MutationController extends BaseController
             $incoming->orWhere('type', 'like', '%' . $name . '%');
         }
 
-        $exit = MasterExitItem::with('user', 'detail');
+        $exit = MasterExitItem::with('user', 'detail.item.unit');
 
         if ($name) {
             $exit->where('mutation_code', 'like', '%' . $name . '%');
