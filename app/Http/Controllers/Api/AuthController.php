@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends BaseController
 
@@ -46,15 +47,32 @@ class AuthController extends BaseController
      */
     public function login(Request $request)
     {
+
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
             $user = Auth::user();
-            $user->tokens()->delete();
-            $success['token']['access_token'] =  $user->createToken('MyApp')->plainTextToken;
-            $success['token']['token_type'] = 'Bearer';
-            $success['user'] =  Auth::user();
-            return $this->sendResponse($success, 'User login successfully.');
+            if (count($user->tokens) >= 1) {
+                return $this->sendResponse('user still login', 'User still Login.', 202);
+            } else {
+                $user->tokens()->delete();
+                $success['token']['access_token'] =  $user->createToken('MyApp')->plainTextToken;
+                $success['token']['token_type'] = 'Bearer';
+                $success['user'] =  Auth::user();
+                return $this->sendResponse($success, 'User login successfully.');
+            }
         } else {
             return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
         }
+    }
+
+
+    public function logout(Request $request)
+    {
+        // Get bearer token from the request
+        $accessToken = $request->bearerToken();
+        // Get access token from database
+        $token = PersonalAccessToken::findToken($accessToken);
+        // Revoke token
+        $token->delete();
+        return $this->sendResponse('done', 'User logout successfully.');
     }
 }

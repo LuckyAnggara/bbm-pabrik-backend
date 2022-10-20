@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ItemUnitController;
 use App\Http\Controllers\Api\MutationController;
 use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('mutations/master', [MutationController::class, 'indexMaster']);
 Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
+Route::get('report/production', [ReportController::class, 'reportProduction']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -56,4 +58,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::get('logout', 'logout');
 });
