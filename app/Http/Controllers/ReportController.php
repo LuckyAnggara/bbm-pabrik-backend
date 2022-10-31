@@ -2,21 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\BaseController;
 use App\Models\Item;
+use App\Models\ProductionOrder;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use PDF;
 use Carbon\Carbon;
 
-class ReportController extends Controller
+class ReportController extends BaseController
 {
-    public function reportProduction()
+    public function reportProduction2(Request $request)
     {
-        return view('production.report');
 
-        $pdf = PDF::loadView('production.report');
+        // $id = $request->input('id');
+        // $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type', 'timeline.user', 'user')->where('id', $id)->first();
+        // if ($item) {
+        //     return view('production.report',[
+        //         'data' => $item,
+        //     ]);
+        // }
+        // return $this->sendError('Data not found');
+        // return view('404');
 
-        return $pdf->download('production_report.pdf');
+        $item = $request->all();
+        // return $item;
+
+        return view('production.report',[
+            'data' => $item,
+        ]);
+
+        $pdf = PDF::loadView('production.report',[
+            'data' => $item,
+        ]);
+
+        return $pdf->download('production_report'.$item['sequence'].'.pdf');
         // $pdf = PDF::loadView('myPDF');
 
         // return $pdf->download('nicesnippets.pdf');

@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('mutations/master', [MutationController::class, 'indexMaster']);
 Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
+Route::post('report/production2', [ReportController::class, 'reportProduction2']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);

@@ -137,11 +137,13 @@
 <body>
     <div class="head-title">
         <h1 class="text-center m-0 p-0">Kertas Kerja Produksi</h1>
+
     </div>
     <div class="add-detail mt-10">
         <div class="w-50 float-left mt-10">
-            <p class="m-0 pt-5 text-bold w-100">Production Order Id - <span class="gray-color">#6</span></p>
-            <p class="m-0 pt-5 text-bold w-100">Tanggal - <span class="gray-color">162695CDFS</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Production Sequeance Id - <span class="gray-color">{{$data['sequence']}}</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Tanggal Order - <span class="gray-color">{{date("d F Y", strtotime($data['order_date']))}}</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Status Produksi - <span class="gray-color">{{$data['status']}}</span></p>
         </div>
         <div style="clear: both;"></div>
     </div>
@@ -154,14 +156,14 @@
             <tr>
                 <td>
                     <div class="box-text">
-                        <p class="m-0 pt-5 text-bold w-100 mb-5">Nama - <span class="gray-color">Yoga</span></p>
-                        <p class="m-0 pt-5 text-bold w-100">Alamat - <span class="gray-color">xxxxxxxxxxxxxxxxxxxxxxxxxx</span></p>
+                        <p class="m-0 pt-5 text-bold w-100 mb-5">Nama - <span class="gray-color">{{strtoupper($data['customer_name'])}}</span></p>
+                        <p class="m-0 pt-5 text-bold w-100">Alamat - <span class="gray-color">{{strtoupper($data['customer_name'])}}</span></p>
                     </div>
                 </td>
                 <td>
                     <div class="box-text">
-                        <p class="m-0 pt-5 text-bold w-100 mb-5">Sales / Penanggung Jawab - <span class="gray-color">Lucky</span></p>
-                        <p class="m-0 pt-5 text-bold w-100 mb-5">Bagian Produksi - <span class="gray-color">Iwan</span></p>
+                        <p class="m-0 pt-5 text-bold w-100 mb-5">Sales / Penanggung Jawab - <span class="gray-color">{{strtoupper($data['pic_name'])}}</span></p>
+                        <p class="m-0 pt-5 text-bold w-100 mb-5">Bagian Produksi - <span class="gray-color">{{strtoupper($data['pic_production'])}}</span></p>
                     </div>
                 </td>
             </tr>
@@ -169,31 +171,44 @@
     </div>
     <div class="table-section bill-tbl w-100 mt-10">
         <table class="table w-100 mt-10">
+            <thead>
+                <tr>
+                    <th class="w-50">Bahan Baku</th>
+                </tr>
+            </thead>
+            <tbody>
             <tr>
-                <th class="w-50">Bahan Baku</th>
-                <th class="w-50">Output Pekerjaan</th>
-            </tr>
-            <tr>
-                <td>
-                    1. Coil - 100 Kg
-                </td>
-                <td>
-                    1. Wiremesh - 100 Kg
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    2. Coil - 100 Kg
-                </td>
+                @foreach ($data['input'] as $key => $item)
+                    <td>
+                        <p>- {{$item['estimate_quantity']}} {{$item['item']['unit']['name']}} <b>{{ strtoupper($item['item']['name']) }}</b> </p>
+                    </td>
+                @endforeach
+              </tr>
+            </tbody>
+        </table>
 
-            </tr>
+        <table class="table w-100 mt-10">
+            <thead>
+                <tr>
+                    <th class="w-50">Hasil Produksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($data['output'] as $key => $item)
+                 <tr>
+                    <td>
+                        <p>- {{$item['target_quantity']}} {{$item['item']['unit']['name']}} <b>{{ strtoupper($item['item']['name']) }}</b> </p>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
         </table>
     </div>
     <div class="border mt-25"></div>
     <div class="mt-5">
-        <div class="w-50  mt-10">
-            <p class="m-0 pt-5 text-bold w-100">Tanggal Penyelesaian - <span class="gray-color">10 Oktober 2022</span></p>
-            <p class="m-0 pt-5 text-bold w-100 mb-5">Catatan - <span class="gray-color">asdasdasdasdadads</span></p>
+        <div class="w-100 mt-10">
+            <p class="m-0 pt-5 text-bold w-100">Tanggal Penyelesaian - <span class="gray-color">{{date("d F Y", strtotime($data['target_date']))}}</span></p>
+            <p class="m-0 pt-5 text-bold w-100 mb-5">Catatan - <span class="gray-color">{{$data['notes']}}</span></p>
         </div>
     </div>
 
@@ -203,7 +218,7 @@
     <p>Kertas kerja ini agar dilaksanakan sesuai dengan Prosedur yang berlaku</p>
     <div class="float-right mt-25 center w-50">
         <p class="mb-75">Maker</p>
-        <p class="mt-25">Maker</p>
+        <p class="mt-25">{{$data['user']['name']}}</p>
     </div>
 
 
