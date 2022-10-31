@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\API\ItemExitController;
 use App\Http\Controllers\API\ItemIncomingController;
@@ -33,6 +34,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('mutations/master', [MutationController::class, 'indexMaster']);
 Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
+Route::get('report/item', [ReportController::class, 'reportItem']);
+Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
+Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
