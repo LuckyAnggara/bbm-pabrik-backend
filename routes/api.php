@@ -51,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
     Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
     Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
+    Route::post('production-order/update-shipping', [ProductionOrderController::class, 'updateShipping']);
 
     Route::post('mutation-incoming/store', [ItemIncomingController::class, 'store']);
     Route::post('mutation-exit/store', [ItemExitController::class, 'store']);

@@ -188,6 +188,80 @@ class ProductionOrderController extends BaseController
         return $this->sendResponse($productionOrder, 'Data updated');
     }
 
+    // UPDATE ITEM DI KIRIM
+    public function updateShipping(Request $request)
+    {
+        $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
+        if ($productionOrder) {
+            foreach ($productionOrder->output as $key => $output) {
+                $item = Mutation::create([
+                    'item_id' => $output->item_id,
+                    'debit' => 0,
+                    'kredit' => $output->real_quantity,
+                    'notes' => 'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence,
+                    'warehouse_id' => 1,
+                    'created_by' => Auth::id()
+                ]);
+            }
+
+            $timeline = ProductionOrderTimeline::create([
+                'production_id' => $productionOrder->id,
+                'status' => "UPDATE ORDER",
+                'notes' =>  'Item sedang dalam perjalanan di kirim ke Pelanggan',
+                'created_by' => Auth::id()
+            ]);
+            $productionOrder->status = 'SHIPPING';
+            $productionOrder->save();
+        }
+        if ($request['nopol'] == '') {
+            return $this->sendResponse($productionOrder, 'Data updated');
+        }
+    }
+
+    // UPDATE ITEM DI RETUR
+    public function returShipping(Request $request)
+    {
+        $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
+        if ($productionOrder) {
+            foreach ($productionOrder->output as $key => $output) {
+                $item = Mutation::create([
+                    'item_id' => $output->item_id,
+                    'debit' => $output->real_quantity,
+                    'kredit' => 0,
+                    'notes' => 'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence,
+                    'warehouse_id' => 1,
+                    'created_by' => Auth::id()
+                ]);
+            }
+
+            $timeline = ProductionOrderTimeline::create([
+                'production_id' => $productionOrder->id,
+                'status' => "UPDATE ORDER",
+                'notes' =>  'Item di Retur dari Pelanggan',
+                'created_by' => Auth::id()
+            ]);
+            $productionOrder->status = 'RETUR';
+            $productionOrder->save();
+        }
+        if ($request['nopol'] == '') {
+            return $this->sendResponse($productionOrder, 'Data updated');
+        }
+    }
+
+    // UPDATE ITEM DI RETUR
+    public function receiveUpdate(Request $request)
+    {
+        $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
+        if ($productionOrder) {
+
+            $productionOrder->status = 'RECEIVE';
+            $productionOrder->save();
+        }
+        if ($request['nopol'] == '') {
+            return $this->sendResponse($productionOrder, 'Data updated');
+        }
+    }
+
     // HANYA UPDATE STATUS
     public function updateStatus(Request $request)
     {
