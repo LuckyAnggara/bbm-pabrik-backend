@@ -111,7 +111,6 @@ class MutationController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-
         $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
             DB::statement(DB::raw('set @balance=0'));
             $query->selectRaw('id,item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');

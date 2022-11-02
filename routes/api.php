@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('mutations/master', [MutationController::class, 'indexMaster']);
 Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
-Route::post('report/production2', [ReportController::class, 'reportProduction2']);
+Route::get('report/mutation', [ReportController::class, 'reportMutation']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
@@ -52,6 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
     Route::post('production-order/update-warehouse', [ProductionOrderController::class, 'updateWarehouse']);
     Route::post('production-order/update-shipping', [ProductionOrderController::class, 'updateShipping']);
+    Route::post('production-order/retur-shipping', [ProductionOrderController::class, 'returShipping']);
+    Route::post('production-order/receive-shipping', [ProductionOrderController::class, 'receiveShipping']);
 
     Route::post('mutation-incoming/store', [ItemIncomingController::class, 'store']);
     Route::post('mutation-exit/store', [ItemExitController::class, 'store']);

@@ -137,7 +137,7 @@ class ProductionOrderController extends BaseController
                 'notes' =>  'Order telah selesai dikerjakan',
                 'created_by' =>  Auth::id(),
             ]);
-            $productionOrder->status = 'DONE';
+            $productionOrder->status = 'DONE PRODUCTION';
             $productionOrder->save();
 
             $productionOrder->output = $updateOrder;
@@ -249,7 +249,7 @@ class ProductionOrderController extends BaseController
     }
 
     // UPDATE ITEM DI RETUR
-    public function receiveUpdate(Request $request)
+    public function receiveShipping(Request $request)
     {
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {

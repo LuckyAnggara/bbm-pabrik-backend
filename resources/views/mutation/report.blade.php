@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Items Report</title>
+    <title>Mutasi Item Report</title>
 </head>
 <style type="text/css">
     body {
@@ -131,13 +131,13 @@
 
 <body>
     <div class="head-title">
-        <h1 class="text-center m-0 p-0">Laporan Persediaan</h1>
+        <h1 class="text-center m-0 p-0">Laporan Mutasi Persediaan {{$data->name}}</h1>
     </div>
 
     <div class="add-detail mt-10">
         <div class="w-100 float-left mt-10">
             <p class="m-0 pt-5 text-bold w-100">Tanggal Data - <span class="gray-color">{{ $from_date }} s.d {{ $to_date }}</span></p>
-            <p class="m-0 pt-5 text-bold w-100">Gudang - <span class="gray-color">{{strtoupper($warehouse->name)}}</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Nama Item - <span class="gray-color">{{strtoupper($data->name)}}</span></p>
         </div>
         <div style="clear: both;"></div>
     </div>
@@ -147,29 +147,22 @@
             <thead>
                 <tr>
                     <th style="width:5%">No</th>
-                    @if ($warehouseShow === true)
-                    <th style="width:35%">Nama</th>
-                    <th style="width:15%">Gudang</th>
-                    @else
-                    <th style="width:50%">Nama</th>
-                    @endif
-                    <th style="width:15%">Unit / Satuan</th>
-                    <th style="width:15%">Tipe</th>
-
-                    <th style="width:15%">Saldo Persediaan</th>
+                    <th style="width:10%">Tanggal</th>
+                    <th style="width:35%">Keterangan</th>
+                    <th style="width:15%">Debit</th>
+                    <th style="width:15%">Kredit</th>
+                    <th style="width:20%">Saldo</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data as $key => $item)
+                @foreach ($data->mutation as $key => $item)
                 <tr>
-                    <td class="center">{{$key}}</td>
-                    <td>{{strtoupper($item->name)}}</td>
-                    @if ($warehouseShow === true)
-                    <td>{{strtoupper($item->warehouse->name)}}</td>
-                    @endif
-                    <td>{{strtoupper($item->type->name)}}</td>
-                    <td>{{strtoupper($item->unit->name)}}</td>
-                    <td>{{number_format($item->balance)}}</td>
+                    <td>{{$key+1}}</td>
+                    <td>{{strtoupper($item->created_at)}}</td>
+                    <td>{{strtoupper($item->notes)}}</td>
+                    <td>{{strtoupper($item->debit)}}</td>
+                    <td>{{strtoupper($item->kredit)}}</td>
+                    <td>{{strtoupper($item->balance)}}</td>
                 </tr>
                 @endforeach
             </tbody>

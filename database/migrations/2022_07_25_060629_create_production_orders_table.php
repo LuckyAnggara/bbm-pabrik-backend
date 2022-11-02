@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('pic_name');
             $table->string('customer_name');
             $table->text('notes');
-            $table->enum('status', ['NEW ORDER', 'WORK IN PROGRESS', 'DONE', 'WAREHOUSE', 'SHIPPING'])->default('NEW ORDER');
+            $table->enum('status', ['NEW ORDER', 'WORK IN PROGRESS', 'DONE PRODUCTION', 'WAREHOUSE', 'SHIPPING', 'RETUR', 'RECEIVE'])->default('NEW ORDER');
             $table->dateTime('target_date');
             $table->dateTime('order_date');
             $table->integer('created_by');
