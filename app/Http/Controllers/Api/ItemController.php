@@ -21,30 +21,34 @@ class ItemController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $item = Item::with(['type', 'unit', 'warehouse', 'user'])->with('mutation', function ($query) use ($fromDate, $toDate) {
-            if (!is_null($fromDate) && !is_null($toDate)) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            }
-            $query->balance = 0;
-        });
+        // $item = Item::with(['type', 'unit', 'warehouse', 'user'])->with('mutation', function ($query) use ($fromDate, $toDate) {
+        //     if (!is_null($fromDate) && !is_null($toDate)) {
+        //         $query->whereBetween('created_at', [$fromDate, $toDate]);
+        //     }
+        //     $query->balance = 0;
+        // });
 
+        $item = Item::with(['type', 'unit', 'warehouse', 'user']);
+
+        if (!is_null($fromDate) && !is_null($toDate)) {
+            $item->whereBetween('created_at', [$fromDate, $toDate]);
+        }
         if ($name) {
             $item->where('name', 'like', '%' . $name . '%');
         }
         if ($warehouseId) {
             $item->where('warehouse_id', $warehouseId);
         }
-        $data = $item->latest()->paginate($limit);
 
-        foreach ($data as $key => $value) {
-            $splitDebitColumn = array_column($value->mutation->toArray(), 'debit');
-            $splitKreditColumn = array_column($value->mutation->toArray(), 'kredit');
-            $debit = array_sum($splitDebitColumn);
-            $kredit = array_sum($splitKreditColumn);
-            $value->balance = $debit - $kredit;
-        }
+        // foreach ($data as $key => $value) {
+        //     $splitDebitColumn = array_column($value->mutation->toArray(), 'debit');
+        //     $splitKreditColumn = array_column($value->mutation->toArray(), 'kredit');
+        //     $debit = array_sum($splitDebitColumn);
+        //     $kredit = array_sum($splitKreditColumn);
+        //     $value->balance = $debit - $kredit;
+        // }
 
-        return $this->sendResponse($data, 'Data fetched');
+        return $this->sendResponse($item->latest()->paginate($limit), 'Data fetched');
     }
 
     public function store(Request $request)
@@ -72,6 +76,7 @@ class ItemController extends BaseController
             $mutation->warehouse_id = $item->warehouse_id;
             $mutation->debit = 0;
             $mutation->kredit = 0;
+            $mutation->balance = 0;
             $mutation->notes = 'saldo awal';
             $mutation->created_by = Auth::id();
             $mutation->save();

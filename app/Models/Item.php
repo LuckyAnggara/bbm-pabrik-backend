@@ -15,6 +15,7 @@ class Item extends Model
         'type_id',
         'unit_id',
         'warehouse_id',
+        'balance',
         'created_by',
     ];
 
@@ -41,6 +42,6 @@ class Item extends Model
 
     public function mutation()
     {
-        return $this->hasMany(Mutation::class, 'item_id', 'id')->orderBy('created_at');
+        return $this->hasMany(Mutation::class, 'item_id', 'id')->orderBy('id', 'desc');
     }
 }

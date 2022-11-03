@@ -111,47 +111,71 @@ class MutationController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
-            DB::statement(DB::raw('set @balance=0'));
-            $query->selectRaw('id,item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
-            // if (!is_null($warehouseId)) {
-            // $query->where('warehouse_id', '=', $warehouseId);
-            if (!is_null($fromDate) && !is_null($toDate)) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            }
-            // } else {
-            //     if (!is_null($fromDate) && !is_null($toDate)) {
-            //         $query->whereBetween('created_at', [$fromDate, $toDate]);
-            //     }
-            // }
-        })->where('id', $id)->first();
+        $item = Item::with('type', 'unit', 'user', 'mutation')->where('id', $id)->first();
+
+        // $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
+        //     DB::statement(DB::raw('set @balance=0'));
+        //     $query->selectRaw('id,item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
+        //     // if (!is_null($warehouseId)) {
+        //     // $query->where('warehouse_id', '=', $warehouseId);
+        //     if (!is_null($fromDate) && !is_null($toDate)) {
+        //         $query->whereBetween('created_at', [$fromDate, $toDate]);
+        //     }
+        //     $query->orderBy('id');
+        //     // } else {
+        //     //     if (!is_null($fromDate) && !is_null($toDate)) {
+        //     //         $query->whereBetween('created_at', [$fromDate, $toDate]);
+        //     //     }
+        //     // }
+        // })->where('id', $id)->first();
 
         return $this->sendResponse($item, 'Data fetched');
     }
 
-    public function update(Request $request, Mutation $mutation)
+    // public function update(Request $request, Mutation $mutation)
+    // {
+    //     $input = $request->all();
+    //     $validator = Validator::make($input, [
+    //         'item_id' => 'required',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return $this->sendError($validator->errors());
+    //     }
+
+    //     $mutation->item_id = $input['item_id'];
+    //     // $mutation->warehouse_id = $input['warehouse_id'];
+    //     $mutation->debit = $input['debit'];
+    //     $mutation->kredit = $input['kredit'];
+    //     $mutation->save();
+
+    //     return $this->sendResponse(new WarehouseResource($mutation), 'Data updated');
+    // }
+
+    // public function destroy(Mutation $mutation)
+    // {
+    //     $mutation->delete();
+    //     return $this->sendResponse([], 'Data deleted');
+    // }
+
+    public static function mutationItem($id, $qty, $type, $note, $warehouse)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'item_id' => 'required',
+        $item = Item::find($id);
+        $mutation = Mutation::create([
+            'item_id' => $id,
+            'debit' => $type == 'DEBIT' ? $qty : 0,
+            'kredit' =>  $type == 'KREDIT' ? $qty : 0,
+            'balance' => $type == 'DEBIT' ? ($item->balance + $qty) : ($item->balance - $qty),
+            'notes' => $note,
+            'warehouse_id' => $warehouse,
+            'created_by' => Auth::id(),
         ]);
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
+        if ($mutation) {
+            $item->balance = $type == 'DEBIT' ? ($item->balance + $qty) : ($item->balance - $qty);
+            $item->save();
+
+            return true;
         }
-
-        $mutation->item_id = $input['item_id'];
-        // $mutation->warehouse_id = $input['warehouse_id'];
-        $mutation->debit = $input['debit'];
-        $mutation->kredit = $input['kredit'];
-        $mutation->save();
-
-        return $this->sendResponse(new WarehouseResource($mutation), 'Data updated');
-    }
-
-    public function destroy(Mutation $mutation)
-    {
-        $mutation->delete();
-        return $this->sendResponse([], 'Data deleted');
     }
 }

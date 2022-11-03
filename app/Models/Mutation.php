@@ -14,6 +14,7 @@ class Mutation extends Model
         // 'warehouse_id',
         'debit',
         'kredit',
+        'balance',
         'notes',
         'saldo',
         'created_by'

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
+use App\Http\Controllers\Api\MutationController;
 use App\Http\Resources\ProductionOrderResource;
 use App\Models\Mutation;
 use App\Models\ProductionOrder;
@@ -154,25 +155,29 @@ class ProductionOrderController extends BaseController
         $productionOrder = ProductionOrder::findOrFail($input['id']);
         if ($productionOrder) {
             foreach ($productionOrder['output'] as $key => $output) {
-                $item = Mutation::create([
-                    'item_id' => $output->item_id,
-                    'debit' => $output->real_quantity,
-                    'kredit' => 0,
-                    'notes' => 'Hasil produksi nomor : ' . $productionOrder->sequence,
-                    'warehouse_id' => 1,
-                    'created_by' => Auth::id()
-                ]);
+
+                $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'DEBIT',  'Hasil produksi nomor : ' . $productionOrder->sequence, 1);
+                // $item = Mutation::create([
+                //     'item_id' => $output->item_id,
+                //     'debit' => $output->real_quantity,
+                //     'kredit' => 0,
+                //     'notes' => 'Hasil produksi nomor : ' . $productionOrder->sequence,
+                //     'warehouse_id' => 1,
+                //     'created_by' => Auth::id()
+                // ]);
             }
 
             foreach ($productionOrder['input'] as $key => $input) {
-                $item = Mutation::create([
-                    'item_id' => $input->item_id,
-                    'kredit' => $input->estimate_quantity,
-                    'debit' => 0,
-                    'notes' => 'Bahan untuk produksi nomor : ' . $productionOrder->sequence,
-                    'warehouse_id' => 1,
-                    'created_by' => Auth::id()
-                ]);
+                $item = MutationController::mutationItem($output->item_id, $output->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
+
+                // $item = Mutation::create([
+                //     'item_id' => $input->item_id,
+                //     'kredit' => $input->estimate_quantity,
+                //     'debit' => 0,
+                //     'notes' => 'Bahan untuk produksi nomor : ' . $productionOrder->sequence,
+                //     'warehouse_id' => 1,
+                //     'created_by' => Auth::id()
+                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([
@@ -194,14 +199,16 @@ class ProductionOrderController extends BaseController
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {
             foreach ($productionOrder->output as $key => $output) {
-                $item = Mutation::create([
-                    'item_id' => $output->item_id,
-                    'debit' => 0,
-                    'kredit' => $output->real_quantity,
-                    'notes' => 'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence,
-                    'warehouse_id' => 1,
-                    'created_by' => Auth::id()
-                ]);
+                $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'KREDIT',  'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence, 1);
+
+                // $item = Mutation::create([
+                //     'item_id' => $output->item_id,
+                //     'debit' => 0,
+                //     'kredit' => $output->real_quantity,
+                //     'notes' => 'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence,
+                //     'warehouse_id' => 1,
+                //     'created_by' => Auth::id()
+                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([
@@ -224,14 +231,16 @@ class ProductionOrderController extends BaseController
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {
             foreach ($productionOrder->output as $key => $output) {
-                $item = Mutation::create([
-                    'item_id' => $output->item_id,
-                    'debit' => $output->real_quantity,
-                    'kredit' => 0,
-                    'notes' => 'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence,
-                    'warehouse_id' => 1,
-                    'created_by' => Auth::id()
-                ]);
+                $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'DEBIT',  'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence, 1);
+
+                // $item = Mutation::create([
+                //     'item_id' => $output->item_id,
+                //     'debit' => $output->real_quantity,
+                //     'kredit' => 0,
+                //     'notes' => 'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence,
+                //     'warehouse_id' => 1,
+                //     'created_by' => Auth::id()
+                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([

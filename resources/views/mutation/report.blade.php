@@ -160,9 +160,9 @@
                     <td>{{$key+1}}</td>
                     <td>{{strtoupper($item->created_at)}}</td>
                     <td>{{strtoupper($item->notes)}}</td>
-                    <td>{{strtoupper($item->debit)}}</td>
-                    <td>{{strtoupper($item->kredit)}}</td>
-                    <td>{{strtoupper($item->balance)}}</td>
+                    <td>{{number_format($item->debit)}}</td>
+                    <td>{{number_format($item->kredit)}}</td>
+                    <td>{{number_format($item->balance)}}</td>
                 </tr>
                 @endforeach
             </tbody>

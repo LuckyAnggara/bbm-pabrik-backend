@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Api\BaseController;
+use App\Http\Controllers\Api\MutationController;
 use App\Http\Resources\MasterItemIncomingResource;
 use App\Models\DetailIncomingItem;
 use App\Models\MasterIncomingItem;
@@ -47,14 +48,7 @@ class ItemIncomingController extends BaseController
                         'qty' => !isset($detail['qty']) ? 0 : $detail['qty'],
                     ]);
 
-                    $item = Mutation::create([
-                        'item_id' => $dd->item_id,
-                        'debit' => $dd->qty,
-                        'kredit' => 0,
-                        'warehouse_id' => 1,
-                        'created_by' =>  Auth::id(),
-                        'notes' => $data->notes . ' - ' . '#' . $data->mutation_code
-                    ]);
+                    $item = MutationController::mutationItem($dd->item_id, $dd->qty, 'DEBIT', $data->notes . ' - ' . '#' . $data->mutation_code, 1);
                 }
             }
         }
