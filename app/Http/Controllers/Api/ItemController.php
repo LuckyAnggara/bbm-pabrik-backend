@@ -21,34 +21,30 @@ class ItemController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        // $item = Item::with(['type', 'unit', 'warehouse', 'user'])->with('mutation', function ($query) use ($fromDate, $toDate) {
-        //     if (!is_null($fromDate) && !is_null($toDate)) {
-        //         $query->whereBetween('created_at', [$fromDate, $toDate]);
-        //     }
-        //     $query->balance = 0;
-        // });
-
         $item = Item::with(['type', 'unit', 'warehouse', 'user']);
 
-        if (!is_null($fromDate) && !is_null($toDate)) {
-            $item->whereBetween('created_at', [$fromDate, $toDate]);
-        }
         if ($name) {
             $item->where('name', 'like', '%' . $name . '%');
         }
         if ($warehouseId) {
             $item->where('warehouse_id', $warehouseId);
         }
+        if (!is_null($fromDate) && !is_null($toDate)) {
+            $item = $item->get();
+            return $item->paginate($limit);
+            foreach ($item as $key => $value) {
+                $mutation = Mutation::where('item_id', $value->id)->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc')->first();
+                if ($mutation) {
+                    $value->balance = $mutation->balance;
+                } else {
+                    $value->balance = 0;
+                }
+            }
+        } else {
+            $item->latest();
+        }
 
-        // foreach ($data as $key => $value) {
-        //     $splitDebitColumn = array_column($value->mutation->toArray(), 'debit');
-        //     $splitKreditColumn = array_column($value->mutation->toArray(), 'kredit');
-        //     $debit = array_sum($splitDebitColumn);
-        //     $kredit = array_sum($splitKreditColumn);
-        //     $value->balance = $debit - $kredit;
-        // }
-
-        return $this->sendResponse($item->latest()->paginate($limit), 'Data fetched');
+        return $this->sendResponse($item->paginate($limit), 'Data fetched');
     }
 
     public function store(Request $request)

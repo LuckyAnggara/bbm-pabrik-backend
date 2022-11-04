@@ -107,29 +107,17 @@ class MutationController extends BaseController
 
     public function show($id, Request $request)
     {
-        // $warehouseId = $request->input('warehouse_id');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $limit = $request->input('limit', 10);
+        $mutation = Mutation::where('item_id', $id);
+        if ($fromDate && $toDate) {
+            $mutation->whereBetween('created_at', [$fromDate, $toDate]);
+        }
+        $mutation->orderBy('id', 'desc');
 
-        $item = Item::with('type', 'unit', 'user', 'mutation')->where('id', $id)->first();
 
-        // $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
-        //     DB::statement(DB::raw('set @balance=0'));
-        //     $query->selectRaw('id,item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
-        //     // if (!is_null($warehouseId)) {
-        //     // $query->where('warehouse_id', '=', $warehouseId);
-        //     if (!is_null($fromDate) && !is_null($toDate)) {
-        //         $query->whereBetween('created_at', [$fromDate, $toDate]);
-        //     }
-        //     $query->orderBy('id');
-        //     // } else {
-        //     //     if (!is_null($fromDate) && !is_null($toDate)) {
-        //     //         $query->whereBetween('created_at', [$fromDate, $toDate]);
-        //     //     }
-        //     // }
-        // })->where('id', $id)->first();
-
-        return $this->sendResponse($item, 'Data fetched');
+        return $this->sendResponse($mutation->latest()->paginate($limit), 'Data fetched');
     }
 
     // public function update(Request $request, Mutation $mutation)
