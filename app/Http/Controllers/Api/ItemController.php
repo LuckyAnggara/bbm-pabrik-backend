@@ -9,6 +9,7 @@ use App\Http\Resources\ItemResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
+use Carbon\Carbon;
 
 class ItemController extends BaseController
 {
@@ -20,7 +21,6 @@ class ItemController extends BaseController
         $warehouseId = $request->input('warehouse_id');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
-
         $item = Item::with(['type', 'unit', 'warehouse', 'user']);
 
         if ($name) {
@@ -29,22 +29,22 @@ class ItemController extends BaseController
         if ($warehouseId) {
             $item->where('warehouse_id', $warehouseId);
         }
+       
+        $result = $item->latest()->paginate($limit);
+        
         if (!is_null($fromDate) && !is_null($toDate)) {
-            $item = $item->get();
-            return $item->paginate($limit);
-            foreach ($item as $key => $value) {
+            $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
+            $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
+            $result->each(function($value) use ( $fromDate, $toDate){
+                $value->balance = 0;
                 $mutation = Mutation::where('item_id', $value->id)->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc')->first();
                 if ($mutation) {
-                    $value->balance = $mutation->balance;
-                } else {
-                    $value->balance = 0;
-                }
-            }
-        } else {
-            $item->latest();
-        }
+                    return $value->balance = $mutation->balance;
+                } 
+            });
+        } 
 
-        return $this->sendResponse($item->paginate($limit), 'Data fetched');
+        return $this->sendResponse($result, 'Data fetched');
     }
 
     public function store(Request $request)

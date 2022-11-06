@@ -39,9 +39,9 @@ Route::get('report/item', [ReportController::class, 'reportItem']);
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 
+Route::resource('items', ItemController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::resource('items', ItemController::class);
     Route::resource('item-types', ItemTypeController::class);
     Route::resource('item-units', ItemUnitController::class);
     Route::resource('warehouses', WarehouseController::class);

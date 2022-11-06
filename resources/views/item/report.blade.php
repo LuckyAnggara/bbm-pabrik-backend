@@ -162,7 +162,7 @@
             <tbody>
                 @foreach ($data as $key => $item)
                 <tr>
-                    <td class="center">{{$key}}</td>
+                    <td class="center">{{$key+1}}</td>
                     <td>{{strtoupper($item->name)}}</td>
                     @if ($warehouseShow === true)
                     <td>{{strtoupper($item->warehouse->name)}}</td>

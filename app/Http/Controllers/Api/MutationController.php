@@ -13,6 +13,7 @@ use App\Http\Resources\WarehouseResource;
 use Illuminate\Support\Collection;
 use App\Models\MasterExitItem;
 use App\Models\MasterIncomingItem;
+use Carbon\Carbon;
 use Database\Factories\WarehouseFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -112,7 +113,10 @@ class MutationController extends BaseController
         $limit = $request->input('limit', 10);
         $mutation = Mutation::where('item_id', $id);
         if ($fromDate && $toDate) {
-            $mutation->whereBetween('created_at', [$fromDate, $toDate]);
+            
+            $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
+            $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
+            $mutation->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc');
         }
         $mutation->orderBy('id', 'desc');
 

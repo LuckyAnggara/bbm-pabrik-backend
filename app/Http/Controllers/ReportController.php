@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Item;
+use App\Models\Mutation;
 use App\Models\ProductionOrder;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -51,16 +52,24 @@ class ReportController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $data = Item::with('type', 'unit', 'warehouse')->with('mutation', function ($query) use ($fromDate, $toDate) {
-            if (!is_null($fromDate) && !is_null($toDate)) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            }
-            $query->balance = 0;
-        })->get();
+        $item = Item::with(['type', 'unit', 'warehouse', 'user']);
 
+        $result = $item->get();
+        
+        if (!is_null($fromDate) && !is_null($toDate)) {
+            $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
+            $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
+            $result->each(function($value) use ( $fromDate, $toDate){
+                $value->balance = 0;
+                $mutation = Mutation::where('item_id', $value->id)->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc')->first();
+                if ($mutation) {
+                    return $value->balance = $mutation->balance;
+                } 
+            });
+        } 
 
         if ($warehouseId) {
-            $data->where('warehouse_id', $warehouseId);
+            $item->where('warehouse_id', $warehouseId);
             $warehouse = Warehouse::find($warehouseId);
             $warehouseShow = false;
         } else {
@@ -69,19 +78,9 @@ class ReportController extends BaseController
             $warehouseShow = true;
         }
 
-        foreach ($data as $key => $value) {
-            $splitDebitColumn = array_column($value->mutation->toArray(), 'debit');
-            $splitKreditColumn = array_column($value->mutation->toArray(), 'kredit');
-            $debit = array_sum($splitDebitColumn);
-            $kredit = array_sum($splitKreditColumn);
-            $value->balance = $debit - $kredit;
-        }
-
-        // return $data;
-        // return view('item.report', ['data' => $data]);
 
         $pdf = PDF::loadView('item.report', [
-            'data' => $data,
+            'data' => $result,
             'from_date' => Carbon::parse($fromDate)->format('d F Y'),
             'to_date' => Carbon::parse($toDate)->format('d F Y'),
             'warehouse' => $warehouse,
@@ -89,9 +88,7 @@ class ReportController extends BaseController
         ]);
 
         return $pdf->download('laporan persediaan.pdf');
-        // $pdf = PDF::loadView('myPDF');
 
-        // return $pdf->download('nicesnippets.pdf');
     }
 
     public function reportMutation(Request $request)
@@ -100,48 +97,44 @@ class ReportController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $fromDate = $request->input('from_date');
-        $toDate = $request->input('to_date');
-
         if (!$fromDate && !$toDate) {
             $fromDate == '01-01-2022';
             $toDate == '2022-11-02';
         }
 
-        $item = Item::with('type', 'unit', 'user')->with('mutation', function ($query) use ($fromDate, $toDate) {
-            DB::statement(DB::raw('set @balance=0'));
-            $query->selectRaw('id,item_id, notes, debit, kredit, created_at ,(@balance := @balance + (debit - kredit)) as balance');
-            // if (!is_null($warehouseId)) {
-            // $query->where('warehouse_id', '=', $warehouseId);
-            if (!is_null($fromDate) && !is_null($toDate)) {
-                $query->whereBetween('created_at', [$fromDate, $toDate]);
-            }
-            // } else {
-            //     if (!is_null($fromDate) && !is_null($toDate)) {
-            //         $query->whereBetween('created_at', [$fromDate, $toDate]);
-            //     }
-            // }
-        })->where('id', $id)->first();
 
-        return view('mutation.report', [
-            'data' => $item,
+
+        $item = Item::with('type', 'unit', 'user')->where('id', $id)->first();
+        $mutation = Mutation::where('item_id', $id);
+
+        if ($fromDate && $toDate) {
+            $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
+            $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
+        }else{
+            $fromDate = Carbon::now()->startOfMonth();
+            $toDate = Carbon::now();
+        }
+        $mutation->whereBetween('created_at', [$fromDate, $toDate]);
+        $mutation->orderBy('id', 'desc');
+
+        // return view('mutation.report', [
+        //     'data_item' => $item,
+        //     'data_mutation' => $mutation->get(),
+        //     'from_date' => Carbon::parse($fromDate)->format('d F Y'),
+        //     'to_date' => Carbon::parse($toDate)->format('d F Y'),
+        // ]);
+
+
+        $pdf = PDF::loadView('mutation.report', [
+            'data_item' => $item,
+            'data_mutation' => $mutation->get(),
             'from_date' => Carbon::parse($fromDate)->format('d F Y'),
             'to_date' => Carbon::parse($toDate)->format('d F Y'),
         ]);
 
-        return $this->sendResponse($item, 'Data fetched');
-
-        // $pdf = PDF::loadView('item.report', [
-        //     'data' => $data,
-        //     'from_date' => Carbon::parse($fromDate)->format('d F Y'),
-        //     'to_date' => Carbon::parse($toDate)->format('d F Y'),
-        //     'warehouse' => $warehouse,
-        //     'warehouseShow' => $warehouseShow,
-        // ]);
-
         // return $pdf->download('laporan persediaan.pdf');
         // $pdf = PDF::loadView('myPDF');
 
-        // return $pdf->download('nicesnippets.pdf');
+        return $pdf->download('Laporan Mutasi '.$item->name.'.pdf');
     }
 }

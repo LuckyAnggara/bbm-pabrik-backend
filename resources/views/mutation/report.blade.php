@@ -131,13 +131,13 @@
 
 <body>
     <div class="head-title">
-        <h1 class="text-center m-0 p-0">Laporan Mutasi Persediaan {{$data->name}}</h1>
+        <h1 class="text-center m-0 p-0">Laporan Mutasi Persediaan {{$data_item->name}}</h1>
     </div>
 
     <div class="add-detail mt-10">
         <div class="w-100 float-left mt-10">
             <p class="m-0 pt-5 text-bold w-100">Tanggal Data - <span class="gray-color">{{ $from_date }} s.d {{ $to_date }}</span></p>
-            <p class="m-0 pt-5 text-bold w-100">Nama Item - <span class="gray-color">{{strtoupper($data->name)}}</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Nama Item - <span class="gray-color">{{strtoupper($data_item->name)}}</span></p>
         </div>
         <div style="clear: both;"></div>
     </div>
@@ -147,18 +147,18 @@
             <thead>
                 <tr>
                     <th style="width:5%">No</th>
-                    <th style="width:10%">Tanggal</th>
+                    <th style="width:15%">Tanggal</th>
                     <th style="width:35%">Keterangan</th>
                     <th style="width:15%">Debit</th>
                     <th style="width:15%">Kredit</th>
-                    <th style="width:20%">Saldo</th>
+                    <th style="width:15%">Saldo</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data->mutation as $key => $item)
+                @foreach ($data_mutation as $key => $item)
                 <tr>
                     <td>{{$key+1}}</td>
-                    <td>{{strtoupper($item->created_at)}}</td>
+                    <td>{{date('d M Y', strtotime($item->created_at))}}</td>
                     <td>{{strtoupper($item->notes)}}</td>
                     <td>{{number_format($item->debit)}}</td>
                     <td>{{number_format($item->kredit)}}</td>

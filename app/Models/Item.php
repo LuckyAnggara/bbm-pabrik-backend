@@ -19,6 +19,8 @@ class Item extends Model
         'created_by',
     ];
 
+
+
     public function type()
     {
         return $this->hasOne(ItemType::class, 'id', 'type_id');
