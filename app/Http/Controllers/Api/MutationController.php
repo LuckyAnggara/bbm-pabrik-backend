@@ -27,41 +27,28 @@ class MutationController extends BaseController
         $typeData = $request->input('type-data', 'debit');
         $name = $request->input('name');
 
-        $incoming = MasterIncomingItem::with('user', 'detail.item.unit');
-
-        if ($name) {
-            $incoming->where('mutation_code', 'like', '%' . $name . '%');
-            $incoming->orWhere('created_at', 'like', '%' . $name . '%');
-            $incoming->orWhere('notes', 'like', '%' . $name . '%');
-            $incoming->orWhere('type', 'like', '%' . $name . '%');
-        }
-
-        $exit = MasterExitItem::with('user', 'detail.item.unit');
-
-        if ($name) {
-            $exit->where('mutation_code', 'like', '%' . $name . '%');
-            $exit->orWhere('created_at', 'like', '%' . $name . '%');
-            $exit->orWhere('notes', 'like', '%' . $name . '%');
-            $exit->orWhere('type', 'like', '%' . $name . '%');
-        }
-
-        // $data = $exit->union($incoming);
 
         if ($typeData == 'debit') {
-            $data = $incoming->latest()->paginate($limit);
-            return $this->sendResponse($data, 'Data fetched');
+            $data = MasterIncomingItem::with('user');
+        } else {
+            $data = MasterExitItem::with('user');
         }
-        $data = $exit->latest()->paginate($limit);
-        return $this->sendResponse($data, 'Data fetched');
+
+        if ($name) {
+            $data->where('notes', 'like', '%' . $name . '%');
+            $data->orWhere('mutation_code', 'like', '%' . $name . '%');
+        }
+
+        return $this->sendResponse($data->latest()->paginate($limit), 'Data fetched');
     }
 
     public function showMaster($id, Request $request)
     {
-        $type = $request->input('type');
-        if ($type == 'debit') {
-            $data = MasterIncomingItem::with('user', 'detail.item')->find($id);
+        $type = $request->input('type-data');
+        if ($type == 'DEBIT') {
+            $data = MasterIncomingItem::with('user', 'detail.item.type', 'detail.item.unit')->find($id);
         } else {
-            $data = MasterExitItem::with('user', 'detail.item')->find($id);
+            $data = MasterExitItem::with('user', 'detail.item.type', 'detail.item.unit')->find($id);
         }
         if ($data) {
             return $this->sendResponse($data, 'Data fetched');
@@ -113,7 +100,7 @@ class MutationController extends BaseController
         $limit = $request->input('limit', 10);
         $mutation = Mutation::where('item_id', $id);
         if ($fromDate && $toDate) {
-            
+
             $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
             $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
             $mutation->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc');
