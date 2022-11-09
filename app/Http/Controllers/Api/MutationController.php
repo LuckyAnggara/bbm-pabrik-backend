@@ -45,7 +45,7 @@ class MutationController extends BaseController
     public function showMaster($id, Request $request)
     {
         $type = $request->input('type-data');
-        if ($type == 'DEBIT') {
+        if ($type == 'debit') {
             $data = MasterIncomingItem::with('user', 'detail.item.type', 'detail.item.unit')->find($id);
         } else {
             $data = MasterExitItem::with('user', 'detail.item.type', 'detail.item.unit')->find($id);

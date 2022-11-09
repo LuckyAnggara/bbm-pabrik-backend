@@ -3,9 +3,12 @@
 namespace App\Http\Resources;
 
 use Illuminate\Support\Str;
+use App\Http\Resources\ItemTypeResource;
+use App\Http\Resources\ItemUnitResource;
+use App\Models\ItemType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MasterItemIncomingResource extends JsonResource
+class ItemResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,14 +19,10 @@ class MasterItemIncomingResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'mutation_code' => $this->mutation_code,
-            'type' => $this->type,
-            'detail' => $this->detail,
-            'notes' => $this->notes,
-            'data_date' => $this->data_date,
-            'created_by' => $this->created_by,
-            'user' => $this->user,
+            'id' =>$this->id,
+            'name' =>  Str::upper($this->name),
+            'created_at' => $this->created_at->format('m/d/Y'),
+            'updated_at' => $this->updated_at->format('m/d/Y'),
         ];
     }
 }

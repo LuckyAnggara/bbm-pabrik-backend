@@ -42,4 +42,21 @@ class ItemExitController extends BaseController
         }
         return $this->sendResponse(new MasterExitResource($data), 'Data created');
     }
+
+    public function destroy($id)
+    {
+        $masterExitItem = MasterExitItem::findOrFail($id);
+        if($masterExitItem){
+            $detailItem = DetailExitItem::where('master_id', $masterExitItem->id)->get();
+            if($detailItem){
+                foreach ($detailItem as $key => $detail) {
+                    MutationController::mutationItem($detail->item_id, $detail->qty, 'DEBIT','Penghapusan Transaksi - #'.$masterExitItem->mutation_code,1);
+                }
+            }
+            $masterExitItem->delete();
+
+            return $this->sendResponse([], 'Data deleted');
+        }
+        return $this->sendError([], 'Data Not Found');
+    }
 }

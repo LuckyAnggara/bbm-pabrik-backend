@@ -8,7 +8,9 @@ use App\Http\Controllers\API\ItemExitController;
 use App\Http\Controllers\API\ItemIncomingController;
 use App\Http\Controllers\Api\ItemTypeController;
 use App\Http\Controllers\Api\ItemUnitController;
+use App\Http\Controllers\API\MachineController;
 use App\Http\Controllers\Api\MutationController;
+use App\Http\Controllers\API\OverheadController;
 use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\ReportController;
@@ -39,7 +41,9 @@ Route::get('report/item', [ReportController::class, 'reportItem']);
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 
-Route::resource('items', ItemController::class);
+Route::resource('machines', MachineController::class);
+Route::resource('overheads', OverheadController::class);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
@@ -47,6 +51,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('mutations', MutationController::class);
     Route::resource('production-order', ProductionOrderController::class);
+    Route::resource('items', ItemController::class);
+    Route::resource('mutation-incoming', ItemIncomingController::class);
+    Route::resource('mutation-exit', ItemExitController::class);
 
     Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
     Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
@@ -55,7 +62,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/retur-shipping', [ProductionOrderController::class, 'returShipping']);
     Route::post('production-order/receive-shipping', [ProductionOrderController::class, 'receiveShipping']);
 
-    Route::post('mutation-incoming/store', [ItemIncomingController::class, 'store']);
     Route::post('mutation-exit/store', [ItemExitController::class, 'store']);
 });
 

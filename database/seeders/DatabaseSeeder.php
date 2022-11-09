@@ -8,8 +8,11 @@ use App\Models\Item;
 use App\Models\User;
 use App\Models\ItemType;
 use App\Models\ItemUnit;
+use App\Models\Machine;
+use App\Models\Overhead;
 use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -174,5 +177,25 @@ class DatabaseSeeder extends Seeder
             'warehouse_id' => '1',
             'created_by' => '1',
         ]);
+
+        DB::table('machines')->insert([
+            'name' => 'Roll Forming Machine Standard - 1',
+            'usage_capacity' => '100000',
+        ]);
+        DB::table('machines')->insert([
+            'name' => 'Roll Forming Machine Standard - 2',
+            'usage_capacity' => '200000',
+        ]);
+
+        DB::table('overheads')->insert([
+            'name' => 'Listrik',
+        ]);
+        DB::table('overheads')->insert([
+            'name' => 'Pegawai',
+        ]);
+        DB::table('overheads')->insert([
+            'name' => 'Air',
+        ]);
+
     }
 }

@@ -54,4 +54,21 @@ class ItemIncomingController extends BaseController
         }
         return $this->sendResponse(new MasterItemIncomingResource($data), 'Data created');
     }
+
+    public function destroy($id)
+    {
+        $masterIncomingItem = MasterIncomingItem::findOrFail($id);
+        if($masterIncomingItem){
+            $detailItem = DetailIncomingItem::where('master_id', $masterIncomingItem->id)->get();
+            if($detailItem){
+                foreach ($detailItem as $key => $detail) {
+                    MutationController::mutationItem($detail->item_id, $detail->qty, 'KREDIT','Penghapusan Transaksi - #'.$masterIncomingItem->mutation_code,1);
+                }
+            }
+            $masterIncomingItem->delete();
+
+            return $this->sendResponse([], 'Data deleted');
+        }
+        return $this->sendError([], 'Data Not Found');
+    }
 }
