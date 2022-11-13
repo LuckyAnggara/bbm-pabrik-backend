@@ -23,6 +23,8 @@ class ProductionOrderResource extends JsonResource
             'notes' => $this->notes,
             'input' => $this->input,
             'output' => $this->output,
+            'machine' => $this->machine,
+            'overhead' => $this->overhead,
             'timeline' => $this->timeline,
             'target_date' => $this->target_date->format('Y-m-d'),
             'order_date' => $this->order_date->format('Y-m-d'),

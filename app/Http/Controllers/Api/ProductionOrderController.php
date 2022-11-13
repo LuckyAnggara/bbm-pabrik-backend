@@ -10,7 +10,9 @@ use App\Http\Resources\ProductionOrderResource;
 use App\Models\Mutation;
 use App\Models\ProductionOrder;
 use App\Models\ProductionOrderInput;
+use App\Models\ProductionOrderMachine;
 use App\Models\ProductionOrderOutput;
+use App\Models\ProductionOrderOverhead;
 use App\Models\ProductionOrderTimeline;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,7 +26,7 @@ class ProductionOrderController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'timeline.user', 'user']);
+        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit','machine.machine','overhead.overhead', 'timeline.user', 'user']);
         if ($fromDate && $toDate) {
             $item->whereBetween('created_at', [$fromDate, $toDate]);
         }
@@ -42,7 +44,7 @@ class ProductionOrderController extends BaseController
 
     public function show($id)
     {
-        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type', 'timeline.user', 'user')->where('id', $id)->first();
+        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type','machine.machine','overhead.overhead', 'timeline.user', 'user')->where('id', $id)->first();
         if ($item) {
             return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
@@ -76,6 +78,8 @@ class ProductionOrderController extends BaseController
             $productionOrder['timeline'] = $timeline;
             $POInput = [];
             $POOutput = [];
+            $POMachine = [];
+            $POOverhead = [];
             foreach ($input['input'] as $key => $value) {
                 $POInput[] = ProductionOrderInput::create([
                     'production_id' => $productionOrder->id,
@@ -93,8 +97,24 @@ class ProductionOrderController extends BaseController
                     'real_quantity' => 0,
                 ]);
             }
+            foreach ($input['machine'] as $key => $value) {
+                $POMachine[] = ProductionOrderMachine::create([
+                    'production_id' => $productionOrder->id,
+                    'machine_id' => $value['id'],
+                    'usage_meter' => $value['usage_meter'],
+                ]);
+            }
+            foreach ($input['overhead'] as $key => $value) {
+                $POOverhead[] = ProductionOrderOverhead::create([
+                    'production_id' => $productionOrder->id,
+                    'overhead_id' => $value['id'],
+                    'usage_meter' => $value['usage_meter'],
+                ]);
+            }
+            $productionOrder['input'] = $POInput;
             $productionOrder['output'] = $POOutput;
-            $productionOrder['output'] = $POOutput;
+            $productionOrder['machine'] = $POMachine;
+            $productionOrder['overhead'] = $POOverhead;
         }
 
         return $this->sendResponse(new ProductionOrderResource($productionOrder), 'Data updated');
@@ -132,6 +152,8 @@ class ProductionOrderController extends BaseController
                 ]);
             }
 
+
+
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
                 'status' => "UPDATE ORDER",
@@ -168,7 +190,7 @@ class ProductionOrderController extends BaseController
             }
 
             foreach ($productionOrder['input'] as $key => $input) {
-                $item = MutationController::mutationItem($output->item_id, $output->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
+                $item = MutationController::mutationItem($input->item_id, $input->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
 
                 // $item = Mutation::create([
                 //     'item_id' => $input->item_id,
@@ -339,6 +361,8 @@ class ProductionOrderController extends BaseController
             $productionOrder['timeline'] = $timeline;
             $POInput = [];
             $POOutput = [];
+            $POMachine = [];
+            $POOverhead = [];
             foreach ($input['input'] as $key => $value) {
                 $POInput[] = ProductionOrderInput::create([
                     'production_id' => $productionOrder->id,
@@ -356,21 +380,26 @@ class ProductionOrderController extends BaseController
                     'real_quantity' => 0,
                 ]);
             }
+            foreach ($input['machine'] as $key => $value) {
+                $POMachine[] = ProductionOrderMachine::create([
+                    'production_id' => $productionOrder->id,
+                    'machine_id' => $value['id'],
+                    'usage_meter' => $value['usage_meter'],
+                ]);
+            }
+            foreach ($input['overhead'] as $key => $value) {
+                $POOverhead[] = ProductionOrderOverhead::create([
+                    'production_id' => $productionOrder->id,
+                    'overhead_id' => $value['id'],
+                    'usage_meter' => $value['usage_meter'],
+                ]);
+            }
+            $productionOrder['input'] = $POInput;
             $productionOrder['output'] = $POOutput;
-            $productionOrder['output'] = $POOutput;
+            $productionOrder['machine'] = $POMachine;
+            $productionOrder['overhead'] = $POOverhead;
         }
-        // // PO singkatan Production Order
-        // if ($item) {
-        //     //membuat saldo awal
-        //     $mutation = new Mutation;
-        //     $mutation->item_id = $item->id;
-        //     $mutation->warehouse_id = $item->warehouse_id;
-        //     $mutation->debit = 0;
-        //     $mutation->kredit = 0;
-        //     $mutation->notes = 'saldo awal';
-        //     $mutation->created_by = 1;
-        //     $mutation->save();
-        // }
+      
         return $this->sendResponse($productionOrder, 'Data created');
     }
 
@@ -380,6 +409,8 @@ class ProductionOrderController extends BaseController
         if ($productionOrder) {
             ProductionOrderInput::where('production_id', $productionOrder->id)->delete();
             ProductionOrderOutput::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderMachine::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderOverhead::where('production_id', $productionOrder->id)->delete();
             ProductionOrderTimeline::where('production_id', $productionOrder->id)->delete();
         }
         return $this->sendResponse([], 'Data deleted');

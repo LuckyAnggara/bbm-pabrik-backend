@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('production_order_overhead', function (Blueprint $table) {
+        Schema::create('production_order_machines', function (Blueprint $table) {
             $table->id();
             $table->string('production_id');
-            $table->string('overhead_id');
-            $table->double('usage_meter');
+            $table->string('machine_id');
+            $table->double('usage_meter')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('production_order_overhead');
+        Schema::dropIfExists('production_order_machines');
     }
 };

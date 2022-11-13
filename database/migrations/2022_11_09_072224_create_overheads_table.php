@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('overheads', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('unit')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

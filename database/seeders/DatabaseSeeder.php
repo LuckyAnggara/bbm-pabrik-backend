@@ -189,12 +189,15 @@ class DatabaseSeeder extends Seeder
 
         DB::table('overheads')->insert([
             'name' => 'Listrik',
+            'unit' => 'Watt',
         ]);
         DB::table('overheads')->insert([
             'name' => 'Pegawai',
+            'unit'=> 'Orang'
         ]);
         DB::table('overheads')->insert([
             'name' => 'Air',
+            'unit'=> 'm3'
         ]);
 
     }
