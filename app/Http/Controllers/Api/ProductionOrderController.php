@@ -26,7 +26,7 @@ class ProductionOrderController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit','machine.machine','overhead.overhead', 'timeline.user', 'user']);
+        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'machine.machine', 'overhead.overhead', 'timeline.user', 'user']);
         if ($fromDate && $toDate) {
             $item->whereBetween('created_at', [$fromDate, $toDate]);
         }
@@ -44,7 +44,7 @@ class ProductionOrderController extends BaseController
 
     public function show($id)
     {
-        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type','machine.machine','overhead.overhead', 'timeline.user', 'user')->where('id', $id)->first();
+        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type', 'machine.machine', 'overhead.overhead', 'timeline.user', 'user')->where('id', $id)->first();
         if ($item) {
             return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
@@ -85,6 +85,7 @@ class ProductionOrderController extends BaseController
                     'production_id' => $productionOrder->id,
                     'item_id' => $value['id'],
                     'estimate_quantity' => $value['estimate_quantity'],
+                    'real_quantity' => $value['estimate_quantity'],
                 ]);
             }
             $productionOrder['input'] = $POInput;
@@ -126,6 +127,7 @@ class ProductionOrderController extends BaseController
         $input = $request->all();
         $dataOrder = $input['data_order'];
         $updateOrder = $input['update_order'];
+        $updateInput = $input['update_input'];
 
         $productionOrder = ProductionOrder::findOrFail($dataOrder['id']);
         if ($productionOrder) {
@@ -152,7 +154,20 @@ class ProductionOrderController extends BaseController
                 ]);
             }
 
+            foreach ($updateInput as $key => $value) {
+                $newInput = ProductionOrderInput::find($value['id']);
+                $newInput->real_quantity = $value['real_quantity'];
+                $newInput->save();
 
+
+                if ($newInput->estimate_quantity > $newInput->real_quantity) {
+                    $balance = $newInput->estimate_quantity - $newInput->real_quantity;
+                    $item = MutationController::mutationItem($newInput->item_id, $balance, 'DEBIT',  'Sisa pemakaian bahan baku produksi nomor : ' . $productionOrder->sequence, 1);
+                } else {
+                    $balance = $newInput->real_quantity - $newInput->estimate_quantity;
+                    $item = MutationController::mutationItem($newInput->item_id, $balance, 'KREDIT',  'Kekurangan bahan baku untuk produksi : ' . $productionOrder->sequence, 1);
+                }
+            }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
@@ -160,6 +175,7 @@ class ProductionOrderController extends BaseController
                 'notes' =>  'Order telah selesai dikerjakan',
                 'created_by' =>  Auth::id(),
             ]);
+
             $productionOrder->status = 'DONE PRODUCTION';
             $productionOrder->save();
 
@@ -179,28 +195,11 @@ class ProductionOrderController extends BaseController
             foreach ($productionOrder['output'] as $key => $output) {
 
                 $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'DEBIT',  'Hasil produksi nomor : ' . $productionOrder->sequence, 1);
-                // $item = Mutation::create([
-                //     'item_id' => $output->item_id,
-                //     'debit' => $output->real_quantity,
-                //     'kredit' => 0,
-                //     'notes' => 'Hasil produksi nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
             }
 
-            foreach ($productionOrder['input'] as $key => $input) {
-                $item = MutationController::mutationItem($input->item_id, $input->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
-
-                // $item = Mutation::create([
-                //     'item_id' => $input->item_id,
-                //     'kredit' => $input->estimate_quantity,
-                //     'debit' => 0,
-                //     'notes' => 'Bahan untuk produksi nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
-            }
+            // foreach ($productionOrder['input'] as $key => $input) {
+            //     $item = MutationController::mutationItem($input->item_id, $input->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
+            // }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
@@ -302,6 +301,12 @@ class ProductionOrderController extends BaseController
             $productionOrder->status = $input['status'];
             $productionOrder->save();
 
+            if ($input['status'] == 'WORK IN PROGRESS') {
+                foreach ($productionOrder['input'] as $key => $dd) {
+                    $item = MutationController::mutationItem($dd->item_id, $dd->estimate_quantity, 'KREDIT',  'Bahan baku untuk produksi nomor : ' . $productionOrder->sequence, 1);
+                }
+            }
+
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
                 'status' => $input['status'],
@@ -368,6 +373,7 @@ class ProductionOrderController extends BaseController
                     'production_id' => $productionOrder->id,
                     'item_id' => $value['id'],
                     'estimate_quantity' => $value['estimate_quantity'],
+                    'real_quantity' => $value['estimate_quantity'],
                 ]);
             }
             $productionOrder['input'] = $POInput;
@@ -399,7 +405,7 @@ class ProductionOrderController extends BaseController
             $productionOrder['machine'] = $POMachine;
             $productionOrder['overhead'] = $POOverhead;
         }
-      
+
         return $this->sendResponse($productionOrder, 'Data created');
     }
 

@@ -16,11 +16,8 @@ class ProductionOrderTimeline extends Model
         'notes',
     ];
 
-
-
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
-
 }

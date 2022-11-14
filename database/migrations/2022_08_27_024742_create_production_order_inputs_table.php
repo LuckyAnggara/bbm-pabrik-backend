@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('production_id');
             $table->string('item_id');
             $table->double('estimate_quantity');
+            $table->double('real_quantity')->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
