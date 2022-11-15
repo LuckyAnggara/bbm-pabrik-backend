@@ -21,8 +21,25 @@ class DashboardController extends BaseController
 
     public function productionCount(Request $request)
     {
-        $data['on_progress'] = ProductionOrder::where('status', '!=', 'DONE')->count();
-        $data['done'] = ProductionOrder::where('status', 'DONE')->count();
+        $data['on_progress'] = ProductionOrder::where('status', '==', 'NEW ORDER')
+            ->orWhere('status', 'WORK IN PROGRESS')
+            ->count();
+        $data['done'] = ProductionOrder::where('status', 'DONE PRODUCTION')
+            ->orWhere('status', 'WAREHOUSE')
+            ->orWhere('status', 'SHIPPING')
+            ->orWhere('status', 'RETUR')
+            ->orWhere('status', 'RECEIVE')
+            ->count();
+
+        return $this->sendResponse($data, 'Data fetched');
+    }
+
+    public function shippingCount(Request $request)
+    {
+        $data['on_progress'] = ProductionOrder::where('status', '==', 'SHIPPING')
+            ->orWhere('status', 'RETUR')
+            ->count();
+        $data['done'] = ProductionOrder::where('status', 'RECEIVE')->count();
 
         return $this->sendResponse($data, 'Data fetched');
     }

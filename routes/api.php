@@ -40,6 +40,7 @@ Route::get('report/mutation', [ReportController::class, 'reportMutation']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
+Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
 Route::resource('machines', MachineController::class);
 Route::resource('overheads', OverheadController::class);

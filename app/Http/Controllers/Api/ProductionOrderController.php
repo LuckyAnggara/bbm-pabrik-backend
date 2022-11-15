@@ -14,6 +14,8 @@ use App\Models\ProductionOrderMachine;
 use App\Models\ProductionOrderOutput;
 use App\Models\ProductionOrderOverhead;
 use App\Models\ProductionOrderTimeline;
+use App\Models\Shipping;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ProductionOrderController extends BaseController
@@ -171,7 +173,7 @@ class ProductionOrderController extends BaseController
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "DONE PRODUCTION",
                 'notes' =>  'Order telah selesai dikerjakan',
                 'created_by' =>  Auth::id(),
             ]);
@@ -203,7 +205,7 @@ class ProductionOrderController extends BaseController
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "WAREHOUSE",
                 'notes' =>  'Hasil Produksi telah dikirim ke Gudang',
                 'created_by' => Auth::id()
             ]);
@@ -219,22 +221,23 @@ class ProductionOrderController extends BaseController
     {
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {
+
+            $shipping = ShippingController::store($request, true);
+
+            if (!$shipping) {
+                return $this->sendResponse(null, 'Error', 201);
+            }
+
+            $productionOrder->shipping_id = $shipping->id;
+            $productionOrder->save();
+
             foreach ($productionOrder->output as $key => $output) {
                 $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'KREDIT',  'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence, 1);
-
-                // $item = Mutation::create([
-                //     'item_id' => $output->item_id,
-                //     'debit' => 0,
-                //     'kredit' => $output->real_quantity,
-                //     'notes' => 'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "SHIPPING",
                 'notes' =>  'Item sedang dalam perjalanan di kirim ke Pelanggan',
                 'created_by' => Auth::id()
             ]);
@@ -253,20 +256,11 @@ class ProductionOrderController extends BaseController
         if ($productionOrder) {
             foreach ($productionOrder->output as $key => $output) {
                 $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'DEBIT',  'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence, 1);
-
-                // $item = Mutation::create([
-                //     'item_id' => $output->item_id,
-                //     'debit' => $output->real_quantity,
-                //     'kredit' => 0,
-                //     'notes' => 'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "RETUR",
                 'notes' =>  'Item di Retur dari Pelanggan',
                 'created_by' => Auth::id()
             ]);
@@ -284,8 +278,24 @@ class ProductionOrderController extends BaseController
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {
 
-            $productionOrder->status = 'RECEIVE';
-            $productionOrder->save();
+            $shipping = Shipping::find($productionOrder->shipping_id);
+
+            if ($shipping) {
+                $timeline = ProductionOrderTimeline::create([
+                    'production_id' => $productionOrder->id,
+                    'status' => "RECEIVE",
+                    'notes' =>  'Item di telah di terima Pelanggan',
+                    'created_by' => Auth::id()
+                ]);
+
+                $shipping->receiving_date = Carbon::now();
+                $shipping->save();
+
+                $productionOrder->status = 'RECEIVE';
+                $productionOrder->save();
+            } else {
+                return $this->sendResponse(null, 'Data Not Found', 201);
+            }
         }
         if ($request['nopol'] == '') {
             return $this->sendResponse($productionOrder, 'Data updated');
