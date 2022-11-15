@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('status', ['NEW ORDER', 'WORK IN PROGRESS', 'DONE PRODUCTION', 'WAREHOUSE', 'SHIPPING', 'RETUR', 'RECEIVE'])->default('NEW ORDER');
             $table->dateTime('target_date');
             $table->dateTime('order_date');
+            $table->string('shippind_id')->nullable();
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();
