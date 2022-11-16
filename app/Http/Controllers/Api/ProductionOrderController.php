@@ -70,10 +70,12 @@ class ProductionOrderController extends BaseController
 
             ProductionOrderInput::where('production_id', $productionOrder->id)->delete();
             ProductionOrderOutput::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderMachine::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderMachine::where('production_id', $productionOrder->id)->delete();
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "EDIT ORDER",
                 'notes' =>  'data di perbaharui',
                 'created_by' => Auth::id()
             ]);
