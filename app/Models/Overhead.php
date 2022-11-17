@@ -12,6 +12,6 @@ class Overhead extends Model
 
     protected $fillable = [
         'name',
-        'usage_mater',
+        'unit',
     ];
 }

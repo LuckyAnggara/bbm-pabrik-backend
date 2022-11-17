@@ -6,6 +6,7 @@ use App\Models\ItemUnit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ItemUnitResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ItemUnitController extends BaseController
@@ -16,12 +17,11 @@ class ItemUnitController extends BaseController
         $name = $request->input('name');
 
         $itemUnit = ItemUnit::with(['user']);
-        if($name)
-        {
-            $itemUnit->where('name','like','%'.$name.'%');
+        if ($name) {
+            $itemUnit->where('name', 'like', '%' . $name . '%');
         }
 
-        return $this->sendResponse($itemUnit->latest()->paginate($limit), 'Data fetched');
+        return $this->sendResponse($itemUnit->latest()->paginate(), 'Data fetched');
     }
 
     public function store(Request $request)
@@ -30,20 +30,22 @@ class ItemUnitController extends BaseController
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $itemType = ItemUnit::create($input);
-        return $this->sendResponse(new ItemUnitResource($itemType), 'Data created');
+        $itemUnit = ItemUnit::create([
+            'name' => $input['name'],
+            'created_by' => Auth::id()
+        ]);
+
+        return $this->sendResponse(new ItemUnitResource($itemUnit), 'Data created');
     }
 
-   
+
     public function show($id)
     {
         $itemUnit = ItemUnit::with(['user'])->where('id', $id)->first();
-        if(is_null($itemUnit))
-        {
+        if (is_null($itemUnit)) {
             return $this->sendError('Data does not exist.');
         }
         return $this->sendResponse(new ItemUnitResource($itemUnit), 'Data fetched');
@@ -55,9 +57,8 @@ class ItemUnitController extends BaseController
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-        
-        if($validator->fails())
-        {
+
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
         $itemUnit->name = $input['name'];

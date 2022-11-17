@@ -42,13 +42,14 @@ Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
-Route::resource('machines', MachineController::class);
-Route::resource('overheads', OverheadController::class);
+
 
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
     Route::resource('item-units', ItemUnitController::class);
+    Route::resource('machines', MachineController::class);
+    Route::resource('overheads', OverheadController::class);
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('mutations', MutationController::class);
     Route::resource('production-order', ProductionOrderController::class);
