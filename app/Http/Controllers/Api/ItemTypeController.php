@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\ItemTypeResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
+use Illuminate\Support\Facades\Auth;
 
 class ItemTypeController extends BaseController
 {
@@ -16,12 +17,11 @@ class ItemTypeController extends BaseController
         $name = $request->input('name');
 
         $itemType = ItemType::with(['user']);
-        if($name)
-        {
-            $itemType->where('name','like','%'.$name.'%');
+        if ($name) {
+            $itemType->where('name', 'like', '%' . $name . '%');
         }
 
-        return $this->sendResponse($itemType->latest()->paginate($limit), 'Data fetched');
+        return $this->sendResponse($itemType->latest()->paginate(), 'Data fetched');
     }
 
     public function store(Request $request)
@@ -30,19 +30,20 @@ class ItemTypeController extends BaseController
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $itemType = ItemType::create($input);
+        $itemType = ItemType::create([
+            'name' => $input['name'],
+            'created_by' => Auth::id()
+        ]);
         return $this->sendResponse(new ItemTypeResource($itemType), 'Data created');
     }
 
     public function show($id)
     {
         $itemType = ItemType::with(['user'])->where('id', $id)->first();
-        if(is_null($itemType))
-        {
+        if (is_null($itemType)) {
             return $this->sendError('Data does not exist.');
         }
         return $this->sendResponse(new ItemTypeResource($itemType), 'Data fetched');
@@ -54,9 +55,8 @@ class ItemTypeController extends BaseController
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-        
-        if($validator->fails())
-        {
+
+        if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
         $itemType->name = $input['name'];

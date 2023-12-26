@@ -12,6 +12,7 @@ class Machine extends Model
 
     protected $fillable = [
         'name',
-        'usage_mater',
+        'unit',
+        'usage_capacity',
     ];
 }

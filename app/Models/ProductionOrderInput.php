@@ -13,12 +13,11 @@ class ProductionOrderInput extends Model
         'production_id',
         'item_id',
         'estimate_quantity',
+        'real_quantity',
     ];
 
     public function item()
     {
         return $this->hasOne(Item::class, 'id', 'item_id');
     }
-
-    
 }

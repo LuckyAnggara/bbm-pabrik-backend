@@ -16,6 +16,7 @@ class ProductionOrder extends Model
         'notes',
         'status',
         'target_date',
+        'shipping_id',
         'order_date',
         'created_by',
         'created_at',
@@ -54,5 +55,10 @@ class ProductionOrder extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'created_by');
+    }
+
+    public function shipping()
+    {
+        return $this->hasOne(Shipping::class, 'id', 'shipping_id');
     }
 }

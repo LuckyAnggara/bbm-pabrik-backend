@@ -14,6 +14,8 @@ use App\Models\ProductionOrderMachine;
 use App\Models\ProductionOrderOutput;
 use App\Models\ProductionOrderOverhead;
 use App\Models\ProductionOrderTimeline;
+use App\Models\Shipping;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ProductionOrderController extends BaseController
@@ -26,7 +28,7 @@ class ProductionOrderController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
 
-        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit','machine.machine','overhead.overhead', 'timeline.user', 'user']);
+        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'machine.machine', 'overhead.overhead', 'timeline.user', 'user']);
         if ($fromDate && $toDate) {
             $item->whereBetween('created_at', [$fromDate, $toDate]);
         }
@@ -44,7 +46,7 @@ class ProductionOrderController extends BaseController
 
     public function show($id)
     {
-        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type','machine.machine','overhead.overhead', 'timeline.user', 'user')->where('id', $id)->first();
+        $item = ProductionOrder::with('input.item.unit', 'output.item.unit', 'output.item.type', 'machine.machine', 'overhead.overhead', 'timeline.user', 'user')->where('id', $id)->first();
         if ($item) {
             return $this->sendResponse(new ProductionOrderResource($item), 'Data fetched');
         }
@@ -68,10 +70,12 @@ class ProductionOrderController extends BaseController
 
             ProductionOrderInput::where('production_id', $productionOrder->id)->delete();
             ProductionOrderOutput::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderMachine::where('production_id', $productionOrder->id)->delete();
+            ProductionOrderMachine::where('production_id', $productionOrder->id)->delete();
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "EDIT ORDER",
                 'notes' =>  'data di perbaharui',
                 'created_by' => Auth::id()
             ]);
@@ -85,6 +89,7 @@ class ProductionOrderController extends BaseController
                     'production_id' => $productionOrder->id,
                     'item_id' => $value['id'],
                     'estimate_quantity' => $value['estimate_quantity'],
+                    'real_quantity' => $value['estimate_quantity'],
                 ]);
             }
             $productionOrder['input'] = $POInput;
@@ -126,6 +131,7 @@ class ProductionOrderController extends BaseController
         $input = $request->all();
         $dataOrder = $input['data_order'];
         $updateOrder = $input['update_order'];
+        $updateInput = $input['update_input'];
 
         $productionOrder = ProductionOrder::findOrFail($dataOrder['id']);
         if ($productionOrder) {
@@ -152,14 +158,28 @@ class ProductionOrderController extends BaseController
                 ]);
             }
 
+            foreach ($updateInput as $key => $value) {
+                $newInput = ProductionOrderInput::find($value['id']);
+                $newInput->real_quantity = $value['real_quantity'];
+                $newInput->save();
 
+
+                if ($newInput->estimate_quantity > $newInput->real_quantity) {
+                    $balance = $newInput->estimate_quantity - $newInput->real_quantity;
+                    $item = MutationController::mutationItem($newInput->item_id, $balance, 'DEBIT',  'Sisa pemakaian bahan baku produksi nomor : ' . $productionOrder->sequence, 1);
+                } else {
+                    $balance = $newInput->real_quantity - $newInput->estimate_quantity;
+                    $item = MutationController::mutationItem($newInput->item_id, $balance, 'KREDIT',  'Kekurangan bahan baku untuk produksi : ' . $productionOrder->sequence, 1);
+                }
+            }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "DONE PRODUCTION",
                 'notes' =>  'Order telah selesai dikerjakan',
                 'created_by' =>  Auth::id(),
             ]);
+
             $productionOrder->status = 'DONE PRODUCTION';
             $productionOrder->save();
 
@@ -179,32 +199,15 @@ class ProductionOrderController extends BaseController
             foreach ($productionOrder['output'] as $key => $output) {
 
                 $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'DEBIT',  'Hasil produksi nomor : ' . $productionOrder->sequence, 1);
-                // $item = Mutation::create([
-                //     'item_id' => $output->item_id,
-                //     'debit' => $output->real_quantity,
-                //     'kredit' => 0,
-                //     'notes' => 'Hasil produksi nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
             }
 
-            foreach ($productionOrder['input'] as $key => $input) {
-                $item = MutationController::mutationItem($input->item_id, $input->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
-
-                // $item = Mutation::create([
-                //     'item_id' => $input->item_id,
-                //     'kredit' => $input->estimate_quantity,
-                //     'debit' => 0,
-                //     'notes' => 'Bahan untuk produksi nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
-            }
+            // foreach ($productionOrder['input'] as $key => $input) {
+            //     $item = MutationController::mutationItem($input->item_id, $input->estimate_quantity, 'KREDIT',  'Bahan untuk produksi nomor : ' . $productionOrder->sequence, 1);
+            // }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "WAREHOUSE",
                 'notes' =>  'Hasil Produksi telah dikirim ke Gudang',
                 'created_by' => Auth::id()
             ]);
@@ -220,22 +223,23 @@ class ProductionOrderController extends BaseController
     {
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {
+
+            $shipping = ShippingController::store($request, true);
+
+            if (!$shipping) {
+                return $this->sendResponse(null, 'Error', 201);
+            }
+
+            $productionOrder->shipping_id = $shipping->id;
+            $productionOrder->save();
+
             foreach ($productionOrder->output as $key => $output) {
                 $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'KREDIT',  'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence, 1);
-
-                // $item = Mutation::create([
-                //     'item_id' => $output->item_id,
-                //     'debit' => 0,
-                //     'kredit' => $output->real_quantity,
-                //     'notes' => 'Shipping Item ke Pelanggan Nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "SHIPPING",
                 'notes' =>  'Item sedang dalam perjalanan di kirim ke Pelanggan',
                 'created_by' => Auth::id()
             ]);
@@ -254,20 +258,11 @@ class ProductionOrderController extends BaseController
         if ($productionOrder) {
             foreach ($productionOrder->output as $key => $output) {
                 $item = MutationController::mutationItem($output->item_id, $output->real_quantity, 'DEBIT',  'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence, 1);
-
-                // $item = Mutation::create([
-                //     'item_id' => $output->item_id,
-                //     'debit' => $output->real_quantity,
-                //     'kredit' => 0,
-                //     'notes' => 'Retur Item dari Pelanggan Nomor : ' . $productionOrder->sequence,
-                //     'warehouse_id' => 1,
-                //     'created_by' => Auth::id()
-                // ]);
             }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
-                'status' => "UPDATE ORDER",
+                'status' => "RETUR",
                 'notes' =>  'Item di Retur dari Pelanggan',
                 'created_by' => Auth::id()
             ]);
@@ -285,8 +280,24 @@ class ProductionOrderController extends BaseController
         $productionOrder = ProductionOrder::with('output')->findOrFail($request['id']);
         if ($productionOrder) {
 
-            $productionOrder->status = 'RECEIVE';
-            $productionOrder->save();
+            $shipping = Shipping::find($productionOrder->shipping_id);
+
+            if ($shipping) {
+                $timeline = ProductionOrderTimeline::create([
+                    'production_id' => $productionOrder->id,
+                    'status' => "RECEIVE",
+                    'notes' =>  'Item di telah di terima Pelanggan',
+                    'created_by' => Auth::id()
+                ]);
+
+                $shipping->receiving_date = Carbon::now();
+                $shipping->save();
+
+                $productionOrder->status = 'RECEIVE';
+                $productionOrder->save();
+            } else {
+                return $this->sendResponse(null, 'Data Not Found', 201);
+            }
         }
         if ($request['nopol'] == '') {
             return $this->sendResponse($productionOrder, 'Data updated');
@@ -301,6 +312,12 @@ class ProductionOrderController extends BaseController
         if ($productionOrder) {
             $productionOrder->status = $input['status'];
             $productionOrder->save();
+
+            if ($input['status'] == 'WORK IN PROGRESS') {
+                foreach ($productionOrder['input'] as $key => $dd) {
+                    $item = MutationController::mutationItem($dd->item_id, $dd->estimate_quantity, 'KREDIT',  'Bahan baku untuk produksi nomor : ' . $productionOrder->sequence, 1);
+                }
+            }
 
             $timeline = ProductionOrderTimeline::create([
                 'production_id' => $productionOrder->id,
@@ -368,6 +385,7 @@ class ProductionOrderController extends BaseController
                     'production_id' => $productionOrder->id,
                     'item_id' => $value['id'],
                     'estimate_quantity' => $value['estimate_quantity'],
+                    'real_quantity' => $value['estimate_quantity'],
                 ]);
             }
             $productionOrder['input'] = $POInput;
@@ -399,7 +417,7 @@ class ProductionOrderController extends BaseController
             $productionOrder['machine'] = $POMachine;
             $productionOrder['overhead'] = $POOverhead;
         }
-      
+
         return $this->sendResponse($productionOrder, 'Data created');
     }
 
