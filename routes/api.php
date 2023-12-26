@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\MutationController;
 use App\Http\Controllers\API\OverheadController;
 use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
+use App\Http\Controllers\Api\PembelianController;
+use App\Http\Controllers\Api\PenjualanController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,6 +46,8 @@ Route::get('dashboard/productions', [DashboardController::class, 'productionCoun
 Route::resource('machines', MachineController::class);
 Route::resource('overheads', OverheadController::class);
 
+Route::resource('penjualan', PenjualanController::class);
+Route::resource('pembelian', PembelianController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
@@ -54,6 +58,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('items', ItemController::class);
     Route::resource('mutation-incoming', ItemIncomingController::class);
     Route::resource('mutation-exit', ItemExitController::class);
+
+
 
     Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
     Route::post('production-order/update-data', [ProductionOrderController::class, 'updateData']);
