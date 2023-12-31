@@ -47,7 +47,6 @@ Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
 
 Route::resource('penjualan', PenjualanController::class);
-Route::resource('pembelian', PembelianController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
@@ -71,6 +70,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/receive-shipping', [ProductionOrderController::class, 'receiveShipping']);
 
     Route::post('mutation-exit/store', [ItemExitController::class, 'store']);
+
+
+    Route::resource('pembelian', PembelianController::class);
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

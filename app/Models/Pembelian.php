@@ -10,6 +10,16 @@ class Pembelian extends Model
 {
     use HasFactory, SoftDeletes;
     
+    protected $fillable = [
+        'nomor_faktur',
+        'nama_supplier',
+        'sub_total',
+        'diskon',
+        'pajak',
+        'total',
+        'created_by',
+    ];
+
     protected $casts = [
         'created_at' => 'datetime:d F Y',
     ];
