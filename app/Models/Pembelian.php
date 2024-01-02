@@ -17,6 +17,7 @@ class Pembelian extends Model
         'diskon',
         'pajak',
         'total',
+        'created_at',
         'created_by',
     ];
 
@@ -27,5 +28,10 @@ class Pembelian extends Model
     public function detail()
     {
         return $this->hasMany(DetailPembelian::class, 'pembelian_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'created_by');
     }
 }

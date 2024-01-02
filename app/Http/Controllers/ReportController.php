@@ -116,6 +116,7 @@ class ReportController extends BaseController
         $id = $request->input('id');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $name = $request->input('name');
 
         if (!$fromDate && !$toDate) {
             $fromDate == '01-01-2022';
@@ -126,6 +127,12 @@ class ReportController extends BaseController
 
         $item = Item::with('type', 'unit', 'user')->where('id', $id)->first();
         $mutation = Mutation::where('item_id', $id);
+
+            $mutation = Mutation::where('item_id', $id)
+                    ->when($name, function ($query, $name) {
+                return $query
+                    ->where('notes', 'like', '%' . $name . '%');
+            });
 
         if ($fromDate && $toDate) {
             $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();

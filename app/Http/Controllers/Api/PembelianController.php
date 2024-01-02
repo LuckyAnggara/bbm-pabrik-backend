@@ -57,6 +57,7 @@ class PembelianController extends BaseController
                 'diskon' => $data->diskon,
                 'ongkir' => $data->ongkir,
                 'total' => $data->total - $data->diskon + $data->ongkir + $data->pajak,
+                'created_at' => $data->tanggal_transaksi ?? Carbon::now(),
                 'created_by' => Auth::id(),
             ]);
 
@@ -68,10 +69,47 @@ class PembelianController extends BaseController
                         'jumlah' => $value->jumlah,
                         'harga' => $value->harga,
                     ]);
+
+                    $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Pembelian Item : #' . $master->nomor_faktur, 1);
                 }
             }
              DB::commit();
             return $this->sendResponse($master, 'Data created');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
+    }
+
+
+    public function show($id)
+    {
+        $result = Pembelian::where('id', $id)
+            ->with(['detail.item','user'])
+            ->first();
+        if ($result) {
+            return $this->sendResponse($result, 'Data fetched');
+        }
+        return $this->sendError('Data not found');
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $data = Pembelian::find($id);
+            if ($data) {
+                $detail = DetailPembelian::where('pembelian_id', $id)->get();
+                foreach ($detail as $key => $value) {
+                    $value->delete();
+                    $item = MutationController::mutationItem($value->item_id, $value->jumlah, 'KREDIT',  'Hapus Pembelian Item : #' . $data->nomor_faktur, 1);
+                }
+                $data->delete();
+                DB::commit();
+                return $this->sendResponse($data, 'Data berhasil dihapus', 200);
+            } else {
+                return $this->sendError('', 'Data tidak ditemukan', 404);
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);

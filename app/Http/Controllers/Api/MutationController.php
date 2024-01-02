@@ -33,11 +33,13 @@ class MutationController extends BaseController
         } else {
             $data = MasterExitItem::with('user');
         }
+            $data->when($name, function ($query, $name) {
+                return $query
+                    ->where('notes', 'like', '%' . $name . '%')
+                    ->orWhere('mutation_code', 'like', '%' . $name . '%');
+            });
 
-        if ($name) {
-            $data->where('notes', 'like', '%' . $name . '%');
-            $data->orWhere('mutation_code', 'like', '%' . $name . '%');
-        }
+     
 
         return $this->sendResponse($data->latest()->paginate($limit), 'Data fetched');
     }
@@ -98,9 +100,14 @@ class MutationController extends BaseController
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
         $limit = $request->input('limit', 10);
-        $mutation = Mutation::where('item_id', $id);
+        $name = $request->input('name');
+        
+        $mutation = Mutation::where('item_id', $id)
+                    ->when($name, function ($query, $name) {
+                return $query
+                    ->where('notes', 'like', '%' . $name . '%');
+            });
         if ($fromDate && $toDate) {
-
             $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
             $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
             $mutation->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc');
