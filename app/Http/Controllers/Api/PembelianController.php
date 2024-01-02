@@ -70,11 +70,21 @@ class PembelianController extends BaseController
                     ]);
                 }
             }
-             DB::commit();
+            DB::commit();
             return $this->sendResponse($master, 'Data created');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
         }
+    }
+
+
+    public function show($id)
+    {
+    }
+
+    public function generateFaktur()
+    {
+        return Pembelian::generateFakturNumber();
     }
 }

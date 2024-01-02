@@ -44,6 +44,7 @@ Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
+Route::get('pembelian/faktur', [PembelianController::class, 'generateFaktur']);
 
 
 Route::resource('penjualan', PenjualanController::class);
@@ -73,7 +74,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::resource('pembelian', PembelianController::class);
-
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
