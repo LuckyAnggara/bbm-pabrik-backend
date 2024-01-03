@@ -15,6 +15,7 @@ use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\PembelianController;
 use App\Http\Controllers\Api\PenjualanController;
+use App\Http\Controllers\FakturController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,8 @@ Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
 Route::get('report/mutation', [ReportController::class, 'reportMutation']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
+Route::get('faktur/pembelian/{id}', [FakturController::class, 'pembelian']);
+
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
