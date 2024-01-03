@@ -17,6 +17,7 @@ class Pembelian extends Model
         'diskon',
         'pajak',
         'total',
+        'created_at',
         'created_by',
     ];
 
@@ -46,5 +47,10 @@ class Pembelian extends Model
         $fakturNumber = 'BBM-' . $formattedDate . '/' . str_pad($number, 4, '0', STR_PAD_LEFT);
 
         return $fakturNumber;
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'created_by');
     }
 }

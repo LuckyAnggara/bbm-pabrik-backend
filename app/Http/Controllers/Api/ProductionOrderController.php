@@ -364,7 +364,7 @@ class ProductionOrderController extends BaseController
             'status' => 'NEW ORDER',
             'target_date' => $input['target_date'],
             'order_date' => $input['order_date'],
-            'created_by' => '1'
+            'created_by' => Auth::id()
         ]);
 
         if ($productionOrder) {

@@ -20,7 +20,7 @@
                             {{date("d F Y", strtotime($data['order_date']))}}<br />
                         </div>
                         <div class="text-right">
-                            <span class="text-gray-600 text-4xl">BBM. </span>
+                            <span class="text-gray-600 text-4xl">BBM </span>
                         </div>
                     </div>
 

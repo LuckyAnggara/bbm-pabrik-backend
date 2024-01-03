@@ -16,4 +16,9 @@ class DetailPembelian extends Model
         'harga',
         
     ];
+
+     public function item()
+    {
+        return $this->hasOne(Item::class, 'id', 'item_id');
+    }
 }
