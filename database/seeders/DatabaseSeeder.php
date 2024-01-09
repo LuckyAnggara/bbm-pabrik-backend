@@ -77,102 +77,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Item::factory()->create([
-            'name' => 'Coil',
+            'name' => 'Plastik',
             'type_id' => '1',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-
-        Item::factory()->create([
-            'name' => 'Wiremesh',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-
-        Item::factory()->create([
-            'name' => 'Coil 1',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-
-        Item::factory()->create([
-            'name' => 'Coil 2',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 3',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 4',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 5',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 6',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 7',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 8',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 9',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 10',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 11',
-            'type_id' => '2',
-            'unit_id' => '1',
-            'warehouse_id' => '1',
-            'created_by' => '1',
-        ]);
-        Item::factory()->create([
-            'name' => 'Coil 12',
-            'type_id' => '2',
             'unit_id' => '1',
             'warehouse_id' => '1',
             'created_by' => '1',
@@ -182,11 +88,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Roll Forming Machine Standard - 1',
             'usage_capacity' => '100000',
         ]);
-        DB::table('machines')->insert([
-            'name' => 'Roll Forming Machine Standard - 2',
-            'usage_capacity' => '200000',
-        ]);
-
+        
         DB::table('overheads')->insert([
             'name' => 'Listrik',
             'unit' => 'Watt',

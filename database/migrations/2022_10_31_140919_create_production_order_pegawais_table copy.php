@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('detail_penjualans', function (Blueprint $table) {
+        Schema::create('production_order_pegawais', function (Blueprint $table) {
             $table->id();
-            $table->integer('penjualan_id');
-            $table->integer('item_id');
-            $table->double('jumlah')->default(0);
-            $table->double('harga')->default(0);
+            $table->string('production_id');
+            $table->string('pegawai_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detail_penjualans');
+        Schema::dropIfExists('production_order_overheads');
     }
 };

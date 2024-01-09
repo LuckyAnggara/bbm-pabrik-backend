@@ -10,6 +10,7 @@ class ProductionOrder extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
+        'shift',
         'sequence',
         'pic_name',
         'customer_name',
@@ -51,11 +52,17 @@ class ProductionOrder extends Model
     {
         return $this->hasMany(ProductionOrderTimeline::class, 'production_id', 'id')->orderBy('created_at');
     }
+    public function pegawai()
+    {
+        return $this->hasMany(ProductionOrderPegawai::class, 'production_id', 'id')->orderBy('created_at');
+    }
 
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
+
+ 
 
     public function shipping()
     {

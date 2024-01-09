@@ -11,10 +11,13 @@ use App\Http\Controllers\Api\ItemUnitController;
 use App\Http\Controllers\API\MachineController;
 use App\Http\Controllers\Api\MutationController;
 use App\Http\Controllers\API\OverheadController;
+use App\Http\Controllers\Api\PegawaiController;
+use App\Http\Controllers\Api\PelangganController;
 use App\Http\Controllers\API\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\PembelianController;
 use App\Http\Controllers\Api\PenjualanController;
+use App\Http\Controllers\FakturController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,13 +43,17 @@ Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
 Route::get('report/mutation', [ReportController::class, 'reportMutation']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
+
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
 Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
+Route::get('faktur/pembelian/{id}', [FakturController::class, 'pembelian']);
+Route::get('faktur/penjualan/{id}', [FakturController::class, 'penjualan']);
 
 
-Route::resource('penjualan', PenjualanController::class);
+Route::get('pembelian/faktur', [PembelianController::class, 'generateFaktur']);
+Route::get('penjualan/faktur', [PenjualanController::class, 'generateFaktur']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
@@ -60,6 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('mutation-incoming', ItemIncomingController::class);
     Route::resource('mutation-exit', ItemExitController::class);
 
+    Route::resource('pegawai', PegawaiController::class);
+    Route::resource('pelanggan', PelangganController::class);
 
 
     Route::post('production-order/update-status', [ProductionOrderController::class, 'updateStatus']);
@@ -71,10 +80,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('mutation-exit/store', [ItemExitController::class, 'store']);
 
+    Route::resource('penjualan', PenjualanController::class);
 
     Route::resource('pembelian', PembelianController::class);
 
 });
+
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return Auth::user();

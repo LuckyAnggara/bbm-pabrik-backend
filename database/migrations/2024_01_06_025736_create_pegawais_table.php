@@ -13,13 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('detail_penjualans', function (Blueprint $table) {
+        Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
-            $table->integer('penjualan_id');
-            $table->integer('item_id');
-            $table->double('jumlah')->default(0);
-            $table->double('harga')->default(0);
+            $table->string('name');
+            $table->string('jabatan');
+            $table->double('gaji');
+            $table->double('uang_makan');
+            $table->double('bonus');
+            $table->integer('created_by');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detail_penjualans');
+        Schema::dropIfExists('pegawais');
     }
 };

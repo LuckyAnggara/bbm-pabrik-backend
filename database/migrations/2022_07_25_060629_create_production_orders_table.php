@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('production_orders', function (Blueprint $table) {
             $table->id();
             $table->string('sequence');
+            $table->integer('shift')->nullable();
             $table->string('pic_name');
             $table->string('customer_name');
             $table->text('notes');

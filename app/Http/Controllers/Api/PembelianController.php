@@ -115,4 +115,9 @@ class PembelianController extends BaseController
             return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
         }
     }
+
+        public function generateFaktur()
+    {
+        return Pembelian::generateFakturNumber();
+    }
 }

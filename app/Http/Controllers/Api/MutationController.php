@@ -153,7 +153,7 @@ class MutationController extends BaseController
             'kredit' =>  $type == 'KREDIT' ? $qty : 0,
             'balance' => $type == 'DEBIT' ? ($item->balance + $qty) : ($item->balance - $qty),
             'notes' => $note,
-            'warehouse_id' => $warehouse,
+            // 'warehouse_id' => $warehouse,
             'created_by' => Auth::id(),
         ]);
 

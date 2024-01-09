@@ -20,28 +20,29 @@ class ReportController extends BaseController
 
         $id = $request->input('id');
         $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'output.item.type', 'machine', 'overhead', 'timeline.user', 'user'])->where('id', $id)->first();
-
-        switch ($item->status) {
-            case "DONE PRODUCTION":
-                $done_production = true;
-                break;
-            case "WAREHOUSE":
-                $done_production = true;
-                break;
-            case "SHIPPING":
-                $done_production = true;
-                break;
-            case "RETUR":
-                $done_production = true;
-                break;
-            case "RECEIVE":
-                $done_production = true;
-                break;
-            default:
-                $done_production = false;
-        }
-
+ 
         if ($item) {
+
+            switch ($item->status) {
+                case "DONE PRODUCTION":
+                    $done_production = true;
+                    break;
+                case "WAREHOUSE":
+                    $done_production = true;
+                    break;
+                case "SHIPPING":
+                    $done_production = true;
+                    break;
+                case "RETUR":
+                    $done_production = true;
+                    break;
+                case "RECEIVE":
+                    $done_production = true;
+                    break;
+                default:
+                    $done_production = false;
+            }
+
             return view('production.report', [
                 'data' => $item,
                 'pic_production' => $request->input('pic_production'),

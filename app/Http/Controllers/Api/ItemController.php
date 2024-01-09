@@ -69,7 +69,7 @@ class ItemController extends BaseController
             //membuat saldo awal
             $mutation = new Mutation;
             $mutation->item_id = $item->id;
-            $mutation->warehouse_id = $item->warehouse_id;
+            // $mutation->warehouse_id = $item->warehouse_id;
             $mutation->debit = 0;
             $mutation->kredit = 0;
             $mutation->balance = 0;
