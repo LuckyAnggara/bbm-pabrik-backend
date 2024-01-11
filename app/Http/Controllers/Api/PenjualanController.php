@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\BaseController;
 use App\Models\DetailPenjualan;
 use App\Models\Penjualan;
+use App\Models\Pin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,7 @@ class PenjualanController extends BaseController
                         'harga' => $value->harga,
                     ]);
 
-                    $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $master->nomor_faktur, 1);
+                    // $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $master->nomor_faktur, 1);
                 }
             }
              DB::commit();
@@ -90,7 +91,7 @@ class PenjualanController extends BaseController
     public function show($id)
     {
         $result = Penjualan::where('id', $id)
-            ->with(['detail.item','user','pelanggan'])
+            ->with(['detail.item.unit','user','pelanggan'])
             ->first();
         if ($result) {
             return $this->sendResponse($result, 'Data fetched');
@@ -120,8 +121,48 @@ class PenjualanController extends BaseController
             return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
         }
     }
+    
+    // HANYA UPDATE STATUS
+    public function verifikasi(Request $request)
+    {
+        $data = json_decode($request->getContent());
+        $auth = Pin::where('pin', $data->pin)->first();
+        
+        if($auth){
+try {
+            DB::beginTransaction();
+            $penjualan = Penjualan::findOrFail($data->id);
+            if($penjualan){
+                $penjualan->status = 'TERVERIFIKASI';
+                $penjualan->save();
+                $detail = DetailPenjualan::where('penjualan_id', $data->id)->get();
+                foreach ($detail as $key => $value) {
+                   $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $penjualan->nomor_faktur, 1);
+                }
+            }
 
-        public function generateFaktur()
+             DB::commit();
+            return $this->sendResponse($data, 'Penjualan terverifikasi', 200);
+         }catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
+        }
+         return $this->sendError('Terjadi kesalahan', 'PIN Salah', 500);
+    }
+
+    public function showPenjualan($id)
+    {
+        $result = Penjualan::where('id', $id)
+            ->with(['detail.item.unit','user','pelanggan'])
+            ->first();
+        if ($result) {
+            return $this->sendResponse($result, 'Data fetched');
+        }
+        return $this->sendError('Data not found');
+    }
+
+    public function generateFaktur()
     {
         return Penjualan::generateFakturNumber();
     }

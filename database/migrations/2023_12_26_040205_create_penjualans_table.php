@@ -25,7 +25,7 @@ return new class extends Migration
             $table->double('diskon')->default(0);
             $table->double('ongkir')->default(0);
             $table->double('total')->default(0);
-            $table->string('status')->default('LUNAS');
+            $table->string('status')->default('BELUM VERIFIKASI');
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();

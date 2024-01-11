@@ -55,6 +55,10 @@ Route::get('faktur/penjualan/{id}', [FakturController::class, 'penjualan']);
 Route::get('pembelian/faktur', [PembelianController::class, 'generateFaktur']);
 Route::get('penjualan/faktur', [PenjualanController::class, 'generateFaktur']);
 
+Route::post('verifikasi/penjualan', [PenjualanController::class, 'verifikasi']);
+Route::get('verifikasi/penjualan/{id}', [PenjualanController::class, 'showPenjualan']);
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
     Route::resource('item-units', ItemUnitController::class);
@@ -79,7 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('production-order/receive-shipping', [ProductionOrderController::class, 'receiveShipping']);
 
     Route::post('mutation-exit/store', [ItemExitController::class, 'store']);
-
     Route::resource('penjualan', PenjualanController::class);
 
     Route::resource('pembelian', PembelianController::class);
