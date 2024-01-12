@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BiayaController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\Api\ItemController;
@@ -70,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('items', ItemController::class);
     Route::resource('mutation-incoming', ItemIncomingController::class);
     Route::resource('mutation-exit', ItemExitController::class);
+    Route::resource('biaya', BiayaController::class);
 
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('pelanggan', PelangganController::class);
@@ -86,7 +88,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('penjualan', PenjualanController::class);
 
     Route::resource('pembelian', PembelianController::class);
-
 });
 
 
