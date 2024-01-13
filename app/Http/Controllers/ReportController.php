@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseController;
+use App\Models\Gaji;
 use App\Models\Item;
 use App\Models\Mutation;
 use App\Models\ProductionOrder;
@@ -165,4 +166,26 @@ class ReportController extends BaseController
 
         // return $pdf->download('Laporan Mutasi ' . $item->name . '.pdf');
     }
+
+     public function reportGaji($created_at)
+    {
+        $data = Gaji::with('pegawai')->whereDate('created_at',$created_at)->get();
+       
+        if($data){
+            return view('bisnis.gaji', [
+                'data' => $data,
+                'tanggal'=>Carbon::parse($created_at)->format('d F Y')
+
+            ]);
+
+            // $pdf = PDF::loadView('production.report', [
+            //     'data' => $item,
+            //     'pic_production' => $request->input('pic_production')
+            // ]);
+
+            // return $pdf->download('production_report' . $item['sequence'] . '.pdf');
+        }
+        return $this->sendError('Data not found');
+    }
+
 }

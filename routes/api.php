@@ -45,6 +45,7 @@ Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
 Route::get('report/mutation', [ReportController::class, 'reportMutation']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
+Route::get('report/gaji/{created_at}', [ReportController::class, 'reportGaji']);
 
 Route::get('dashboard/items', [DashboardController::class, 'itemCount']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
@@ -52,6 +53,8 @@ Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
 Route::get('faktur/pembelian/{id}', [FakturController::class, 'pembelian']);
 Route::get('faktur/penjualan/{id}', [FakturController::class, 'penjualan']);
+
+
 
 
 Route::get('pembelian/faktur', [PembelianController::class, 'generateFaktur']);

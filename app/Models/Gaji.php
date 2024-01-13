@@ -21,5 +21,10 @@ class Gaji extends Model
         'created_at' => 'datetime:d F Y',
     ];
 
+        public function pegawai()
+    {
+        return $this->hasOne(Pegawai::class, 'id', 'pegawai_id');
+    }
+
 
 }
