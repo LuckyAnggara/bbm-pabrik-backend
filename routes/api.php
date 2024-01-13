@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BiayaController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\Api\GajiController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\API\ItemExitController;
 use App\Http\Controllers\API\ItemIncomingController;
@@ -72,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('mutation-incoming', ItemIncomingController::class);
     Route::resource('mutation-exit', ItemExitController::class);
     Route::resource('biaya', BiayaController::class);
+    Route::resource('gaji', GajiController::class);
 
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('pelanggan', PelangganController::class);

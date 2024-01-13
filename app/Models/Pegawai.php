@@ -18,4 +18,10 @@ class Pegawai extends Model
         'bonus',
         'created_by',
     ];
+
+         protected $casts = [
+        'gaji' => 'double',
+        'uang_makan' => 'double',
+        'bonus' => 'double',
+    ];
 }
