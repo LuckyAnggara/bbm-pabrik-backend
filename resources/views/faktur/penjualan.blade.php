@@ -46,7 +46,7 @@
                 <div class="card">
                     <div class="card-header">Nomor Faktur
                         <strong>#{{$data->nomor_faktur}}</strong>
-                        <a class="btn btn-sm btn-secondary float-right mr-1 d-print-none" href="#" onclick="javascript:window.print();" data-abc="true">
+                        <a class="btn btn-sm btn-secondary float-right mr-1 d-print-none" href="{{url('/api/faktur/print/penjualan/'.$data->id)}}" data-abc="true">
                             <i class="fa fa-print"></i> Print</a>
                         <!-- <a class="btn btn-sm btn-info float-right mr-1 d-print-none" href="#" data-abc="true">
                             <i class="fa fa-save"></i> Save</a> -->

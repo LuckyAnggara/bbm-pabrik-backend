@@ -137,7 +137,7 @@ try {
                 $penjualan->save();
                 $detail = DetailPenjualan::where('penjualan_id', $data->id)->get();
                 foreach ($detail as $key => $value) {
-                   $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $penjualan->nomor_faktur, 1);
+                   $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $penjualan->nomor_faktur, 1, $auth->pegawai_id);
                 }
             }
 

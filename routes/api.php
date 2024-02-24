@@ -53,6 +53,9 @@ Route::get('dashboard/shipping', [DashboardController::class, 'shippingCount']);
 
 Route::get('faktur/pembelian/{id}', [FakturController::class, 'pembelian']);
 Route::get('faktur/penjualan/{id}', [FakturController::class, 'penjualan']);
+Route::get('faktur/print/penjualan/{id}', [FakturController::class, 'makeFaktur']);
+Route::get('faktur', [FakturController::class, 'makeFont']);
+
 
 
 

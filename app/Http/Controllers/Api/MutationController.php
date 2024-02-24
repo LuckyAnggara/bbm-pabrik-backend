@@ -144,8 +144,9 @@ class MutationController extends BaseController
     //     return $this->sendResponse([], 'Data deleted');
     // }
 
-    public static function mutationItem($id, $qty, $type, $note, $warehouse)
+    public static function mutationItem($id, $qty, $type, $note, $warehouse, $authId = null)
     {
+        
         $item = Item::find($id);
         $mutation = Mutation::create([
             'item_id' => $id,
@@ -154,7 +155,7 @@ class MutationController extends BaseController
             'balance' => $type == 'DEBIT' ? ($item->balance + $qty) : ($item->balance - $qty),
             'notes' => $note,
             // 'warehouse_id' => $warehouse,
-            'created_by' => Auth::id(),
+            'created_by' => $authId == null ? Auth::id() : $authId,
         ]);
 
         if ($mutation) {
