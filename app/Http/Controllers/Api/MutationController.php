@@ -33,13 +33,13 @@ class MutationController extends BaseController
         } else {
             $data = MasterExitItem::with('user');
         }
-            $data->when($name, function ($query, $name) {
-                return $query
-                    ->where('notes', 'like', '%' . $name . '%')
-                    ->orWhere('mutation_code', 'like', '%' . $name . '%');
-            });
+        $data->when($name, function ($query, $name) {
+            return $query
+                ->where('notes', 'like', '%' . $name . '%')
+                ->orWhere('mutation_code', 'like', '%' . $name . '%');
+        });
 
-     
+
 
         return $this->sendResponse($data->latest()->paginate($limit), 'Data fetched');
     }
@@ -101,9 +101,9 @@ class MutationController extends BaseController
         $toDate = $request->input('to_date');
         $limit = $request->input('limit', 10);
         $name = $request->input('name');
-        
+
         $mutation = Mutation::where('item_id', $id)
-                    ->when($name, function ($query, $name) {
+            ->when($name, function ($query, $name) {
                 return $query
                     ->where('notes', 'like', '%' . $name . '%');
             });
@@ -146,7 +146,7 @@ class MutationController extends BaseController
 
     public static function mutationItem($id, $qty, $type, $note, $warehouse)
     {
-        $item = Item::find($id);
+        $item = Item::withTrashed()->find($id);
         $mutation = Mutation::create([
             'item_id' => $id,
             'debit' => $type == 'DEBIT' ? $qty : 0,

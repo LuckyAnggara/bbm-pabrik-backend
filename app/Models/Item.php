@@ -23,17 +23,16 @@ class Item extends Model
 
     public function type()
     {
-        return $this->hasOne(ItemType::class, 'id', 'type_id');
+        return $this->hasOne(ItemType::class, 'id', 'type_id')->withTrashed();
     }
 
     public function unit()
     {
-        return $this->hasOne(ItemUnit::class, 'id', 'unit_id');
+        return $this->hasOne(ItemUnit::class, 'id', 'unit_id')->withTrashed();
     }
-
     public function warehouse()
     {
-        return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse_id')->withTrashed();
     }
 
     public function user()

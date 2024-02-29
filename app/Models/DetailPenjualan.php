@@ -9,16 +9,16 @@ class DetailPenjualan extends Model
 {
     use HasFactory;
 
-        protected $fillable = [
+    protected $fillable = [
         'penjualan_id',
         'item_id',
         'jumlah',
         'harga',
-        
+
     ];
 
-     public function item()
+    public function item()
     {
-        return $this->hasOne(Item::class, 'id', 'item_id');
+        return $this->hasOne(Item::class, 'id', 'item_id')->withTrashed();
     }
 }
