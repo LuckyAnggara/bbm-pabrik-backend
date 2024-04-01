@@ -50,15 +50,15 @@ class AuthController extends BaseController
 
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
             $user = Auth::user();
-            if (count($user->tokens) >= 1) {
-                return $this->sendResponse('user still login', 'User still Login.', 202);
-            } else {
-                $user->tokens()->delete();
-                $success['token']['access_token'] =  $user->createToken('MyApp')->plainTextToken;
-                $success['token']['token_type'] = 'Bearer';
-                $success['user'] =  Auth::user();
-                return $this->sendResponse($success, 'User login successfully.');
-            }
+            // if (count($user->tokens) >= 1) {
+            //     return $this->sendResponse('user still login', 'User still Login.', 202);
+            // } else {
+            $user->tokens()->delete();
+            $success['token']['access_token'] =  $user->createToken('MyApp')->plainTextToken;
+            $success['token']['token_type'] = 'Bearer';
+            $success['user'] =  Auth::user();
+            return $this->sendResponse($success, 'User login successfully.');
+            // }
         } else {
             return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
         }
@@ -71,12 +71,11 @@ class AuthController extends BaseController
         $accessToken = $request->bearerToken();
         // Get access token from database
         $token = PersonalAccessToken::findToken($accessToken);
-        if($token){
+        if ($token) {
             // Revoke token
             $token->delete();
             return $this->sendResponse('done', 'User logout successfully.');
         }
-        return $this->sendResponse('error','token not found');
-
+        return $this->sendResponse('error', 'token not found');
     }
 }

@@ -3,18 +3,18 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BiayaController;
 use App\Http\Controllers\Api\BlogController;
-use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ItemController;
-use App\Http\Controllers\API\ItemExitController;
-use App\Http\Controllers\API\ItemIncomingController;
+use App\Http\Controllers\Api\ItemExitController;
+use App\Http\Controllers\Api\ItemIncomingController;
 use App\Http\Controllers\Api\ItemTypeController;
 use App\Http\Controllers\Api\ItemUnitController;
-use App\Http\Controllers\API\MachineController;
+use App\Http\Controllers\Api\MachineController;
 use App\Http\Controllers\Api\MutationController;
-use App\Http\Controllers\API\OverheadController;
+use App\Http\Controllers\Api\OverheadController;
 use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PelangganController;
-use App\Http\Controllers\API\ProductionOrderController;
+use App\Http\Controllers\Api\ProductionOrderController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\PembelianController;
 use App\Http\Controllers\Api\PenjualanController;
@@ -26,12 +26,12 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| Api Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
+| Here is where you can register Api routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+| is assigned the "api" middleware group. Enjoy building your Api!
 |
 */
 
