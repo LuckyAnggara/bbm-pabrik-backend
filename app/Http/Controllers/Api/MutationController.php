@@ -102,7 +102,7 @@ class MutationController extends BaseController
         $limit = $request->input('limit', 10);
         $name = $request->input('name');
 
-        $mutation = Mutation::where('item_id', $id)
+        $mutation = Mutation::withTrashed()->where('item_id', $id)
             ->when($name, function ($query, $name) {
                 return $query
                     ->where('notes', 'like', '%' . $name . '%');

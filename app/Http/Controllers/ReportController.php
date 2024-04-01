@@ -20,7 +20,7 @@ class ReportController extends BaseController
 
         $id = $request->input('id');
         $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'output.item.type', 'machine', 'overhead', 'timeline.user', 'user'])->where('id', $id)->first();
- 
+
         if ($item) {
 
             switch ($item->status) {
@@ -129,8 +129,8 @@ class ReportController extends BaseController
         $item = Item::with('type', 'unit', 'user')->where('id', $id)->first();
         $mutation = Mutation::where('item_id', $id);
 
-            $mutation = Mutation::where('item_id', $id)
-                    ->when($name, function ($query, $name) {
+        $mutation = Mutation::where('item_id', $id)
+            ->when($name, function ($query, $name) {
                 return $query
                     ->where('notes', 'like', '%' . $name . '%');
             });

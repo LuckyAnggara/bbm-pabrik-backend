@@ -25,11 +25,11 @@ class Penjualan extends Model
         'created_by',
     ];
 
-     protected $casts = [
+    protected $casts = [
         'created_at' => 'datetime:d F Y',
     ];
 
-    
+
 
     public function detail()
     {
@@ -40,7 +40,7 @@ class Penjualan extends Model
     {
         $date = now();
         $formattedDate = $date->format('Y/m/d');
-        $latestInvoice = self::where('nomor_faktur', 'like', $formattedDate . '%')->latest()->first();
+        $latestInvoice = self::where('nomor_faktur', 'like', 'BBM-SLS-' . $formattedDate . '%')->latest()->first();
 
         if (!$latestInvoice) {
             $number = 1;
@@ -54,7 +54,7 @@ class Penjualan extends Model
         return $fakturNumber;
     }
 
-        public function pelanggan()
+    public function pelanggan()
     {
         return $this->hasOne(Pelanggan::class, 'id', 'pelanggan_id');
     }

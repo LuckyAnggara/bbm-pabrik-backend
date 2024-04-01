@@ -35,7 +35,7 @@ class Pembelian extends Model
     {
         $date = now();
         $formattedDate = $date->format('Y/m/d');
-        $latestInvoice = self::where('nomor_faktur', 'like', $formattedDate . '%')->latest()->first();
+        $latestInvoice = self::where('nomor_faktur', 'like', 'BBM-' . $formattedDate . '%')->latest()->first();
 
         if (!$latestInvoice) {
             $number = 1;

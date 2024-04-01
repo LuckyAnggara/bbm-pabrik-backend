@@ -17,6 +17,6 @@ class DetailExitItem extends Model
 
     public function item()
     {
-        return $this->hasOne(Item::class, 'id', 'item_id');
+        return $this->hasOne(Item::class, 'id', 'item_id')->withTrashed();
     }
 }
