@@ -55,6 +55,9 @@ Route::get('faktur/penjualan/{id}', [FakturController::class, 'penjualan']);
 
 Route::get('pembelian/faktur', [PembelianController::class, 'generateFaktur']);
 Route::get('penjualan/faktur', [PenjualanController::class, 'generateFaktur']);
+Route::get('faktur/print/penjualan/{id}', [FakturController::class, 'makeFaktur']);
+Route::get('faktur/print/suratjalan/{id}', [FakturController::class, 'makeSuratJalan']);
+Route::get('faktur', [FakturController::class, 'makeFont']);
 
 Route::post('verifikasi/penjualan', [PenjualanController::class, 'verifikasi']);
 Route::get('verifikasi/penjualan/{id}', [PenjualanController::class, 'showPenjualan']);

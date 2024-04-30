@@ -9,16 +9,16 @@ class DetailPembelian extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+        protected $fillable = [
         'pembelian_id',
         'item_id',
         'jumlah',
         'harga',
-
+        
     ];
 
-    public function item()
+     public function item()
     {
-        return $this->hasOne(Item::class, 'id', 'item_id')->withTrashed();
+        return $this->hasOne(Item::class, 'id', 'item_id');
     }
 }
