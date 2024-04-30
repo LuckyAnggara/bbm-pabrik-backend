@@ -42,116 +42,143 @@
 
 <body>
     <div class="container-fluid mt-5">
-            <div>
-                <div class="card">
-                    <div class="card-header">Nomor Faktur
-                        <strong>#{{$data->nomor_faktur}}</strong>
-                        <a class="btn btn-sm btn-secondary float-right mr-1 d-print-none" href="{{url('/api/faktur/print/penjualan/'.$data->id)}}" data-abc="true">
-                            <i class="fa fa-print"></i> Print</a>
-                        <a class="btn btn-sm btn-info float-right mr-1 d-print-none" href="{{url('/api/faktur/print/suratjalan/'.$data->id)}}" data-abc="true">
-                            <i class="fa fa-save"></i> Surat Jalan</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-4">
-                            <div class="col-sm-4">
-                                <h6 class="mb-3">Dari:</h6>
+        <div>
+            <div class="card">
+                <div class="card-header">Nomor Faktur
+                    <strong>#{{$data->nomor_faktur}}</strong>
+                    <a class="btn btn-sm btn-secondary float-right mr-1 d-print-none" href="{{url('/api/faktur/print/penjualan/'.$data->id)}}" data-abc="true">
+                        <i class="fa fa-print"></i> Print</a>
+                    <!-- href="{{url('/api/faktur/print/suratjalan/'.$data->id)}}" data-abc="true" -->
+                    <a data-toggle="modal" data-target="#staticBackdrop" class="btn btn-sm btn-info float-right mr-1 d-print-none">
+                        <i class="fa fa-save"></i> Surat Jalan</a>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm-4">
+                            <h6 class="mb-3">Dari:</h6>
 
-                                <div>
-                                    <strong>Berkah Baja Makmur</strong>
-                                </div>
-                                <!-- <div>42, Awesome Enclave</div>
+                            <div>
+                                <strong>Berkah Baja Makmur</strong>
+                            </div>
+                            <!-- <div>42, Awesome Enclave</div>
                                 <div>New York City, New york, 10394</div>
                                 <div>Email: admin@bbbootstrap.com</div>
                                 <div>Phone: +48 123 456 789</div> -->
-                               
-                            </div>
 
-                            <div class="col-sm-4">
-                                <h6 class="mb-3">To:</h6>
-                                <div>
-                                    <strong>{{$data->pelanggan ? $data->pelanggan->name : $data->nama_pelanggan}}</strong>
-                                </div>
-                                <div>{{$data->pelanggan ? $data->pelanggan->alamat : $data->alamat}}</div>
-                                <div>Phone: {{$data->pelanggan ? $data->pelanggan->nomor_telepon : $data->nomor_telepon}}</div>
-                            </div>
+                        </div>
 
-                            <div class="col-sm-4">
-                                <h6 class="mb-3">Nomor Faktur:</h6>
-                                <div>Invoice
-                                    <strong>#{{$data->nomor_faktur}}</strong>
-                                </div>
-                                <div>{{$data->created_at->format('d F Y')}}</div>
-                                <!-- <div>VAT: NYC09090390</div>
+                        <div class="col-sm-4">
+                            <h6 class="mb-3">To:</h6>
+                            <div>
+                                <strong>{{$data->pelanggan ? $data->pelanggan->name : $data->nama_pelanggan}}</strong>
+                            </div>
+                            <div>{{$data->pelanggan ? $data->pelanggan->alamat : $data->alamat}}</div>
+                            <div>Phone: {{$data->pelanggan ? $data->pelanggan->nomor_telepon : $data->nomor_telepon}}</div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <h6 class="mb-3">Nomor Faktur:</h6>
+                            <div>Invoice
+                                <strong>#{{$data->nomor_faktur}}</strong>
+                            </div>
+                            <div>{{$data->created_at->format('d F Y')}}</div>
+                            <!-- <div>VAT: NYC09090390</div>
                                 <div>Account Name: BBBootstrap Inc</div>
                                 <div>
                                     <strong>SWIFT code: 99 8888 7777 6666 5555</strong>
                                 </div> -->
-                            </div>
-
                         </div>
 
-                        <div class="table-responsive-sm">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="center">#</th>
-                                        <th>Nama Item</th>
-                                        <th class="center">Quantity</th>
-                                        <th class="right">Harga</th>
-                                        <th class="right">Total</th>
-                                    </tr>
-                                </thead>
+                    </div>
+
+                    <div class="table-responsive-sm">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="center">#</th>
+                                    <th>Nama Item</th>
+                                    <th class="center">Quantity</th>
+                                    <th class="right">Harga</th>
+                                    <th class="right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($data->detail as $key => $item)
+                                <tr>
+                                    <td class="center">1</td>
+                                    <td class="left">{{$item->item->name}}</td>
+                                    <td class="left">{{$item->jumlah}} {{$item->item->unit->name}}</td>
+                                    <td class="center">{{number_format($item->harga)}}</td>
+                                    <td class="right">{{number_format($item->harga * $item->jumlah)}}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-sm-5">{{$notes}}</div>
+                        <div class="col-lg-4 col-sm-5 ml-auto">
+                            <table class="table table-clear">
                                 <tbody>
-                                    @foreach ($data->detail as $key => $item)
                                     <tr>
-                                        <td class="center">1</td>
-                                        <td class="left">{{$item->item->name}}</td>
-                                        <td class="left">{{$item->jumlah}} {{$item->item->unit->name}}</td>
-                                        <td class="center">{{number_format($item->harga)}}</td>
-                                        <td class="right">{{number_format($item->harga * $item->jumlah)}}</td>
+                                        <td class="left">
+                                            <strong>Subtotal</strong>
+                                        </td>
+                                        <td class="right">Rp. {{number_format($data->sub_total)}}</td>
                                     </tr>
-                                    @endforeach
+                                    <tr>
+                                        <td class="left">
+                                            <strong>Diskon</strong>
+                                        </td>
+                                        <td class="right">Rp. {{number_format($data->diskon)}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong>Pajak</strong>
+                                        </td>
+                                        <td class="right">Rp. {{number_format($data->pajak)}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong>Total</strong>
+                                        </td>
+                                        <td class="right">
+                                            <strong>Rp. {{number_format($data->total)}}</strong>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4 col-sm-5">{{$notes}}</div>
-                            <div class="col-lg-4 col-sm-5 ml-auto">
-                                <table class="table table-clear">
-                                    <tbody>
-                                        <tr>
-                                            <td class="left">
-                                                <strong>Subtotal</strong>
-                                            </td>
-                                            <td class="right">Rp. {{number_format($data->sub_total)}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="left">
-                                                <strong>Diskon</strong>
-                                            </td>
-                                            <td class="right">Rp. {{number_format($data->diskon)}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="left">
-                                                <strong>Pajak</strong>
-                                            </td>
-                                            <td class="right">Rp. {{number_format($data->pajak)}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="left">
-                                                <strong>Total</strong>
-                                            </td>
-                                            <td class="right">
-                                                <strong>Rp. {{number_format($data->total)}}</strong>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Print Surat Jalan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Masukan Nomor Kendaraan</label>
+                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary">Print</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 </body>
