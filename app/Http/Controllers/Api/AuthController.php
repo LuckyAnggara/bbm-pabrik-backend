@@ -79,4 +79,9 @@ class AuthController extends BaseController
         return $this->sendResponse('error','token not found');
 
     }
+
+     public function user(Request $request)
+    {
+        return Auth::user();
+    }
 }

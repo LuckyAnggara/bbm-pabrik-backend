@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends BaseController
 {
@@ -18,18 +19,24 @@ class ItemController extends BaseController
     {
         $limit = $request->input('limit', 5);
         $name = $request->input('name');
+        $type = $request->input('type');
+        $balance_nol = $request->input('balance_nol');
         $warehouseId = $request->input('warehouse_id');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
         $item = Item::with(['type', 'unit', 'warehouse', 'user']);
-
+        if ($type) {
+            $item->where('type_id', $type);
+        }
         if ($name) {
             $item->where('name', 'like', '%' . $name . '%');
         }
         if ($warehouseId) {
             $item->where('warehouse_id', $warehouseId);
         }
-       
+        if($balance_nol){
+            $item->whereNot('balance', 0);
+        }       
         $result = $item->latest()->paginate($limit);
         
         if (!is_null($fromDate) && !is_null($toDate)) {
@@ -40,9 +47,13 @@ class ItemController extends BaseController
                 $mutation = Mutation::where('item_id', $value->id)->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc')->first();
                 if ($mutation) {
                     return $value->balance = $mutation->balance;
-                } 
+                }
             });
-        } 
+        }
+
+        
+
+
 
         return $this->sendResponse($result, 'Data fetched');
     }
@@ -89,20 +100,33 @@ class ItemController extends BaseController
         return $this->sendResponse(new ItemResource($item), 'Data fetched');
     }
 
-    public function update(Request $request, Item $item)
+    public function update(Request $request, $id)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'name' => 'required',
-        ]);
+        $data = json_decode($request->getContent());
+        $result = Item::where('id', $id)->first();
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
+      
+    
+
+           try {
+            DB::beginTransaction();
+
+                     $result->name  = $data->name;
+         $result->type_id  = $data->type_id;
+        $result->unit_id  = $data->unit_id;
+        $result->save();
+
+             DB::commit();
+            return $this->sendResponse($result, 'Data updated');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
         }
-        $item->name = $input['name'];
-        $item->save();
 
-        return $this->sendResponse(new ItemResource($item), 'Data updated');
+
+
+
+        return $this->sendResponse($result, 'Data updated');
     }
 
     public function destroy(Item $item)

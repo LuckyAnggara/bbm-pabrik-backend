@@ -40,8 +40,9 @@ class Penjualan extends Model
     {
         $date = now();
         $formattedDate = $date->format('Y/m/d');
-        $latestInvoice = self::where('nomor_faktur', 'like', $formattedDate . '%')->latest()->first();
+        $latestInvoice = self::where('nomor_faktur', 'like','BBM-SLS-' . $formattedDate . '%')->latest()->first();
 
+   
         if (!$latestInvoice) {
             $number = 1;
         } else {

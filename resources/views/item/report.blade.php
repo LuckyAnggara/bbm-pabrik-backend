@@ -1,11 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+
+{{-- <head>
     <title>Items Report</title>
 </head>
 <style type="text/css">
-    body {
+ 
+</style> --}}
+
+<head>
+    <title>Laporan Persediaan </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <style>
+        .card {
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid #c8ced3;
+            border-radius: .25rem;
+        }
+
+        .card-header:first-child {
+            border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+        }
+
+        .card-header {
+            padding: .75rem 1.25rem;
+            margin-bottom: 0;
+            background-color: #f0f3f5;
+            border-bottom: 1px solid #c8ced3;
+        }
+
+           body {
         font-family: 'Roboto Condensed', sans-serif;
     }
 
@@ -127,29 +167,31 @@
     .item-center {
         align-items: center;
     }
-</style>
+    </style>
+
+</head>
 
 <body>
-    <div class="head-title">
-        <h1 class="text-center m-0 p-0">Laporan Persediaan</h1>
-    </div>
+        <div class="container-fluid mt-5">
+            <div>
+                <div class="card">
+                    <div class="card-header">Laporan Persediaan <span class="gray-color">{{ $from_date }} s.d {{ $to_date }}</span>
+              <a class="btn btn-sm btn-secondary float-right mr-1 d-print-none" href="#" onclick="javascript:window.print();" data-abc="true">
+                            <i class="fa fa-print"></i> Print</a>
+                        <!-- <a class="btn btn-sm btn-info float-right mr-1 d-print-none" href="#" data-abc="true">
+                            <i class="fa fa-save"></i> Save</a> -->
+                    </div>
+   
+   
 
-    <div class="add-detail mt-10">
-        <div class="w-100 float-left mt-10">
-            <p class="m-0 pt-5 text-bold w-100">Tanggal Data - <span class="gray-color">{{ $from_date }} s.d {{ $to_date }}</span></p>
-            <p class="m-0 pt-5 text-bold w-100">Gudang - <span class="gray-color">{{strtoupper($warehouse->name)}}</span></p>
-        </div>
-        <div style="clear: both;"></div>
-    </div>
-
-    <div class="mx-auto table-section bill-tb mt-10 w-100">
-        <table class="table w-100 mt-10">
+    <div class="mx-auto table-section bill-tb w-100">
+        <table class="table w-100 ">
             <thead>
                 <tr>
-                    <th style="width:5%">No</th>
+                    <th class="center" style="width:5%">No</th>
                     @if ($warehouseShow === true)
                     <th style="width:35%">Nama</th>
-                    <th style="width:15%">Gudang</th>
+                    {{-- <th style="width:15%">Gudang</th> --}}
                     @else
                     <th style="width:50%">Nama</th>
                     @endif
@@ -164,9 +206,9 @@
                 <tr>
                     <td class="center">{{$key+1}}</td>
                     <td>{{strtoupper($item->name)}}</td>
-                    @if ($warehouseShow === true)
+                    {{-- @if ($warehouseShow === true)
                     <td>{{strtoupper($item->warehouse->name)}}</td>
-                    @endif
+                    @endif --}}
                     <td>{{strtoupper($item->type->name)}}</td>
                     <td>{{strtoupper($item->unit->name)}}</td>
                     <td>{{number_format($item->balance)}}</td>
@@ -175,6 +217,10 @@
             </tbody>
         </table>
     </div>
+
+                </div>
+            </div>
+        </div>
 
 </body>
 

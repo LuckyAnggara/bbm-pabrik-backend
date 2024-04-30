@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('shift')->nullable();
             $table->string('pic_name');
             $table->string('customer_name');
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->enum('status', ['NEW ORDER', 'WORK IN PROGRESS', 'DONE PRODUCTION', 'WAREHOUSE', 'SHIPPING', 'RETUR', 'RECEIVE'])->default('NEW ORDER');
             $table->dateTime('target_date');
             $table->dateTime('order_date');

@@ -38,7 +38,7 @@ class PenjualanController extends BaseController
                 return $query->whereBetween('created_at', [$startDate, $endDate]);
             })
             // ->where('created_by', Auth::user()->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->latest()
             ->paginate($perPage);
 
@@ -76,7 +76,7 @@ class PenjualanController extends BaseController
                         'harga' => $value->harga,
                     ]);
 
-                    // $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $master->nomor_faktur, 1);
+                    $item = MutationController::mutationItem($value->id, $value->jumlah, 'KREDIT',  'Penjualan Item : #' . $master->nomor_faktur, 1);
                 }
             }
              DB::commit();
@@ -99,16 +99,21 @@ class PenjualanController extends BaseController
         return $this->sendError('Data not found');
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         DB::beginTransaction();
+        $data = json_decode($request->getContent());
+
+        
         try {
             $data = Penjualan::find($id);
             if ($data) {
                 $detail = DetailPenjualan::where('penjualan_id', $id)->get();
                 foreach ($detail as $key => $value) {
                     $value->delete();
+                    if($data->retur == 1){
                     $item = MutationController::mutationItem($value->item_id, $value->jumlah, 'DEBIT',  'Hapus Penjualan Item : #' . $data->nomor_faktur, 1);
+                    }
                 }
                 $data->delete();
                 DB::commit();
