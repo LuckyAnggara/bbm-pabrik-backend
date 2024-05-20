@@ -114,7 +114,7 @@
                                 @endforeach
                             </tbody>
                             <tfoot>
-                                 <tr>
+                                <tr>
                                     <td class="text-center font-bold" colspan="2">TOTAL</td>
                                     <td class="center">{{$total_qty}} KG</td>
                                 </tr>
@@ -146,6 +146,12 @@
                                     </tr>
                                     <tr>
                                         <td class="left">
+                                            <strong>Ongkos Kirim</strong>
+                                        </td>
+                                        <td class="right">Rp. {{number_format($data->ongkir)}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
                                             <strong>Total</strong>
                                         </td>
                                         <td class="right">
@@ -164,8 +170,8 @@
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content" action="{{url('/api/faktur/print/suratjalan/'.$data->id)}}" method="get" >
-                
+            <form class="modal-content" action="{{url('/api/faktur/print/suratjalan/'.$data->id)}}" method="get">
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">Print Surat Jalan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

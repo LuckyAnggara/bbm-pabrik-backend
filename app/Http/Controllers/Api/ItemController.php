@@ -21,7 +21,11 @@ class ItemController extends BaseController
         $warehouseId = $request->input('warehouse_id');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $tipe = $request->input('tipe');
+        $showZero = $request->input('show_zero');
         $item = Item::with(['type', 'unit', 'warehouse', 'user']);
+
+
 
         if ($name) {
             $item->where('name', 'like', '%' . $name . '%');
@@ -29,20 +33,26 @@ class ItemController extends BaseController
         if ($warehouseId) {
             $item->where('warehouse_id', $warehouseId);
         }
-       
+        if ($tipe) {
+            $item->where('type_id', $tipe);
+        }
+        if ($showZero) {
+            $item->whereNot('balance', 0);
+        }
+
         $result = $item->latest()->paginate($limit);
-        
+
         if (!is_null($fromDate) && !is_null($toDate)) {
             $fromDate = Carbon::createFromFormat('Y-m-d', $fromDate)->startOfDay();
             $toDate = Carbon::createFromFormat('Y-m-d', $toDate)->endOfDay();
-            $result->each(function($value) use ( $fromDate, $toDate){
+            $result->each(function ($value) use ($fromDate, $toDate) {
                 $value->balance = 0;
                 $mutation = Mutation::where('item_id', $value->id)->whereBetween('created_at', [$fromDate, $toDate])->orderBy('id', 'desc')->first();
                 if ($mutation) {
                     return $value->balance = $mutation->balance;
-                } 
+                }
             });
-        } 
+        }
 
         return $this->sendResponse($result, 'Data fetched');
     }

@@ -52,6 +52,7 @@ class PembelianController extends BaseController
             $master = Pembelian::create([
                 'nomor_faktur' => $data->nomor_faktur,
                 'nama_supplier' => $data->nama_supplier,
+                'nomor_rekening' => $data->nomor_rekening,
                 'sub_total' => $data->total,
                 'pajak' => $data->pajak,
                 'diskon' => $data->diskon,
@@ -73,7 +74,7 @@ class PembelianController extends BaseController
                     $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Pembelian Item : #' . $master->nomor_faktur, 1);
                 }
             }
-             DB::commit();
+            DB::commit();
             return $this->sendResponse($master, 'Data created');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -85,7 +86,7 @@ class PembelianController extends BaseController
     public function show($id)
     {
         $result = Pembelian::where('id', $id)
-            ->with(['detail.item','user'])
+            ->with(['detail.item', 'user'])
             ->first();
         if ($result) {
             return $this->sendResponse($result, 'Data fetched');
@@ -116,7 +117,7 @@ class PembelianController extends BaseController
         }
     }
 
-        public function generateFaktur()
+    public function generateFaktur()
     {
         return Pembelian::generateFakturNumber();
     }

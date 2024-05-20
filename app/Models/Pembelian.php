@@ -13,6 +13,7 @@ class Pembelian extends Model
     protected $fillable = [
         'nomor_faktur',
         'nama_supplier',
+        'nomor_rekening',
         'sub_total',
         'diskon',
         'ongkir',
