@@ -39,7 +39,11 @@ class FakturController extends BaseController
             ->with(['detail.item.unit', 'user','pelanggan'])
             ->first();
         if ($result) {
-            return view('faktur.penjualan', ['data' => $result, 'notes' => 'NOTES']);
+            $qty = 0;
+            foreach ($result->detail as $key => $value) {
+                $qty =+ $value->jumlah;
+            }
+            return view('faktur.penjualan', ['data' => $result, 'notes' => 'NOTES','total_qty'=>$qty]);
         }
         return $this->sendError('Data not found');
     }
@@ -165,8 +169,10 @@ class FakturController extends BaseController
         $pdf->Output();
     }
 
-    function makeSuratJalan($id)
+    function makeSuratJalan($id, Request $request)
         {
+
+        $nomor_kendaraan = $request->nomor_kendaraan;
          $data = Penjualan::where('id', $id)
             ->with(['detail.item.unit', 'user','pelanggan'])
             ->first();
@@ -224,7 +230,7 @@ class FakturController extends BaseController
             $pdf->Cell(45);
             $pdf->Cell(25, 5, 'No Polisi', 0, 0);
             $pdf->Cell(5, 5, ':', 0, 0);
-            $pdf->Cell(50, 5, '', 0, 1);
+            $pdf->Cell(50, 5, $nomor_kendaraan, 0, 1);
 
 
             // header

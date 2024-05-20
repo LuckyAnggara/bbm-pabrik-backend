@@ -113,6 +113,12 @@
                                 </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                 <tr>
+                                    <td class="text-center font-bold" colspan="2">TOTAL</td>
+                                    <td class="center">{{$total_qty}} KG</td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="row">
@@ -158,7 +164,8 @@
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <form class="modal-content" action="{{url('/api/faktur/print/suratjalan/'.$data->id)}}" method="get" >
+                
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">Print Surat Jalan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -166,18 +173,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <div>
                         <div class="form-group">
                             <label for="exampleInputEmail1">Masukan Nomor Kendaraan</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            <input type="text" class="form-control" name="nomor_kendaraan" aria-describedby="emailHelp">
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary">Print</button>
+                    <button type="cancel" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Print</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 

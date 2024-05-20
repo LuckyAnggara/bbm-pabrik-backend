@@ -17,6 +17,7 @@ class Penjualan extends Model
         'alamat',
         'nomor_telepon',
         'sub_total',
+        'ongkir',
         'diskon',
         'pajak',
         'total',

@@ -15,6 +15,7 @@ class Pembelian extends Model
         'nama_supplier',
         'sub_total',
         'diskon',
+        'ongkir',
         'pajak',
         'total',
         'created_at',
