@@ -28,11 +28,20 @@ class ProductionOrderController extends BaseController
         $name = $request->input('name');
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
+        $tipe = $request->input('tipe');
 
-        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'machine.machine', 'overhead.overhead', 'timeline.user', 'user']);
+        $item = ProductionOrder::with(['input.item.unit', 'output.item.unit', 'machine.machine', 'overhead.overhead', 'timeline.user', 'user', 'jenis']);
+
+
+        if ($tipe) {
+            $item->where('jenis_hasil', $tipe);
+        }
+
         if ($fromDate && $toDate) {
             $item->whereBetween('created_at', [$fromDate, $toDate]);
         }
+
+
         if ($name) {
             $item
                 ->where('sequence', 'like', '%' . $name . '%')
@@ -389,6 +398,7 @@ class ProductionOrderController extends BaseController
             'sequence' => $sequence,
             'shift' => $input['shift'],
             'pic_name' => $input['pic_name'],
+            'jenis_hasil' => $input['jenis_hasil'],
             'customer_name' => $input['customer_name'],
             'notes' => $input['notes'],
             'status' => 'NEW ORDER',

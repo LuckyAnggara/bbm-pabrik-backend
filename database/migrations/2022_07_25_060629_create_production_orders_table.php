@@ -20,11 +20,11 @@ return new class extends Migration
             $table->string('pic_name');
             $table->string('customer_name');
             $table->text('notes');
-            $table->string('jenis_hasil');
+            $table->integer('jenis_hasil');
             $table->enum('status', ['NEW ORDER', 'WORK IN PROGRESS', 'DONE PRODUCTION', 'WAREHOUSE', 'SHIPPING', 'RETUR', 'RECEIVE'])->default('NEW ORDER');
             $table->dateTime('target_date');
             $table->dateTime('order_date');
-            $table->string('shippind_id')->nullable();
+            $table->string('shipping_id')->nullable();
             $table->integer('created_by');
             $table->timestamps();
             $table->softDeletes();

@@ -23,6 +23,7 @@ class ProductionOrderResource extends JsonResource
             'notes' => $this->notes,
             'shift' => $this->shift,
             'input' => $this->input,
+            'jenis' => $this->jenis,
             'output' => $this->output,
             'machine' => $this->machine,
             'overhead' => $this->overhead,

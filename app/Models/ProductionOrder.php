@@ -34,6 +34,11 @@ class ProductionOrder extends Model
         return $this->hasMany(ProductionOrderInput::class, 'production_id', 'id')->orderBy('created_at');
     }
 
+    public function jenis()
+    {
+        return $this->hasOne(ItemType::class, 'id', 'jenis_hasil');
+    }
+
     public function output()
     {
         return $this->hasMany(ProductionOrderOutput::class, 'production_id', 'id')->orderBy('created_at');
