@@ -22,6 +22,8 @@ class ProductionOrder extends Model
         'order_date',
         'created_by',
         'created_at',
+        'start_at',
+        'end_at'
     ];
 
     protected $dates = [

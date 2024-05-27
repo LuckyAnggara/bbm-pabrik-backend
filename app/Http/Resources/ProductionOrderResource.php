@@ -32,6 +32,8 @@ class ProductionOrderResource extends JsonResource
             'target_date' => $this->target_date->format('Y-m-d'),
             'order_date' => $this->order_date->format('Y-m-d'),
             'created_by' => $this->created_by,
+            'start_at' => $this->start_at,
+            'end_at' => $this->end_at,
             'user' => $this->user,
             'created_at' => $this->created_at->format('m/d/Y'),
         ];

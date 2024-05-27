@@ -84,6 +84,7 @@ class ProductionOrderController extends BaseController
 
                 // BALIKIN BAHAN BAKU
                 if ($productionOrder->status == 'WORK IN PROGRESS') {
+
                     $inputBahanBaku = ProductionOrderInput::where('production_id', $productionOrder->id)->get();
                     foreach ($inputBahanBaku as $key => $x) {
                         $item = MutationController::mutationItem($x->item_id, $x->estimate_quantity, 'DEBIT', 'Edit - retur bahan baku untuk produksi nomor : ' . $productionOrder->sequence, 1);
@@ -102,6 +103,7 @@ class ProductionOrderController extends BaseController
                     'notes' => 'data di perbaharui',
                     'created_by' => Auth::id(),
                 ]);
+
                 $productionOrder['timeline'] = $timeline;
                 $POInput = [];
                 $POOutput = [];
@@ -222,6 +224,7 @@ class ProductionOrderController extends BaseController
             ]);
 
             $productionOrder->status = 'DONE PRODUCTION';
+            $productionOrder->end_at = Carbon::now();
             $productionOrder->save();
 
             $productionOrder->output = $updateOrder;
