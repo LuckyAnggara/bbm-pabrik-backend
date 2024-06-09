@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Laporan Penerimaan Gaji</title>
+    <title>Laporan Pengeluaran Gaji</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -53,7 +53,9 @@
                             <i class="fa fa-save"></i> Save</a> -->
                     </div>
                               <div class="card-body">
-                      
+                      <div class="my-4">
+                        <span class="h4">Laporan Pengeluaran Gaji</span>
+                      </div>
 
                         <div class="table-responsive-sm">
                             <table class="table table-striped">
@@ -65,7 +67,7 @@
                                         <th class="center">Uang Makan</th>
                                         <th class="center">Bonus</th>
                                         <th class="center">Total</th>
-                                        <th class="center">TTD</th>
+                                        <th class="center">Tanda Terima</th>
                                     </tr>
                                 </thead>
                                 <tbody>

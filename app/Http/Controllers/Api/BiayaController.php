@@ -16,9 +16,8 @@ class BiayaController extends BaseController
 
         $perPage = $request->input('limit', 1000);
         $name = $request->input('query');
-        $fromDate = $request->input('from_date');
-        $toDate = $request->input('to_date');
-
+                  $fromDate = Carbon::createFromFormat('Y-m-d',  $request->input('start-date'))->format('Y-m-d 00:00:00');
+                $toDate = Carbon::createFromFormat('Y-m-d', $request->input('end-date'))->format('Y-m-d 23:59:59');
 
         $data = Biaya::when($name, function ($query, $name) {
             return $query
@@ -27,6 +26,9 @@ class BiayaController extends BaseController
                 ->orWhere('jumlah', 'like', '%' . $name . '%');
         })
             ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+
+
+
                 return $query
                     ->whereBetween('tanggal_transaksi', [$fromDate, $toDate]);
             })

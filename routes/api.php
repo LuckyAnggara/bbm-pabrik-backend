@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BiayaController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\GajiController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\ItemExitController;
 use App\Http\Controllers\Api\ItemIncomingController;
@@ -39,11 +40,15 @@ use Illuminate\Support\Facades\Route;
 // Route::post('register', [AuthController::class, 'signup']);
 
 
+
 Route::get('mutations/master', [MutationController::class, 'indexMaster']);
 Route::get('mutations/master/{id}', [MutationController::class, 'showMaster']);
 Route::get('report/production', [ReportController::class, 'reportProduction']);
 Route::get('report/mutation', [ReportController::class, 'reportMutation']);
 Route::get('report/item', [ReportController::class, 'reportItem']);
+Route::get('report/gaji/{created_at}', [ReportController::class, 'reportGaji']);
+Route::get('report/biaya/{created_at}', [ReportController::class, 'reportBiaya']);
+Route::get('report/persediaan/produksi', [ReportController::class, 'reportPersediaanProduksi'])->name('laporan-persediaan-produksi');
 
 Route::get('dashboard/bisnis', [DashboardController::class, 'bisnis']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
@@ -75,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('mutation-incoming', ItemIncomingController::class);
     Route::resource('mutation-exit', ItemExitController::class);
     Route::resource('biaya', BiayaController::class);
+    Route::resource('gaji', GajiController::class);
 
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('pelanggan', PelangganController::class);

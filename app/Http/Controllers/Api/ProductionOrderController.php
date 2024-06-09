@@ -355,6 +355,9 @@ class ProductionOrderController extends BaseController
             $productionOrder->save();
 
             if ($input['status'] == 'WORK IN PROGRESS') {
+                $productionOrder->start_at = Carbon::now();
+                $productionOrder->save();
+                
                 foreach ($productionOrder['input'] as $key => $dd) {
                     $item = MutationController::mutationItem($dd->item_id, $dd->estimate_quantity, 'KREDIT', 'Bahan baku untuk produksi nomor : ' . $productionOrder->sequence, 1);
                 }
