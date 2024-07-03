@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\MutationController;
+use App\Http\Controllers\LabaRugiController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::get('/', function () {
 Route::get('/report/persediaan/produksi', [ReportController::class, 'reportPersediaanProduksi'])->name('laporan-persediaan-produksi');
 Route::get('/report/bisnis', [ReportController::class, 'bisnisHome'])->name('bisnis-home');
 Route::get('/report/bisnis/labarugi/harian', [ReportController::class, 'reportLabaRugiHarian'])->name('report-laba-rugi-harian');
+
+Route::get('/laba-rugi-harian', [LabaRugiController::class, 'generateLabaRugiHarian'])->name('labarugiharian');
 
 Route::get('/migrate', function () {
     Artisan::call('migrate:refresh --seed --force');

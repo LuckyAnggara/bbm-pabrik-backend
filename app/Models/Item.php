@@ -16,6 +16,7 @@ class Item extends Model
         'unit_id',
         'warehouse_id',
         'balance',
+        'cogs',
         'created_by',
     ];
 

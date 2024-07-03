@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Models\Biaya;
 use App\Models\Gaji;
 use App\Models\Item;
+use App\Models\LabaRugi;
 use App\Models\Mutation;
 use App\Models\Penjualan;
 use App\Models\ProductionOrder;
@@ -205,7 +206,7 @@ class ReportController extends BaseController
         return $this->sendError('Data not found');
     }
 
-    function reportPersediaanProduksi (Request $request)
+    function reportPersediaanProduksi(Request $request)
     {
         $tanggal = $request->input('tanggal', Carbon::now()->format('d F Y'));
         // return $tanggal;
@@ -220,21 +221,164 @@ class ReportController extends BaseController
         return view('laporan.persediaan', ['data' => $result,  'tanggal' => $tanggal]);
     }
 
-      function bisnisHome (Request $request)
+    function bisnisHome(Request $request)
     {
-       
+
         return view('laporan.bisnis');
     }
 
-     function reportLabaRugiHarian (Request $request)
+    function reportLabaRugiHarian(Request $request)
     {
-         $tanggal = $request->input('tanggal', Carbon::now()->format('d F Y'));
+        $tanggal = $request->input('tanggal', Carbon::now()->format('d F Y'));
         // return $tanggal;
         $tanggal2 = Carbon::createFromFormat('d F Y', $tanggal)->format('Y-m-d');
-        return view('laporan.labarugiharian',['tanggal' => $tanggal]);
+        $fromDate = Carbon::parse($tanggal)->startOfDay();
+
+        $this->generateLabaRugiHarian($fromDate);
+
+        $labaRugiExisting = LabaRugi::whereDate('created_at', $fromDate)->get();
+
+        return view('laporan.labarugiharian', ['tanggal' => $tanggal, 'data1' => $labaRugiExisting]);
     }
 
-    function generateReport(Request $request){
+
+    function generateLabaRugiHarian($tanggal)
+    {
+
+        $fromDate = Carbon::parse($tanggal)->startOfDay();
+        $toDate = Carbon::parse($tanggal)->endOfDay();
+
+
+        // CEK JIKA DATA SUDAH ADA
+
+        $labaRugiExisting = LabaRugi::whereDate('created_at', $fromDate);
+        if ($labaRugiExisting) {
+            $labaRugiExisting->delete();
+        }
+
+        $biaya = Biaya::selectRaw('sum(jumlah) as total')
+            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->first();
+
+        // $totalBiaya = 0;
+        // foreach ($biaya as $key => $b) {
+        //     $totalBiaya = $totalBiaya + $b->total;
+        // }
+
+        $gaji = Gaji::selectRaw('sum(gaji + bonus + uang_makan) as total')
+            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->first();
+
+        $totalPenjualan = Penjualan::selectRaw('sum(sub_total) as total_penjualan')
+            ->selectRaw('sum(cogs_total) as cogs_total')
+            ->selectRaw('sum(diskon) as diskon')
+            ->selectRaw('sum(ongkir) as ongkir')
+            ->selectRaw('sum(pajak) as pajak')
+            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->first();
+
+
+
+        // $returPenjualan = ReturPenjualan::selectRaw('sum(retur_grand_total) as retur_total')
+        //     ->whereBetween('tanggal_transaksi', [$fromDate, $toDate])
+        //     ->first();
+
+        // $pembelian = Pembelian::selectRaw('sum(total_harga) as total_pembelian')
+        //     ->whereBetween('tanggal_input', [$fromDate, $toDate])
+        //     ->first();
+
+        // $persediaanAwal = $this->persediaan($fromDate->subDay());
+        // $persediaanAkhir = $this->persediaan($fromDate->addDay());
+
+        $data[0] = [
+            'nomor' => 1,
+            'account' => 'PENJUALAN',
+            'class' => 'fw-bold',
+            'balance' => $totalPenjualan->total_penjualan ?? 0,
+        ];
+        $data[1] = [
+            'nomor' => 2,
+            'class' => 'text-danger',
+            'account' => 'DISKON',
+            'balance' =>  $totalPenjualan->diskon ?? 0,
+        ];
+        $data[2] = [
+            'nomor' => 3,
+            'class' => 'text-danger',
+            'account' => 'RETUR PENJUALAN',
+            'balance' => 0,
+        ];
+        $data[3] = [
+            'nomor' => 4,
+            'class' => 'fw-bold',
+            'account' => 'TOTAL PENJUALAN (1-2-3)',
+            'balance' => $totalPenjualan->total_penjualan - $totalPenjualan->diskon - $data[2]['balance'],
+        ];
+
+        // $data[4] = [
+        //     'nomor' => 5,
+        //     'class' => '',
+        //     'account' => 'TOTAL PEMBELIAN',
+        //     'balance' => $pembelian->total_pembelian == null ? 0 : $pembelian->total_pembelian,
+        // ];
+        // $data[5] = [
+        //     'nomor' => 6,
+        //     'class' => '',
+        //     'account' => 'PERSEDIAAN AKHIR',
+        //     'balance' => $persediaanAkhir,
+        // ];
+        $data[4] = [
+            'nomor' => 5,
+            'class' => 'fw-bold text-danger',
+            'account' => 'HARGA POKOK PENJUALAN (4+5-6)',
+            'balance' => $totalPenjualan->cogs_total ?? 0,
+        ];
+
+        // $data[6] = [
+        //     'nomor' => 7,
+        //     'class' => 'fw-bold text-danger',
+        //     'account' => 'HARGA POKOK PENJUALAN (4+5-6)',
+        //     'balance' => $persediaanAwal + $pembelian->total_pembelian - $persediaanAkhir,
+        // ];
+        $data[5] = [
+            'nomor' => 6,
+            'class' => 'fw-bold',
+            'account' => 'TOTAL PENDAPATAN (3-7)',
+            'balance' => $data[3]['balance'] - $data[4]['balance'],
+        ];
+        $data[6] = [
+            'nomor' => 7,
+            'class' => 'text-danger',
+            'account' => 'BIAYA OPERASIONAL',
+            'balance' => $biaya->total ?? 0,
+        ];
+        $data[7] = [
+            'nomor' => 8,
+            'class' => 'text-danger',
+            'account' => 'GAJI',
+            'balance' => $gaji->total ?? 0,
+        ];
+        $data[8] = [
+            'nomor' => 9,
+            'class' => 'fw-bold',
+            'account' => 'LABA / RUGI (8-9-10)',
+            'balance' => $data[5]['balance'] - $data[6]['balance'] - $data[7]['balance'],
+        ];
+
+        foreach ($data as $key => $d) {
+            LabaRugi::create([
+                'nomor' => $d['nomor'],
+                'account' => $d['account'],
+                'class' => $d['class'],
+                'balance' => $d['balance'],
+                'created_at' => $fromDate,
+            ]);
+        }
+        return 'Sukses';
+    }
+
+    function generateReport(Request $request)
+    {
         $tahun = $request->tahun;
         $bulan = $request->bulan;
         $d = $request->d;
@@ -258,7 +402,7 @@ class ReportController extends BaseController
             ->whereBetween('created_at', [$fromDate, $toDate])
             ->first();
 
-        
+
         $totalGaji = 0;
         foreach ($gaji as $key => $b) {
             $totalGaji = $totalGaji + $b->gaji + $b->bonus + $b->uang_makan;

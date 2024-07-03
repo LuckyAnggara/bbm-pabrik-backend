@@ -18,7 +18,7 @@
                 <label for="staticEmail" class="col-sm-2 col-form-label">Harian</label>
                 <div class="form-group col-3">
                     <div class="input-group date" id="datetimepicker">
-               <input type="text" class="form-control" name="tanggal" value="{{$tanggal}}" />
+                        <input type="text" class="form-control" name="tanggal" value="{{$tanggal}}" />
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-        
+
             <p class="my-2">
                 <span class="fs-4">Tanggal Data <span class="fw-bold">{{date('d F Y', strtotime($tanggal))}}</span></span>
             </p>
@@ -38,9 +38,7 @@
                 <div class="col-10">
 
                 </div>
-                <div class="col-1 d-grid float-end">
-                    <button type="button" class="btn btn-primary" onclick="window.print(); return false;">Generate</button>
-                </div>
+
                 <div class="col-1 d-grid float-end">
                     <button type="button" class="btn btn-primary" onclick="window.print(); return false;">Print</button>
                 </div>
@@ -57,76 +55,47 @@
                             <th style="width:25%">Balance</th>
                         </thead>
                         <tbody>
-                            {{-- @foreach($data1 as $key=> $d)
+                            @foreach($data1 as $key=> $d)
                             <tr>
                                 <!-- // PENJUALAN -->
                                 <td>{{$d->nomor}}</td>
                                 <td class="{{$d->class}}">{{$d->account}}</td>
                                 <td class="text-right {{$d->class}}">Rp. {{number_format($d->balance)}}</td>
                             </tr>
-                            @if($d->nomor == 3)
+                            @if($d->nomor == 4)
                             <tr>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                            @elseif($d->nomor == 7)
+                            @elseif($d->nomor == 6)
                             <tr>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                            @elseif($d->nomor == 8)
                             <tr>
                                 <td></td>
                                 <td>BEBAN</td>
                                 <td></td>
                             </tr>
-                            @elseif($d->nomor == 10)
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            @endif
-                            @endforeach --}}
-                        </tbody>
-                    </table>
-                </div>
-                {{-- <div class="col-3">
-                    <table class="table">
-                        <thead>
-                            <th>({{date('d F Y', strtotime($tanggal2))}})</th>
-                        </thead>
-                        <tbody>
-                            @foreach($data2 as $key=> $d)
-                            <tr>
-                                <!-- // PENJUALAN -->
-                                <td class="text-right {{$d->class}}">Rp. {{number_format($d->balance)}}</td>
-                            </tr>
-                            @if($d->nomor == 3)
-                            <tr>
-                                <td></td>
-                            </tr>
-                            @elseif($d->nomor == 7)
-                            <tr>
-                                <td></td>
-                            </tr>
                             @elseif($d->nomor == 8)
                             <tr>
-                                <td class="text-white">BEBAN</td>
-                            </tr>
-                            @elseif($d->nomor == 10)
-                            <tr>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                             </tr>
                             @endif
                             @endforeach
                         </tbody>
                     </table>
-                </div> --}}
+                </div>
+
                 @endif
+
+                {{$data1}}
             </div>
+
         </form>
     </div>
 
@@ -141,7 +110,7 @@
 <script type="text/javascript">
     $(function() {
         $('#datetimepicker').datetimepicker({
-             format: 'DD MMMM YYYY'
+            format: 'DD MMMM YYYY'
         });
     });
 </script>

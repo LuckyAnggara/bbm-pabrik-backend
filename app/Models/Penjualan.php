@@ -22,6 +22,7 @@ class Penjualan extends Model
         'pajak',
         'total',
         'status',
+        'cogs_total',
         'created_at',
         'created_by',
     ];

@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('laba_rugis', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->dobule('balance')->default(0);
-            $table->dateTime('date');
+            $table->string('nomor');
+            $table->string('account');
+            $table->string('class');
+            $table->double('balance')->default(0);
             $table->timestamps();
         });
     }

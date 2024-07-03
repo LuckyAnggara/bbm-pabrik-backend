@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\DB;
 
 class PenjualanController extends BaseController
 {
-   
-      public function index(Request $request)
+
+    public function index(Request $request)
     {
         $perPage = $request->input('limit', 1000);
         $name = $request->input('query');
@@ -22,7 +22,7 @@ class PenjualanController extends BaseController
         $startDate = $request->input('start-date');
         $endDate = $request->input('end-date');
 
-        $data = Penjualan::with('detail','pelanggan')
+        $data = Penjualan::with('detail', 'pelanggan')
             ->when($tahun, function ($query, $tahun) {
                 return $query->whereYear('created_at', $tahun);
             })
@@ -68,18 +68,23 @@ class PenjualanController extends BaseController
             ]);
 
             if ($master) {
+                $cogs = 0;
                 foreach ($data->cart as $key => $value) {
                     DetailPenjualan::create([
                         'penjualan_id' => $master->id,
                         'item_id' => $value->id,
                         'jumlah' => $value->jumlah,
                         'harga' => $value->harga,
+                        'cogs' => $value->cogs,
                     ]);
-
+                    $cogs += $value->cogs * $value->jumlah;
                     // $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $master->nomor_faktur, 1);
                 }
+
+                $master->cogs_total = $cogs;
+                $master->save();
             }
-             DB::commit();
+            DB::commit();
             return $this->sendResponse($master, 'Data created');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -91,7 +96,7 @@ class PenjualanController extends BaseController
     public function show($id)
     {
         $result = Penjualan::where('id', $id)
-            ->with(['detail.item.unit','user','pelanggan'])
+            ->with(['detail.item.unit', 'user', 'pelanggan'])
             ->first();
         if ($result) {
             return $this->sendResponse($result, 'Data fetched');
@@ -121,40 +126,40 @@ class PenjualanController extends BaseController
             return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
         }
     }
-    
+
     // HANYA UPDATE STATUS
     public function verifikasi(Request $request)
     {
         $data = json_decode($request->getContent());
         $auth = Pin::where('pin', $data->pin)->first();
-        
-        if($auth){
-try {
-            DB::beginTransaction();
-            $penjualan = Penjualan::findOrFail($data->id);
-            if($penjualan){
-                $penjualan->status = 'TERVERIFIKASI';
-                $penjualan->save();
-                $detail = DetailPenjualan::where('penjualan_id', $data->id)->get();
-                foreach ($detail as $key => $value) {
-                   $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $penjualan->nomor_faktur, 1);
-                }
-            }
 
-             DB::commit();
-            return $this->sendResponse($data, 'Penjualan terverifikasi', 200);
-         }catch (\Exception $e) {
-            DB::rollBack();
-            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        if ($auth) {
+            try {
+                DB::beginTransaction();
+                $penjualan = Penjualan::findOrFail($data->id);
+                if ($penjualan) {
+                    $penjualan->status = 'TERVERIFIKASI';
+                    $penjualan->save();
+                    $detail = DetailPenjualan::where('penjualan_id', $data->id)->get();
+                    foreach ($detail as $key => $value) {
+                        $item = MutationController::mutationItem($value->id, $value->jumlah, 'DEBIT',  'Penjualan Item : #' . $penjualan->nomor_faktur, 1);
+                    }
+                }
+
+                DB::commit();
+                return $this->sendResponse($data, 'Penjualan terverifikasi', 200);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+            }
         }
-        }
-         return $this->sendError('Terjadi kesalahan', 'PIN Salah', 500);
+        return $this->sendError('Terjadi kesalahan', 'PIN Salah', 500);
     }
 
     public function showPenjualan($id)
     {
         $result = Penjualan::where('id', $id)
-            ->with(['detail.item.unit','user','pelanggan'])
+            ->with(['detail.item.unit', 'user', 'pelanggan'])
             ->first();
         if ($result) {
             return $this->sendResponse($result, 'Data fetched');

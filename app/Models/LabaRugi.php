@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class LabaRugi extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'nomor',
+        'account',
+        'class',
+        'balance',
+    ];
 }

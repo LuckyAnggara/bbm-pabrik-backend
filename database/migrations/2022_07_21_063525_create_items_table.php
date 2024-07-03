@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('type_id')->nullable();
             $table->integer('unit_id')->nullable();
             $table->double('balance')->default(0);
+            $table->double('cogs')->default(0);
             $table->integer('warehouse_id')->nullable();
             $table->integer('created_by');
             $table->timestamps();
