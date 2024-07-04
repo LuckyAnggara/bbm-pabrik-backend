@@ -98,12 +98,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('penjualan', PenjualanController::class);
 
     Route::resource('pembelian', PembelianController::class);
+
+    Route::resource('absensi', AbsensiController::class);
 });
 
-Route::get('/absensi/get-absen', [AbsensiController::class, 'getDataAbsensi']);
-Route::get('/absensi/get-all-pin', [AbsensiController::class, 'getAllPin']);
-Route::get('/absensi/get-pin', [AbsensiController::class, 'getPin']);
-Route::get('/absensi/reset-mesin', [AbsensiController::class, 'resetMesin']);
+Route::get('/mesin-absen/get-absen', [AbsensiController::class, 'getDataAbsensi']);
+Route::get('/mesin-absen/get-all-pin', [AbsensiController::class, 'getAllPin']);
+Route::get('/mesin-absen/get-pin', [AbsensiController::class, 'getPin']);
+Route::get('/mesin-absen/reset-mesin', [AbsensiController::class, 'resetMesin']);
 
 
 
