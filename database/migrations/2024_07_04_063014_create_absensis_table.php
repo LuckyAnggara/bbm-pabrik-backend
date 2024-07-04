@@ -13,18 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('pegawais', function (Blueprint $table) {
+        Schema::create('absensis', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('jabatan');
-            $table->string('jenis_gaji');
-            $table->string('pin_absen')->uniqid();
-            $table->double('gaji');
-            $table->double('uang_makan');
-            $table->double('bonus');
-            $table->integer('created_by');
+            $table->string('pin');
+            $table->dateTime('scan_date');
+            $table->timestamp('jam_masuk')->nullable();
+            $table->timestamp('jam_pulang')->nullable();
+            $table->integer('verify');
+            $table->integer('status_scan');
+            $table->date('tanggal_data');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -35,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pegawais');
+        Schema::dropIfExists('absensis');
     }
 };

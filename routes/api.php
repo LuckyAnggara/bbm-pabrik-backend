@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BiayaController;
 use App\Http\Controllers\Api\BlogController;
@@ -98,6 +99,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('pembelian', PembelianController::class);
 });
+
+Route::get('/absensi/get-absen', [AbsensiController::class, 'getDataAbsensi']);
+Route::get('/absensi/get-all-pin', [AbsensiController::class, 'getAllPin']);
+Route::get('/absensi/get-pin', [AbsensiController::class, 'getPin']);
+Route::get('/absensi/reset-mesin', [AbsensiController::class, 'resetMesin']);
 
 
 

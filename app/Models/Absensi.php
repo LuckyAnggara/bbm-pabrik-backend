@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LabaRugi extends Model
+class Absensi extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'nomor',
-        'account',
-        'class',
-        'balance',
-        'created_at'
+        'pin',
+        'scan_date',
+        'jam_masuk',
+        'jam_pulang',
+        'verify',
+        'status_scan',
+        'tanggal_data'
     ];
 }

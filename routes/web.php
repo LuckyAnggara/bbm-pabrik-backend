@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\MutationController;
 use App\Http\Controllers\LabaRugiController;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::post('/', function () {
     return view('welcome');
 });
 
@@ -33,3 +34,7 @@ Route::get('/migrate', function () {
     Artisan::call('migrate:refresh --seed --force');
     return 'ok';
 });
+
+Route::get('/fetch', [AbsensiController::class, 'fetchAndStoreData']);
+
+Route::webhooks('paystack/webhook');

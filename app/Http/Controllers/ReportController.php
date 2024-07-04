@@ -79,7 +79,7 @@ class ReportController extends BaseController
             $result->each(function ($value) use ($fromDate, $toDate) {
                 $value->balance = 0;
                 $mutation = Mutation::where('item_id', $value->id)
-                    ->whereBetween('created_at', [$fromDate, $toDate])
+                    ->whereDate('created_at', $fromDate)
                     ->orderBy('id', 'desc')
                     ->first();
                 if ($mutation) {
@@ -235,7 +235,6 @@ class ReportController extends BaseController
         $fromDate = Carbon::parse($tanggal)->startOfDay();
 
         $this->generateLabaRugiHarian($fromDate);
-
         $labaRugiExisting = LabaRugi::whereDate('created_at', $fromDate)->get();
 
         return view('laporan.labarugiharian', ['tanggal' => $tanggal, 'data1' => $labaRugiExisting]);
@@ -249,15 +248,19 @@ class ReportController extends BaseController
         $toDate = Carbon::parse($tanggal)->endOfDay();
 
 
+
+
         // CEK JIKA DATA SUDAH ADA
 
-        $labaRugiExisting = LabaRugi::whereDate('created_at', $fromDate);
-        if ($labaRugiExisting) {
-            $labaRugiExisting->delete();
+        $labaRugiExisting = LabaRugi::whereDate('created_at', $fromDate)->get();
+        if ($labaRugiExisting->count() > 0) {
+            foreach ($labaRugiExisting as $key => $value) {
+                $value->delete();
+            }
         }
 
         $biaya = Biaya::selectRaw('sum(jumlah) as total')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', $fromDate)
             ->first();
 
         // $totalBiaya = 0;
@@ -266,7 +269,7 @@ class ReportController extends BaseController
         // }
 
         $gaji = Gaji::selectRaw('sum(gaji + bonus + uang_makan) as total')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', $fromDate)
             ->first();
 
         $totalPenjualan = Penjualan::selectRaw('sum(sub_total) as total_penjualan')
@@ -274,7 +277,7 @@ class ReportController extends BaseController
             ->selectRaw('sum(diskon) as diskon')
             ->selectRaw('sum(ongkir) as ongkir')
             ->selectRaw('sum(pajak) as pajak')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', $fromDate)
             ->first();
 
 
@@ -365,6 +368,7 @@ class ReportController extends BaseController
             'balance' => $data[5]['balance'] - $data[6]['balance'] - $data[7]['balance'],
         ];
 
+
         foreach ($data as $key => $d) {
             LabaRugi::create([
                 'nomor' => $d['nomor'],
@@ -374,7 +378,6 @@ class ReportController extends BaseController
                 'created_at' => $fromDate,
             ]);
         }
-        return 'Sukses';
     }
 
     function generateReport(Request $request)
@@ -390,7 +393,7 @@ class ReportController extends BaseController
         $biaya = Biaya::selectRaw('kategori, sum(jumlah) as jumlah')
             ->with('nama')
             ->groupBy('kategori')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', $fromDate)
             ->get();
 
         $totalBiaya = 0;
@@ -399,7 +402,7 @@ class ReportController extends BaseController
         }
 
         $gaji = Gaji::selectRaw('sum(gaji) as gaji, sum(bonus) as bonus, sum(uang_makan) as uang_makan')
-            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->whereDate('created_at', $fromDate)
             ->first();
 
 

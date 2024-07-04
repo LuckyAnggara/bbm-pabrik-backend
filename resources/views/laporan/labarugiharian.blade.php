@@ -93,7 +93,6 @@
 
                 @endif
 
-                {{$data1}}
             </div>
 
         </form>
