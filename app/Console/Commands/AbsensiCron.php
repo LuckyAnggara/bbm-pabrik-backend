@@ -31,9 +31,9 @@ class AbsensiCron extends Command
     {
         // Sample
         $resullt = AbsensiController::fetchDaily();
-        if($resullt){
+        if ($resullt) {
             Log::info($resullt);
-        }else{
+        } else {
             Log::info('gagal');
         }
     }

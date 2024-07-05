@@ -16,10 +16,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-
-         $schedule->command('absensi:cron')
-            ->dailyAt('21:37');
-
+        $schedule->command('absensi:cron')->dailyAt('09:00');
+        $schedule->command('absensi:cron')->dailyAt('17:00');
+        $schedule->command('absensi:cron')->dailyAt('24:00');
     }
 
     /**
@@ -29,7 +28,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

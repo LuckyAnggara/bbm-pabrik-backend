@@ -16,7 +16,7 @@ class AbsensiController extends BaseController
         $startDate = $request->input('start-date', Carbon::now());
         $endDate = $request->input('end-date', Carbon::now());
 
-        $data = Absensi::when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+        $data = Absensi::with('pegawai')->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
             $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->format('Y-m-d 00:00:00');
             $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->format('Y-m-d 23:59:59');
             return $query->whereBetween('tanggal_data', [$startDate, $endDate]);
@@ -177,8 +177,6 @@ class AbsensiController extends BaseController
                 }
             }
 
-            
-
             $url = 'https://developer.fingerspot.io/api/get_attlog';
             $data = '{"trans_id":"1", "cloud_id":"' . env('ABSEN_CLOUD_ID') . '", "start_date":"' . $date->format('Y-m-d') . '", "end_date":"' . $date->format('Y-m-d') . '"}';
             $authorization = 'Authorization: Bearer ' . env('ABSEN_TOKEN');
@@ -222,7 +220,7 @@ class AbsensiController extends BaseController
                     }
                 }
             }
-            return 'Data fetched and stored successfully';
+            return 'Data fetched Absensi ' . $date;
         } catch (\Exception $e) {
             return $e->getMessage();
         }

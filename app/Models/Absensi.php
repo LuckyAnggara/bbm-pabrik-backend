@@ -18,4 +18,9 @@ class Absensi extends Model
         'status_scan',
         'tanggal_data'
     ];
+
+    public function pegawai()
+    {
+        return $this->hasOne(Pegawai::class, 'pin', 'pin');
+    }
 }
