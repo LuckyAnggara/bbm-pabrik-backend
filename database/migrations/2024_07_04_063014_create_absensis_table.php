@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('verify');
             $table->integer('status_scan');
             $table->date('tanggal_data');
+            $table->date('tanggal_tarik');
             $table->timestamps();
         });
     }

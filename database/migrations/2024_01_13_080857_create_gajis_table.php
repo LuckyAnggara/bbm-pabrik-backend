@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('gajis', function (Blueprint $table) {
             $table->id();
             $table->string('pegawai_id');
+            $table->double('jam_kerja');
             $table->double('gaji');
             $table->double('uang_makan');
             $table->double('bonus');

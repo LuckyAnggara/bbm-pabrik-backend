@@ -10,6 +10,7 @@ class Gaji extends Model
     use HasFactory;
     protected $fillable = [
         'pegawai_id',
+        'jam_kerja',
         'gaji',
         'uang_makan',
         'bonus',
@@ -17,14 +18,12 @@ class Gaji extends Model
         'created_at'
     ];
 
-         protected $casts = [
+    protected $casts = [
         'created_at' => 'datetime:d F Y',
     ];
 
-        public function pegawai()
+    public function pegawai()
     {
         return $this->hasOne(Pegawai::class, 'id', 'pegawai_id');
     }
-
-
 }

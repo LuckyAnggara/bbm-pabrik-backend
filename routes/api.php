@@ -100,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('pembelian', PembelianController::class);
 
     Route::resource('absensi', AbsensiController::class);
+    Route::get('tarik-jam-kerja', [AbsensiController::class, 'getAbsenForGaji']);
 });
 
 Route::get('/mesin-absen/get-absen', [AbsensiController::class, 'getDataAbsensi']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Absensi;
+use App\Models\Pegawai;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -53,7 +54,7 @@ class AbsensiController extends BaseController
 
     public function fetchAndStoreData(Request $request)
     {
-        $date = '2024-07-03';
+        $date = '2024-07-06';
         $existing = Absensi::whereDate('tanggal_data', $date)->get();
 
         if ($existing) {
@@ -196,7 +197,7 @@ class AbsensiController extends BaseController
 
             $data = $final->data;
 
-            if (isset($data)) {
+            if (count($data) > 0) {
                 foreach ($data as $record) {
                     $existingRecord = Absensi::where('pin', $record->pin)
                         ->whereDate('jam_masuk', '=', date('Y-m-d', strtotime($record->scan_date)))
@@ -216,13 +217,44 @@ class AbsensiController extends BaseController
                             'verify' => $record->verify,
                             'status_scan' => $record->status_scan,
                             'tanggal_data' => $date,
+                            'tanggal_tarik' => $date,
                         ]);
                     }
                 }
+            } else {
+                return 'No Data';
             }
             return 'Data fetched Absensi ' . $date;
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function getAbsenForGaji(Request $request)
+    {
+        $startDate = $request->input('start-date', Carbon::now());
+        $endDate = $request->input('end-date', Carbon::now());
+
+        $pegawai = Pegawai::all();
+
+        foreach ($pegawai as $key => $value) {
+            $absen = Absensi::where('pin', $value->pin)
+                ->whereBetween('tanggal_data', [$startDate, $endDate])
+                ->get();
+
+            $totalJamKerja = 0;
+            foreach ($absen as $key => $v) {
+                $jamMasuk = Carbon::parse($v->jam_masuk);
+                $jamPulang = Carbon::parse($v->jam_pulang);
+                $jamKerja = $jamMasuk->diffInHours($jamPulang);
+                $totalJamKerja += $jamKerja;
+            }
+
+            $value->total_jam_kerja = $totalJamKerja;
+        }
+
+
+
+        return $this->sendResponse($pegawai, 'Data fetched');
     }
 }

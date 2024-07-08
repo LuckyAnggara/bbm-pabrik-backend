@@ -16,7 +16,8 @@ class Absensi extends Model
         'jam_pulang',
         'verify',
         'status_scan',
-        'tanggal_data'
+        'tanggal_data',
+        'tanggal_tarik'
     ];
 
     public function pegawai()
