@@ -10,7 +10,7 @@ class Pegawai extends Model
 {
     use HasFactory, SoftDeletes;
 
-       protected $fillable = [
+    protected $fillable = [
         'name',
         'jabatan',
         'gaji',
@@ -19,9 +19,14 @@ class Pegawai extends Model
         'created_by',
     ];
 
-         protected $casts = [
+    protected $casts = [
         'gaji' => 'double',
         'uang_makan' => 'double',
         'bonus' => 'double',
     ];
+
+    public function absensi()
+    {
+        return $this->hasMany(Absensi::class, 'pin', 'pin');
+    }
 }

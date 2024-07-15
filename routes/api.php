@@ -107,6 +107,7 @@ Route::get('/mesin-absen/get-absen', [AbsensiController::class, 'getDataAbsensi'
 Route::get('/mesin-absen/get-all-pin', [AbsensiController::class, 'getAllPin']);
 Route::get('/mesin-absen/get-pin', [AbsensiController::class, 'getPin']);
 Route::get('/mesin-absen/reset-mesin', [AbsensiController::class, 'resetMesin']);
+Route::get('/absensi-missing', [AbsensiController::class, 'handleMissingScans']);
 
 
 

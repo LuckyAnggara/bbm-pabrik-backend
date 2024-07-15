@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('pin');
+            $table->string('shift')->default('PAGI');
             $table->string('jabatan');
             $table->string('jenis_gaji');
             $table->string('pin_absen')->uniqid();

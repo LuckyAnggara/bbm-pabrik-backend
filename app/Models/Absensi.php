@@ -11,13 +11,11 @@ class Absensi extends Model
 
     protected $fillable = [
         'pin',
-        'scan_date',
-        'jam_masuk',
-        'jam_pulang',
-        'verify',
-        'status_scan',
+        'start_time',
+        'end_time',
+        'shift_type',
         'tanggal_data',
-        'tanggal_tarik'
+        'status_scan'
     ];
 
     public function pegawai()
