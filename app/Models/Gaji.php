@@ -15,6 +15,8 @@ class Gaji extends Model
         'uang_makan',
         'bonus',
         'potongan',
+        'start_date',
+        'end_date',
         'created_by',
         'created_at'
     ];

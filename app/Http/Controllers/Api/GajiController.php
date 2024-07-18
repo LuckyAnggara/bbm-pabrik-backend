@@ -48,6 +48,8 @@ class GajiController extends BaseController
                         'uang_makan' => $value->uang_makan,
                         'bonus' => $value->bonus,
                         'potongan' => $value->potongan,
+                        'start_date'=>$data->start_date,
+                        'end_date'=>$data->end_date,
                         'created_by' => Auth::id(),
                         'created_at' => $tanggal,
                     ]);
