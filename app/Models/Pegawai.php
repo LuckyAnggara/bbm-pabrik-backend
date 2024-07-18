@@ -11,6 +11,7 @@ class Pegawai extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'pin',
         'name',
         'jabatan',
         'gaji',

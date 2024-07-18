@@ -16,14 +16,19 @@ class GajiController extends BaseController
         $fromDate = Carbon::createFromFormat('Y-m-d', $request->input('start-date'))->format('Y-m-d 00:00:00');
         $toDate = Carbon::createFromFormat('Y-m-d', $request->input('end-date'))->format('Y-m-d 23:59:59');
 
-        $data = Gaji::when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+    
+            $data = Gaji::select(
+                DB::raw('DATE(created_at) as tanggal'),
+                DB::raw('SUM(gaji * jam_kerja + bonus + uang_makan - IFNULL(potongan, 0)) as total_gaji')
+            )
+            -> when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
             return $query->whereBetween('created_at', [$fromDate, $toDate]);
         })
-            ->select('created_at', DB::raw('SUM(gaji) as total_gaji'), DB::raw('SUM(uang_makan) as total_uang_makan'), DB::raw('SUM(bonus) as total_bonus'))
-            ->orderBy('created_at', 'desc')
-            ->groupBy('created_at') // Group by kolom yang dipilih
-            ->latest()
-            ->paginate($perPage);
+            ->orderBy('tanggal', 'desc')
+
+            ->groupBy(DB::raw('DATE(created_at)'))
+              ->paginate($perPage);
+           
 
         return $this->sendResponse($data, 'Data fetched');
     }
@@ -38,9 +43,11 @@ class GajiController extends BaseController
                 if ($value->bayarkan == true) {
                     $master[] = Gaji::create([
                         'pegawai_id' => $value->id,
+                        'jam_kerja' => $value->total_jam_kerja,
                         'gaji' => $value->gaji,
                         'uang_makan' => $value->uang_makan,
                         'bonus' => $value->bonus,
+                        'potongan' => $value->potongan,
                         'created_by' => Auth::id(),
                         'created_at' => $tanggal,
                     ]);
@@ -73,5 +80,11 @@ class GajiController extends BaseController
             DB::rollBack();
             return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
         }
+    }
+
+    public function showTanggalGaji($id)
+    {
+        $data = Gaji::where('pegawai_id', $id)->select( DB::raw('DATE(created_at) as tanggal')) ->orderBy('tanggal', 'desc')->limit(10)->get();
+         return $this->sendResponse($data, 'Data fetched');
     }
 }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->double('gaji');
             $table->double('uang_makan');
             $table->double('bonus');
+            $table->double('potongan');
             $table->integer('created_by');
             $table->timestamps();
         });

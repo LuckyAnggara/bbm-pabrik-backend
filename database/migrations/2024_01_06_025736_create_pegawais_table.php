@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('shift')->default('PAGI');
             $table->string('jabatan');
             $table->string('jenis_gaji');
-            $table->string('pin_absen')->uniqid();
             $table->double('gaji');
             $table->double('uang_makan');
             $table->double('bonus');

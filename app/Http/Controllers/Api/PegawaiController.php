@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class PegawaiController extends BaseController
 {
-     public function index(Request $request)
+    
+    public function index(Request $request)
     {
         $perPage = $request->input('limit', 1000);
         $name = $request->input('query');
@@ -20,7 +21,7 @@ class PegawaiController extends BaseController
                     ->orWhere('jabatan', 'like', '%' . $name . '%')
                     ->orWhere('gaji', 'like', '%' . $name . '%');
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('name', 'desc')
             ->latest()
             ->paginate($perPage);
 

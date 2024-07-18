@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('production_order_overheads');
+        Schema::dropIfExists('production_order_pegawais');
     }
 };

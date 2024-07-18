@@ -28,6 +28,7 @@ return new class extends Migration
             $table->double('total')->default(0);
             $table->string('status')->default('BELUM VERIFIKASI');
             $table->integer('created_by');
+            $table->integer('sales_id');
             $table->timestamps();
             $table->softDeletes();
         });

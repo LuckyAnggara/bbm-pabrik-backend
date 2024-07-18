@@ -7,8 +7,9 @@ use App\Models\Absensi;
 use App\Models\Pegawai;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+            use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class AbsensiController extends BaseController
 {
@@ -19,6 +20,7 @@ class AbsensiController extends BaseController
         $endDate = $request->input('end-date', Carbon::now());
 
         $data = Absensi::with('pegawai')->whereBetween('tanggal_data', [$startDate, $endDate])
+            ->orderBy('tanggal_data')
             ->latest()
             ->paginate($perPage);
 
@@ -42,6 +44,43 @@ class AbsensiController extends BaseController
         return $this->sendResponse($data, 'Data fetched');
     }
 
+    public function show($id, Request $request)
+    {
+        $month = $request->input('month', Carbon::now());
+        $year = $request->input('year', Carbon::now());
+
+        
+        $data = Absensi::where('pin', $id)
+           ->when($month, function ($query) use ($month, $year) {
+                return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data',$year);
+            })
+        ->get();
+        if ($data) {
+            return $this->sendResponse($data, 'Data fetched');
+        }
+        return $this->sendError('Data not found');
+    }
+
+         public function test($id, Request $request)
+    {
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+
+        $monthName = Carbon::create()->month($month)->translatedFormat('F');
+        $pegawai = Pegawai::where('pin', $id)->first();
+        
+        $data = Absensi::where('pin', $id)
+           ->when($month, function ($query) use ($month, $year) {
+                return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data',$year);
+            })
+        ->get();
+        if ($data) {
+            return view('laporan.absensi',['absensi' => $data, 'bulan' => $monthName, 'pegawai'=> $pegawai]);
+        }
+        return $this->sendError('Data not found');
+    }
+
+  
     static function getDataAbsensi(Request $request)
     {
         $startDate = $request->date;
@@ -208,6 +247,7 @@ class AbsensiController extends BaseController
         $date = $request->date;
         $getAbsenData = AbsensiController::getDataAbsensi($request);
 
+
         try {
             DB::beginTransaction();
             foreach ($getAbsenData as $entry) {
@@ -227,6 +267,7 @@ class AbsensiController extends BaseController
                     } else {
                         Absensi::create([
                             'pin' => $pin,
+                            'scan_date' => $scanDate,
                             'shift_type' => ($hour >= 7 && $hour < 19) ? 'PAGI' : 'MALAM',
                             'status_scan' => $statusScan,
                             'start_time' => $scanDate,
@@ -249,7 +290,7 @@ class AbsensiController extends BaseController
             // AbsensiController::handleMissingScans();
 
             DB::commit();
-            return 'Data fetched Absensi ';
+            return 'Data fetched Absensi '. $date;
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -299,6 +340,7 @@ class AbsensiController extends BaseController
     {
         // $endDate = Carbon::now();
         // $startDate = Carbon::now()->subDays(1);
+        
         $endDate = Carbon::createFromDate("2024-07-11");
         $startDate =  Carbon::createFromDate("2024-07-10");
 

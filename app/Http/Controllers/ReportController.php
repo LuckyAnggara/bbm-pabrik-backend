@@ -3,22 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseController;
+use App\Models\Absensi;
 use App\Models\Biaya;
 use App\Models\Gaji;
 use App\Models\Item;
 use App\Models\LabaRugi;
 use App\Models\Mutation;
+use App\Models\Pegawai;
 use App\Models\Penjualan;
 use App\Models\ProductionOrder;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
-use PDF;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class ReportController extends BaseController
 {
+
+     public function reportAbsensiPegawai($id, Request $request)
+    {
+        $month = $request->input('month', Carbon::now());
+        $year = $request->input('year', Carbon::now());
+
+        $monthName = Carbon::create()->month($month)->translatedFormat('F');
+        $pegawai = Pegawai::where('pin', $id)->first();
+        
+        $data = Absensi::where('pin', $id)
+           ->when($month, function ($query) use ($month, $year) {
+                return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data',$year);
+            })
+        ->get();
+        if ($data) {
+            return view('laporan.absensi',['absensi' => $data, 'bulan' => $monthName, 'pegawai'=> $pegawai]);
+        }
+        return $this->sendError('Data not found');
+    }
+
+    public function reportStruckGaji($id, Request $request)
+    {
+        $tanggal = Carbon::createFromFormat('Y-m-d', $request->input('tanggal'));  
+
+        $gaji = Gaji::where('pegawai_id', $id)->whereDate('created_at', $tanggal)->first();
+
+        $pegawai = Pegawai::findOrFail($id);
+        if ($gaji) {
+            return view('laporan.struckgaji',['gaji' => $gaji, 'pegawai'=>$pegawai,'tanggal' => $tanggal]);
+        }
+        return $this->sendError('Data not found');
+    }
+
     public function reportProduction(Request $request)
     {
         $id = $request->input('id');

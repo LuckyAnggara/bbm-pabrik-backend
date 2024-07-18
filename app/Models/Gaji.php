@@ -14,16 +14,23 @@ class Gaji extends Model
         'gaji',
         'uang_makan',
         'bonus',
+        'potongan',
         'created_by',
         'created_at'
     ];
+    
+    protected $appends = ['total'];
 
-    protected $casts = [
-        'created_at' => 'datetime:d F Y',
-    ];
-
+   
     public function pegawai()
     {
         return $this->hasOne(Pegawai::class, 'id', 'pegawai_id');
     }
+
+    public function getTotalAttribute()
+    {
+        $total = ($this->jam_kerja * $this->gaji) + $this->uang_makan + $this->bonus - $this->potongan;
+        return $total;
+    }
+
 }

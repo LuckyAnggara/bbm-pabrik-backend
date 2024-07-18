@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\PembelianController;
 use App\Http\Controllers\Api\PenjualanController;
 use App\Http\Controllers\FakturController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,9 @@ Route::get('report/item', [ReportController::class, 'reportItem']);
 Route::get('report/gaji/{created_at}', [ReportController::class, 'reportGaji']);
 Route::get('report/biaya/{created_at}', [ReportController::class, 'reportBiaya']);
 Route::get('report/persediaan/produksi', [ReportController::class, 'reportPersediaanProduksi'])->name('laporan-persediaan-produksi');
+Route::get('report/absensi/{id}', [ReportController::class, 'reportAbsensiPegawai']);
+Route::get('report/struckgaji/{id}', [ReportController::class, 'reportStruckGaji']);
+
 
 Route::get('dashboard/bisnis', [DashboardController::class, 'bisnis']);
 Route::get('dashboard/productions', [DashboardController::class, 'productionCount']);
@@ -73,6 +77,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('item-types', ItemTypeController::class);
     Route::resource('item-units', ItemUnitController::class);
     Route::resource('machines', MachineController::class);
+    Route::resource('sales', SalesController::class);
+    Route::resource('gaji', GajiController::class);
+    Route::get('tanggal-gaji/{id}', [GajiController::class, 'showTanggalGaji']);
+
     Route::resource('overheads', OverheadController::class);
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('mutations', MutationController::class);
@@ -81,7 +89,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('mutation-incoming', ItemIncomingController::class);
     Route::resource('mutation-exit', ItemExitController::class);
     Route::resource('biaya', BiayaController::class);
-    Route::resource('gaji', GajiController::class);
 
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('pelanggan', PelangganController::class);
@@ -108,6 +115,7 @@ Route::get('/mesin-absen/get-all-pin', [AbsensiController::class, 'getAllPin']);
 Route::get('/mesin-absen/get-pin', [AbsensiController::class, 'getPin']);
 Route::get('/mesin-absen/reset-mesin', [AbsensiController::class, 'resetMesin']);
 Route::get('/absensi-missing', [AbsensiController::class, 'handleMissingScans']);
+Route::get('/absensi-test/{id}', [AbsensiController::class, 'test']);
 
 
 

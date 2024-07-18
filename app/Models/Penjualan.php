@@ -25,6 +25,7 @@ class Penjualan extends Model
         'cogs_total',
         'created_at',
         'created_by',
+        'sales_id',
     ];
 
     protected $casts = [
@@ -36,6 +37,11 @@ class Penjualan extends Model
     public function detail()
     {
         return $this->hasMany(DetailPenjualan::class, 'penjualan_id', 'id');
+    }
+
+        public function sales()
+    {
+        return $this->hasOne(Sales::class, 'id', 'sales_id');
     }
 
     public static function generateFakturNumber()

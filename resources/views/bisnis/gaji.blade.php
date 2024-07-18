@@ -63,9 +63,11 @@
                                     <tr>
                                         <th class="center">#</th>
                                         <th class="center">Nama Pegawai</th>
+                                        <th class="center">Jam Kerja</th>
                                         <th class="center">Gaji</th>
                                         <th class="center">Uang Makan</th>
                                         <th class="center">Bonus</th>
+                                        <th class="center">Potongan</th>
                                         <th class="center">Total</th>
                                         <th class="center">Tanda Terima</th>
                                     </tr>
@@ -76,22 +78,24 @@
 @endphp
                                     @foreach ($data as $key => $item)
                                      @php
-$total = $total + $item->bonus + $item->uang_makan + $item->bonus;
+$total = $total + $item->total;
 @endphp
                                     <tr>
                                         <td class="center">{{$key + 1}}</td>
                                         <td class="left">{{$item->pegawai->name}}</td>
+                                        <td class="left">{{number_format($item->jam_kerja)}}</td>
                                         <td class="left">{{number_format($item->gaji)}}</td>
                                         <td class="left">{{number_format($item->uang_makan)}}</td>
                                         <td class="left">{{number_format($item->bonus)}}</td>
-                                        <td class="left">{{number_format($item->bonus + $item->uang_makan + $item->bonus)}}</td>
+                                        <td class="left">{{number_format($item->potongan)}}</td>
+                                        <td class="left">{{number_format($item->total)}}</td>
                                         <td class=""></td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                      <tr>
-                                        <th colspan="5" class="text-right">Total Bayar</th>
+                                        <th colspan="7" class="text-right">Total Bayar</th>
                                         <th class="text-left">{{number_format($total)}}</th>
                                         <th class="text-left"></th>
                                      </tr>
