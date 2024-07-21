@@ -46,19 +46,41 @@ class AbsensiController extends BaseController
 
     public function show($id, Request $request)
     {
-        $month = $request->input('month', Carbon::now());
-        $year = $request->input('year', Carbon::now());
+        // $month = $request->input('month', Carbon::now());
+        // $year = $request->input('year', Carbon::now());        
+        // $data = Absensi::where('pin', $id)
+        //    ->when($month, function ($query) use ($month, $year) {
+        //         return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data',$year);
+        //     })
+        // ->get();
 
-        
-        $data = Absensi::where('pin', $id)
-           ->when($month, function ($query) use ($month, $year) {
-                return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data',$year);
-            })
-        ->get();
+        $data = Absensi::findOrFail($id);
         if ($data) {
             return $this->sendResponse($data, 'Data fetched');
         }
         return $this->sendError('Data not found');
+    }
+
+      public function update(Request $request, $id)
+    {   
+        try {
+            DB::beginTransaction();
+            $data = Absensi::findOrFail($id);
+        if ($data) {
+              $data->start_time = Carbon::parse($request->start_time)->format('Y-m-d H:i:s');
+            $data->end_time = Carbon::parse($request->end_time)->format('Y-m-d H:i:s');
+            $data->save();
+
+            DB::commit();
+            return $this->sendResponse($data, 'Data fetched');
+        }
+        return $this->sendError('Data not found');
+
+        }catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError($e->getMessage(), 'Failed to saved data');
+        }
+        
     }
 
          public function test($id, Request $request)
@@ -81,10 +103,12 @@ class AbsensiController extends BaseController
     }
 
   
-    static function getDataAbsensi(Request $request)
+    static function getDataAbsensi($date)
     {
-        $startDate = $request->date;
-        $endDate = $request->date;
+        $startDate = Carbon::parse($date)->format('Y-m-d');
+        $endDate = Carbon::parse($date)->format('Y-m-d');
+        // $startDate = $request->date;
+        // $endDate = $request->date;
 
         $url = 'https://developer.fingerspot.io/api/get_attlog';
         $data = '{"trans_id":"1", "cloud_id":"' . env('ABSEN_CLOUD_ID') . '", "start_date":"' . $startDate . '", "end_date":"' . $endDate . '"}';
@@ -242,10 +266,10 @@ class AbsensiController extends BaseController
         return $result;
     }
 
-    static function fetchPagi(Request $request)
+    static function fetchPagi($date)
     {
-        $date = $request->date;
-        $getAbsenData = AbsensiController::getDataAbsensi($request);
+        // $date = $request->date;
+        $getAbsenData = AbsensiController::getDataAbsensi($date);
 
 
         try {
@@ -318,6 +342,7 @@ class AbsensiController extends BaseController
                     } elseif ($data->shift_type == 'MALAM') {
                         $data->end_time = $currentDate->copy()->addDay()->setTime(6, 0, 0);
                     }
+                    $data->missing = 'MISSING ABSEN';
                     $data->save();
                 }
 
@@ -452,5 +477,59 @@ class AbsensiController extends BaseController
             $value->total_jam_kerja = $totalJamKerja;
         }
         return $this->sendResponse($pegawai, 'Data fetched');
+    }
+
+        static function fetchManual(Request $request)
+    {
+        $date = $request->date;
+        $getAbsenData = AbsensiController::getDataAbsensi($date);
+
+
+        try {
+            DB::beginTransaction();
+            foreach ($getAbsenData as $entry) {
+                $pin = $entry->pin;
+                $scanDate = $entry->scan_date;
+                $statusScan = $entry->status_scan;
+                $hour = date('H', strtotime($scanDate));
+
+                // Cek apakah ini adalah shift masuk atau keluar
+                if ($statusScan == 0) {
+                    // Masuk
+                    $exist = Absensi::where('pin', $pin)->whereDate('tanggal_data', $date)->first();
+                    if ($exist) {
+                        $time = $exist->start_time < $scanDate ? $exist->start_time : $scanDate;
+                        $exist->start_time = $time;
+                        $exist->save();
+                    } else {
+                        Absensi::create([
+                            'pin' => $pin,
+                            'scan_date' => $scanDate,
+                            'shift_type' => ($hour >= 7 && $hour < 19) ? 'PAGI' : 'MALAM',
+                            'status_scan' => $statusScan,
+                            'start_time' => $scanDate,
+                            'tanggal_data' => $scanDate,
+                        ]);
+                    }
+                } elseif ($statusScan == 1) {
+                    // Keluar
+                    $shift = Absensi::where('pin', $pin)
+                        ->whereNull('end_time')
+                        ->orderBy('start_time', 'desc')
+                        ->first();
+                    if ($shift) {
+                        $shift->end_time = $scanDate;
+                        $shift->status_scan = $statusScan;
+                        $shift->save();
+                    }
+                }
+            }
+            // AbsensiController::handleMissingScans();
+
+            DB::commit();
+            return 'Data fetched Absensi '. $date;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

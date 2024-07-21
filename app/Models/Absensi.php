@@ -17,7 +17,8 @@ class Absensi extends Model
         'end_time',
         'shift_type',
         'tanggal_data',
-        'status_scan'
+        'status_scan',
+        'missing',
     ];
 
 

@@ -38,6 +38,7 @@ Route::get('/migrate', function () {
 // Route::get('/fetch', [AbsensiController::class, 'fetchAndStoreData']);
 Route::get('/fetch', [AbsensiController::class, 'fetchDaily']);
 Route::get('/fetch-pagi', [AbsensiController::class, 'fetchPagi']);
+Route::get('/fetch-manual', [AbsensiController::class, 'fetchManual']);
 
 
 Route::webhooks('paystack/webhook');
