@@ -24,7 +24,7 @@ Route::get('/', function () {
 });
 
 
-Route::get('/report/persediaan/produksi', [ReportController::class, 'reportPersediaanProduksi'])->name('laporan-persediaan-produksi');
+Route::get('/report/persediaan/produksi', [ReportController::class, 'reportProductions'])->name('laporan-produksi');
 Route::get('/report/bisnis', [ReportController::class, 'bisnisHome'])->name('bisnis-home');
 Route::get('/report/bisnis/labarugi/harian', [ReportController::class, 'reportLabaRugiHarian'])->name('report-laba-rugi-harian');
 

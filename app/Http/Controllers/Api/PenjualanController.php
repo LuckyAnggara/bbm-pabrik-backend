@@ -22,7 +22,7 @@ class PenjualanController extends BaseController
         $startDate = $request->input('start-date');
         $endDate = $request->input('end-date');
 
-        $data = Penjualan::with('detail', 'pelanggan','sales')
+        $data = Penjualan::with('detail', 'pelanggan', 'sales')
             ->when($tahun, function ($query, $tahun) {
                 return $query->whereYear('created_at', $tahun);
             })
@@ -61,9 +61,10 @@ class PenjualanController extends BaseController
                 'pajak' => $data->pajak,
                 'diskon' => $data->diskon,
                 'ongkir' => $data->ongkir,
+                'notes' => $data->notes ?? '',
                 'status' => $data->status ?? 'LUNAS',
                 'total' => $data->total - $data->diskon + $data->ongkir + $data->pajak,
-                'sales_id'=> $data->sales_id,
+                'sales_id' => $data->sales_id,
                 'created_at' => $data->tanggal_transaksi ?? Carbon::now(),
                 'created_by' => Auth::id(),
             ]);

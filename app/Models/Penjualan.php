@@ -26,6 +26,7 @@ class Penjualan extends Model
         'created_at',
         'created_by',
         'sales_id',
+        'notes'
     ];
 
     protected $casts = [
@@ -39,7 +40,7 @@ class Penjualan extends Model
         return $this->hasMany(DetailPenjualan::class, 'penjualan_id', 'id');
     }
 
-        public function sales()
+    public function sales()
     {
         return $this->hasOne(Sales::class, 'id', 'sales_id');
     }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nomor_faktur');
             $table->string('nama_supplier')->nullable();
             $table->string('nomor_rekening')->nullable();
+            $table->string('notes')->nullable();
             $table->double('sub_total')->default(0);
             $table->double('pajak')->default(0);
             $table->double('ongkir')->default(0);

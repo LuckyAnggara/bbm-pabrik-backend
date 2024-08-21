@@ -8,6 +8,7 @@ use App\Models\Mutation;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use App\Models\ProductionOrder;
+use App\Models\Setting;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use PDF;
@@ -36,14 +37,17 @@ class FakturController extends BaseController
     {
 
         $result = Penjualan::where('id', $id)
-            ->with(['detail.item.unit', 'user','pelanggan'])
+            ->with(['detail.item.unit', 'user', 'pelanggan'])
             ->first();
+
+        $no_rekening = Setting::where('name', 'rekening')->first();
+
         if ($result) {
             $qty = 0;
             foreach ($result->detail as $key => $value) {
-                $qty =+ $value->jumlah;
+                $qty = +$value->jumlah;
             }
-            return view('faktur.penjualan', ['data' => $result, 'notes' => 'NOTES','total_qty'=>$qty]);
+            return view('faktur.penjualan', ['data' => $result, 'no_rekening' => $no_rekening->value, 'notes' => 'NOTES', 'total_qty' => $qty]);
         }
         return $this->sendError('Data not found');
     }
@@ -51,9 +55,10 @@ class FakturController extends BaseController
 
 
 
-    public function makeFaktur($id){
+    public function makeFaktur($id)
+    {
         $data = Penjualan::where('id', $id)
-            ->with(['detail.item.unit', 'user','pelanggan'])
+            ->with(['detail.item.unit', 'user', 'pelanggan'])
             ->first();
         // $tanggal_transaksi = $this->tgl_indo(date("Y-m-d-D", strtotime()));
 
@@ -61,8 +66,8 @@ class FakturController extends BaseController
         $pdf = new Fpdf('p', 'mm', 'letter');
         // membuat halaman baru
         $pdf->AddPage();
-        $pdf->AddFont('Tahoma','B','tahomabd.php');
-        $pdf->AddFont('Tahoma','','tahoma.php');
+        $pdf->AddFont('Tahoma', 'B', 'tahomabd.php');
+        $pdf->AddFont('Tahoma', '', 'tahoma.php');
         // setting jenis font yang akan digunakan
         $pdf->SetFont('Tahoma', 'B', 11);
         // mencetak string
@@ -74,13 +79,13 @@ class FakturController extends BaseController
         $pdf->Cell(100, 5, 'Telp : 085324884799', 0, 1, 'L');
 
         $pdf->Cell(196, 5, 'Email : bbmlimbangan@gmail.com', 0, 1, 'L');
-        $pdf->Cell(196, 2,'', 'B', 1, 'L');
+        $pdf->Cell(196, 2, '', 'B', 1, 'L');
         // Memberikan space kebawah agar tidak terlalu rapat
         $pdf->Cell(10, 3, '', 0, 1);
 
         $pdf->Cell(30, 5, 'Nama Pelanggan', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, $data->pelanggan  != null? $data->pelanggan->name : $data->nama_pelanggan, 0, 0);
+        $pdf->Cell(50, 5, $data->pelanggan  != null ? $data->pelanggan->name : $data->nama_pelanggan, 0, 0);
         $pdf->Cell(45);
         $pdf->Cell(20, 5, 'Nomor Faktur', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
@@ -95,7 +100,7 @@ class FakturController extends BaseController
         $pdf->Cell(50, 5, $data->created_at->format('d F Y'), 0, 1);
 
         // header
-        $pdf->Cell(196, 2,'', 'B', 1, 'L');
+        $pdf->Cell(196, 2, '', 'B', 1, 'L');
         $pdf->Cell(10, 5, '', 0, 1);
         $pdf->SetFont('Tahoma', 'B', 7);
 
@@ -114,13 +119,12 @@ class FakturController extends BaseController
         // }
         $no = 0;
         foreach ($data->detail as $key => $value) {
-            
+
             $pdf->Cell(7, 5, $no, 1, 0, 'C');
             $pdf->Cell(100, 5, $value->item->name, 1, 0);
-            $pdf->Cell(25, 5, $value->jumlah . ' ' .$value->item->unit->name  , 1, 0, 'C');
+            $pdf->Cell(25, 5, $value->jumlah . ' ' . $value->item->unit->name, 1, 0, 'C');
             $pdf->Cell(20, 5, number_format($value->harga), 1, 0, 'R');
             $pdf->Cell(35, 5, number_format($value->harga * $value->jumlah), 1, 1, 'R');
-            
         }
 
         $pdf->Cell(10, 6, '', 0, 1);
@@ -131,32 +135,32 @@ class FakturController extends BaseController
         $pdf->SetFont('Tahoma', '', 7);
         $pdf->Cell(30, 5, 'Sub Total', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(22, 5, 'Rp. '.number_format($data->sub_total), 0, 1, 'R');
+        $pdf->Cell(22, 5, 'Rp. ' . number_format($data->sub_total), 0, 1, 'R');
         $pdf->Cell(30, 5, '', 0, 0);
         $pdf->SetFont('Tahoma', '', 8);
         $pdf->Cell(110);
         $pdf->SetFont('Tahoma', '', 7);
         $pdf->Cell(30, 5, 'Diskon', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(22, 5, '(Rp. '.number_format($data->diskon).')', 0, 1, 'R');
+        $pdf->Cell(22, 5, '(Rp. ' . number_format($data->diskon) . ')', 0, 1, 'R');
         $pdf->Cell(30, 5, '', 0, 0);
         $pdf->Cell(110);
         $pdf->SetFont('Tahoma', '', 7);
         $pdf->Cell(30, 5, '', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(22, 5, '(Rp. '.number_format($data->ongkir).')', 0, 1, 'R');
+        $pdf->Cell(22, 5, '(Rp. ' . number_format($data->ongkir) . ')', 0, 1, 'R');
         $pdf->SetFont('Tahoma', '', 7);
-        $pdf->Cell(90, 5,'(                             )',  0, 0, 'C');
+        $pdf->Cell(90, 5, '(                             )',  0, 0, 'C');
         $pdf->Cell(50, 5, '', 0, 0);
         $pdf->Cell(30, 5, 'Ongkos Kirim', 'B', 0);
         $pdf->Cell(5, 5, ':', 'B', 0);
-        $pdf->Cell(22, 5,'Rp. '.number_format($data->pajak),  'B', 1, 'R');
+        $pdf->Cell(22, 5, 'Rp. ' . number_format($data->pajak),  'B', 1, 'R');
         $pdf->Cell(30, 5, '', 0, 0);
         $pdf->SetFont('Tahoma', 'B', 9);
         $pdf->Cell(110);
         $pdf->Cell(30, 5, 'Grand Total', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(22, 5, 'Rp. '.number_format($data->total),   0, 1, 'R');
+        $pdf->Cell(22, 5, 'Rp. ' . number_format($data->total),   0, 1, 'R');
 
         $pdf->SetFont('Tahoma', 'B', 7);
         $pdf->Cell(196, 3, '', 'B', 1);
@@ -165,25 +169,25 @@ class FakturController extends BaseController
         // $pdf->Cell(30, 7, 'Note :', 0, 0);
         // $pdf->MultiCell(90, 4,'asdasdsad', 0, 'J');
         // $pdf->Cell(90,6,nl2br($setting_perusahaan['catatan_faktur_cash']),1,0);
-        
+
         $pdf->Output();
     }
 
     function makeSuratJalan($id, Request $request)
-        {
+    {
 
         $nomor_kendaraan = $request->nomor_kendaraan;
-         $data = Penjualan::where('id', $id)
-            ->with(['detail.item.unit', 'user','pelanggan'])
+        $data = Penjualan::where('id', $id)
+            ->with(['detail.item.unit', 'user', 'pelanggan'])
             ->first();
         // $tanggal_transaksi = $this->tgl_indo(date("Y-m-d-D", strtotime()));
 
 
-              $pdf = new Fpdf('p', 'mm', 'letter');
+        $pdf = new Fpdf('p', 'mm', 'letter');
         // membuat halaman baru
         $pdf->AddPage();
-        $pdf->AddFont('Tahoma','B','tahomabd.php');
-        $pdf->AddFont('Tahoma','','tahoma.php');
+        $pdf->AddFont('Tahoma', 'B', 'tahomabd.php');
+        $pdf->AddFont('Tahoma', '', 'tahoma.php');
         // setting jenis font yang akan digunakan
         $pdf->SetFont('Tahoma', 'B', 11);
         // mencetak string
@@ -195,14 +199,14 @@ class FakturController extends BaseController
         $pdf->Cell(100, 5, 'Telp : 085324884799', 0, 1, 'L');
 
         $pdf->Cell(196, 5, 'Email : bbmlimbangan@gmail.com', 0, 1, 'L');
-        $pdf->Cell(196, 2,'', 'B', 1, 'L');
+        $pdf->Cell(196, 2, '', 'B', 1, 'L');
         // Memberikan space kebawah agar tidak terlalu rapat
-        
-            $pdf->Cell(10, 3, '', 0, 1);
 
-            $pdf->Cell(30, 5, 'Nama Pelanggan', 0, 0);
+        $pdf->Cell(10, 3, '', 0, 1);
+
+        $pdf->Cell(30, 5, 'Nama Pelanggan', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, $data->pelanggan  != null? $data->pelanggan->name : $data->nama_pelanggan, 0, 0);
+        $pdf->Cell(50, 5, $data->pelanggan  != null ? $data->pelanggan->name : $data->nama_pelanggan, 0, 0);
         $pdf->Cell(45);
         $pdf->Cell(25, 5, 'Nomor Faktur', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
@@ -216,65 +220,65 @@ class FakturController extends BaseController
         $pdf->Cell(5, 5, ':', 0, 0);
         $pdf->Cell(50, 5, $data->created_at->format('d F Y'), 0, 1);
 
-            $pdf->Cell(30, 5, '', 0, 0);
-            $pdf->Cell(5, 5, '', 0, 0);
-            $pdf->Cell(50, 5, '', 0, 0);
-            $pdf->Cell(45);
-            $pdf->Cell(25, 5, 'No Surat Jalan', 0, 0);
-            $pdf->Cell(5, 5, ':', 0, 0);
-            $pdf->Cell(50, 5, $data->nomor_faktur, 0, 1);
+        $pdf->Cell(30, 5, '', 0, 0);
+        $pdf->Cell(5, 5, '', 0, 0);
+        $pdf->Cell(50, 5, '', 0, 0);
+        $pdf->Cell(45);
+        $pdf->Cell(25, 5, 'No Surat Jalan', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, $data->nomor_faktur, 0, 1);
 
-            $pdf->Cell(30, 5, '', 0, 0);
-            $pdf->Cell(5, 5, '', 0, 0);
-            $pdf->Cell(50, 5, '', 0, 0);
-            $pdf->Cell(45);
-            $pdf->Cell(25, 5, 'No Polisi', 0, 0);
-            $pdf->Cell(5, 5, ':', 0, 0);
-            $pdf->Cell(50, 5, $nomor_kendaraan, 0, 1);
-
-
-            // header
-            $pdf->Cell(196, 2, '', 'B', 1, 'L');
-            $pdf->Cell(10, 5, '', 0, 1);
-            $pdf->SetFont('Tahoma', '', 9);
-
-            $pdf->Cell(15, 6, 'Jumlah', 1, 0, 'C');
-            $pdf->Cell(15, 6, 'Satuan', 1, 0, 'C');
-            $pdf->Cell(65, 6, 'Nama Barang', 1, 0, 'C');
-            $pdf->Cell(100, 6, 'Keterangan', 1, 1, 'C');
-            $pdf->SetFont('Tahoma', '', 9);
-
-            // foreach ($detail_order as $row){
-            //     $pdf->Cell(20,6,$row->nim,1,0);
-            //     $pdf->Cell(85,6,$row->nama_lengkap,1,0);
-            //     $pdf->Cell(27,6,$row->no_hp,1,0);
-            //     $pdf->Cell(25,6,$row->tanggal_lahir,1,1); 
-            // }
-           foreach ($data->detail as $key => $value) {
-
-                $pdf->Cell(15, 5, $value->jumlah, 1, 0, 'C');
-                $pdf->Cell(15, 5, $value->item->unit->name , 1, 0, 'C');
-                $pdf->Cell(65, 5, $value->item->name, 1, 0);
-                $pdf->Cell(100, 5, '', 'R', 1);
-            }
+        $pdf->Cell(30, 5, '', 0, 0);
+        $pdf->Cell(5, 5, '', 0, 0);
+        $pdf->Cell(50, 5, '', 0, 0);
+        $pdf->Cell(45);
+        $pdf->Cell(25, 5, 'No Polisi', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, $nomor_kendaraan, 0, 1);
 
 
-            $pdf->Cell(195, 5, '', 'T', 1);
+        // header
+        $pdf->Cell(196, 2, '', 'B', 1, 'L');
+        $pdf->Cell(10, 5, '', 0, 1);
+        $pdf->SetFont('Tahoma', '', 9);
+
+        $pdf->Cell(15, 6, 'Jumlah', 1, 0, 'C');
+        $pdf->Cell(15, 6, 'Satuan', 1, 0, 'C');
+        $pdf->Cell(65, 6, 'Nama Barang', 1, 0, 'C');
+        $pdf->Cell(100, 6, 'Keterangan', 1, 1, 'C');
+        $pdf->SetFont('Tahoma', '', 9);
+
+        // foreach ($detail_order as $row){
+        //     $pdf->Cell(20,6,$row->nim,1,0);
+        //     $pdf->Cell(85,6,$row->nama_lengkap,1,0);
+        //     $pdf->Cell(27,6,$row->no_hp,1,0);
+        //     $pdf->Cell(25,6,$row->tanggal_lahir,1,1); 
+        // }
+        foreach ($data->detail as $key => $value) {
+
+            $pdf->Cell(15, 5, $value->jumlah, 1, 0, 'C');
+            $pdf->Cell(15, 5, $value->item->unit->name, 1, 0, 'C');
+            $pdf->Cell(65, 5, $value->item->name, 1, 0);
+            $pdf->Cell(100, 5, '', 'R', 1);
+        }
 
 
-            $pdf->Cell(10, 6, '', 0, 1);
-            $pdf->SetFont('Tahoma', '', 8);
-            // $pdf->Cell(50, 5, 'Sales', 0, 0, 'C');
-            $pdf->Cell(50, 5, 'Supir', 0, 0, 'C');
-            $pdf->Cell(95, 5, 'Gudang', 0, 0, 'C');
-            $pdf->Cell(50, 5, 'Diterima Oleh', 0, 1, 'C');
-            $pdf->Cell(110, 5, '', 0, 1);
-            $pdf->Cell(110, 5, '', 0, 1);
-            $pdf->Cell(110, 5, '', 0, 1);
-            // $pdf->Cell(50, 5, '(                         )', 0, 0, 'C');
-            $pdf->Cell(50, 5, '(                                 )', 0, 0, 'C');
-            $pdf->Cell(95, 5, '(                                 )', 0, 0, 'C');
-            $pdf->Cell(50, 5, '(                                 )', 0, 0, 'C');
+        $pdf->Cell(195, 5, '', 'T', 1);
+
+
+        $pdf->Cell(10, 6, '', 0, 1);
+        $pdf->SetFont('Tahoma', '', 8);
+        // $pdf->Cell(50, 5, 'Sales', 0, 0, 'C');
+        $pdf->Cell(50, 5, 'Supir', 0, 0, 'C');
+        $pdf->Cell(95, 5, 'Gudang', 0, 0, 'C');
+        $pdf->Cell(50, 5, 'Diterima Oleh', 0, 1, 'C');
+        $pdf->Cell(110, 5, '', 0, 1);
+        $pdf->Cell(110, 5, '', 0, 1);
+        $pdf->Cell(110, 5, '', 0, 1);
+        // $pdf->Cell(50, 5, '(                         )', 0, 0, 'C');
+        $pdf->Cell(50, 5, '(                                 )', 0, 0, 'C');
+        $pdf->Cell(95, 5, '(                                 )', 0, 0, 'C');
+        $pdf->Cell(50, 5, '(                                 )', 0, 0, 'C');
 
         $pdf->Output();
     }

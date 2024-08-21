@@ -56,6 +56,7 @@ class PembelianController extends BaseController
                 'sub_total' => $data->total,
                 'pajak' => $data->pajak,
                 'diskon' => $data->diskon,
+                'notes' => $data->notes ?? '',
                 'ongkir' => $data->ongkir,
                 'total' => $data->total - $data->diskon + $data->ongkir + $data->pajak,
                 'created_at' => $data->tanggal_transaksi ?? Carbon::now(),

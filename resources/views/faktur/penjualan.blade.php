@@ -107,7 +107,7 @@
                                 <tr>
                                     <td class="center">1</td>
                                     <td class="left">{{$item->item->name}}</td>
-                                    <td class="left">{{$item->jumlah}} {{$item->item->unit->name}}</td>
+                                    <td class="left">{{number_format($item->jumlah)}} {{$item->item->unit->name}}</td>
                                     <td class="center">{{number_format($item->harga)}}</td>
                                     <td class="right">{{number_format($item->harga * $item->jumlah)}}</td>
                                 </tr>
@@ -116,13 +116,15 @@
                             <tfoot>
                                 <tr>
                                     <td class="text-center font-bold" colspan="2">TOTAL</td>
-                                    <td class="center">{{$total_qty}} KG</td>
+                                    <td class="center">{{number_format($total_qty)}}</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                     <div class="row">
-                        <div class="col-lg-4 col-sm-5">{{$notes}}</div>
+                        <div class="col-lg-8 col-sm-5 mb-2">Rekening : {{$no_rekening}}</div>
+                        <div class="col-lg-8 col-sm-5 mb-2 font-bold">Catatan</div>
+                        <div class="col-lg-8 col-sm-5 ">{{$data->notes}}</div>
                         <div class="col-lg-4 col-sm-5 ml-auto">
                             <table class="table table-clear">
                                 <tbody>

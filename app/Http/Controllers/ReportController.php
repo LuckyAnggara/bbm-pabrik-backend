@@ -20,34 +20,34 @@ use stdClass;
 class ReportController extends BaseController
 {
 
-     public function reportAbsensiPegawai($id, Request $request)
+    public function reportAbsensiPegawai($id, Request $request)
     {
         $month = $request->input('month', Carbon::now());
         $year = $request->input('year', Carbon::now());
 
         $monthName = Carbon::create()->month($month)->translatedFormat('F');
         $pegawai = Pegawai::where('pin', $id)->first();
-        
+
         $data = Absensi::where('pin', $id)
-           ->when($month, function ($query) use ($month, $year) {
-                return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data',$year);
+            ->when($month, function ($query) use ($month, $year) {
+                return $query->whereMonth('tanggal_data', $month)->whereYear('tanggal_data', $year);
             })
-        ->get();
+            ->get();
         if ($data) {
-            return view('laporan.absensi',['absensi' => $data, 'bulan' => $monthName, 'pegawai'=> $pegawai]);
+            return view('laporan.absensi', ['absensi' => $data, 'bulan' => $monthName, 'pegawai' => $pegawai]);
         }
         return $this->sendError('Data not found');
     }
 
     public function reportStruckGaji($id, Request $request)
     {
-        $tanggal = Carbon::createFromFormat('Y-m-d', $request->input('tanggal'));  
+        $tanggal = Carbon::createFromFormat('Y-m-d', $request->input('tanggal'));
 
         $gaji = Gaji::where('pegawai_id', $id)->whereDate('created_at', $tanggal)->first();
 
         $pegawai = Pegawai::findOrFail($id);
         if ($gaji) {
-            return view('laporan.struckgaji',['gaji' => $gaji, 'pegawai'=>$pegawai,'tanggal' => $tanggal]);
+            return view('laporan.struckgaji', ['gaji' => $gaji, 'pegawai' => $pegawai, 'tanggal' => $tanggal]);
         }
         return $this->sendError('Data not found');
     }
@@ -94,6 +94,22 @@ class ReportController extends BaseController
             // return $pdf->download('production_report' . $item['sequence'] . '.pdf');
         }
         return $this->sendError('Data not found');
+    }
+
+    //Laporan Produksi Banyak
+    function reportProductions(Request $request)
+    {
+        $tanggal = $request->input('tanggal', Carbon::now()->format('d F Y'));
+        // return $tanggal;
+        $tanggal2 = Carbon::createFromFormat('d F Y', $tanggal)->format('Y-m-d');
+
+        $result = Mutation::with('item.type')
+            ->when($tanggal2, function ($query, $tanggal2) {
+                return $query->whereDate('created_at', $tanggal2);
+            })
+            ->get();
+
+        return view('laporan.productions', ['data' => $result,  'tanggal' => $tanggal]);
     }
 
     public function reportItem(Request $request)

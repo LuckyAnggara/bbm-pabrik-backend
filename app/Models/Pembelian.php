@@ -21,6 +21,7 @@ class Pembelian extends Model
         'total',
         'created_at',
         'created_by',
+        'notes'
     ];
 
     protected $casts = [
