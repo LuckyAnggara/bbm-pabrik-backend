@@ -39,6 +39,7 @@ class GajiController extends BaseController
         $tanggal = Carbon::createFromFormat('Y-m-d', $data->created_at)->format('Y-m-d 00:00:00');
         try {
             DB::beginTransaction();
+            $master[] = null;
             foreach ($data->detail as $key => $value) {
                 if ($value->bayarkan == true) {
                     $master[] = Gaji::create([

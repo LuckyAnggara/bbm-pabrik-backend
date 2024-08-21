@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\BaseController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends BaseController
 {
@@ -99,20 +100,33 @@ class ItemController extends BaseController
         return $this->sendResponse(new ItemResource($item), 'Data fetched');
     }
 
-    public function update(Request $request, Item $item)
+    public function update(Request $request, $id)
     {
+        $data = json_decode($request->getContent());
+        $result = Item::where('id', $id)->first();
+        try {
+            DB::beginTransaction();
+                $result->name  = $data->name;
+                $result->cogs  = $data->cogs;
+                $result->type_id  = $data->type_id;
+                $result->unit_id  = $data->unit_id;
+                $result->warehouse_id  = $data->warehouse_id;
+                $result->save();
+             DB::commit();
+
+              $item = Item::with(['type', 'unit', 'warehouse', 'user',])->where('id', $id)->first();
+            return $this->sendResponse($item, 'Data updated');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Terjadi kesalahan', $e->getMessage(), 500);
+        }
+
         $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-        $item->name = $input['name'];
-        $item->save();
-
-        return $this->sendResponse(new ItemResource($item), 'Data updated');
+        
     }
 
     public function destroy(Item $item)

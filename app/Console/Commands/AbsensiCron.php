@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\AbsensiController;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -30,7 +31,7 @@ class AbsensiCron extends Command
     public function handle()
     {
         // Sample
-        $resullt = AbsensiController::fetchDaily();
+        $resullt = AbsensiController::fetchPagi(Carbon::now());
         if ($resullt) {
             Log::info($resullt);
         } else {
