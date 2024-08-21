@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4ad7587393d90db877eb337a458b7bd",
+    "content-hash": "6bda4bd1bee9e2f0ccc7e7c34faa2d89",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -206,6 +206,73 @@
                 }
             ],
             "time": "2023-12-10T15:33:53+00:00"
+        },
+        {
+            "name": "codedge/laravel-fpdf",
+            "version": "1.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codedge/laravel-fpdf.git",
+                "reference": "9319768852f483ec5a3b00ca19b2157349c88fb9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codedge/laravel-fpdf/zipball/9319768852f483ec5a3b00ca19b2157349c88fb9",
+                "reference": "9319768852f483ec5a3b00ca19b2157349c88fb9",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^9.0 || ^10.0 || ^11.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.39",
+                "orchestra/testbench": "^7.35.0 || ^8.0 || ^9.0",
+                "phpunit/phpunit": "^9.6.0 || ^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Fpdf": "Codedge\\Fpdf\\Facades\\Fpdf"
+                    },
+                    "providers": [
+                        "Codedge\\Fpdf\\FpdfServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codedge\\Fpdf\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Holger Lösken",
+                    "email": "holger.loesken@codedge.de"
+                }
+            ],
+            "description": "Laravel package to include Fpdf. It ships with Fpdf 1.86.",
+            "keywords": [
+                "fpdf",
+                "laravel",
+                "pdf"
+            ],
+            "support": {
+                "issues": "https://github.com/codedge/laravel-fpdf/issues",
+                "source": "https://github.com/codedge/laravel-fpdf"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/codedge",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-19T13:25:39+00:00"
         },
         {
             "name": "composer/semver",
@@ -9340,5 +9407,5 @@
         "php": "^8.0.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

@@ -74,6 +74,7 @@ Route::get('verifikasi/penjualan/{id}', [PenjualanController::class, 'showPenjua
 
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('auth/user', [AuthController::class, 'user'])->name('user');
     Route::resource('item-types', ItemTypeController::class);
     Route::resource('item-units', ItemUnitController::class);
     Route::resource('machines', MachineController::class);
