@@ -103,7 +103,7 @@ class ReportController extends BaseController
         // return $tanggal;
         $tanggal2 = Carbon::createFromFormat('d F Y', $tanggal)->format('Y-m-d');
 
-        $result = Mutation::with('item.type')
+        $result = ProductionOrder::with('input.item', 'output.item.type', 'jenis', 'pegawai.pegawai', 'machine.machine')
             ->when($tanggal2, function ($query, $tanggal2) {
                 return $query->whereDate('created_at', $tanggal2);
             })

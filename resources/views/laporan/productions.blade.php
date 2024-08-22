@@ -13,7 +13,7 @@
     <div class="container-fluid container-lg mx-auto mt-5">
         <span class="fs-1">Laporan Produksi</span>
 
-        <form action="{{ route('laporan-persediaan-produksi') }}" method="get">
+        <form action="{{ route('laporan-produksi') }}" method="get">
             <div class="row my-2 d-print-none">
                 <label for="staticEmail" class="col-sm-2 col-form-label">Tanggal</label>
                 <div class="form-group col-3">
@@ -31,7 +31,7 @@
             {{-- <p class="my-2">
                 <span class="fs-4">Tanggal Data <span class="fw-bold">{{date('d F Y', strtotime($tanggal))}}</span></span>
             </p> --}}
-            {{-- <p>Total Semua Persediaan <span class="fw-bold "> Rp. {{number_format($totalSemuaPersediaan,0)}}</span></p> --}}
+
 
             <div class="row d-print-none my-4">
 
@@ -45,60 +45,101 @@
             @php
             $totalTable = 0;
             @endphp
+
             <div class="my-4">
                 <span class="fs-3">Data Tanggal {{$tanggal}}</span>
-
             </div>
             <div>
                 @if($tanggal == null)
                 @else
-                <table class="table table-bordered">
-                    <thead>
+                <table class="table table-striped table-bordered table-responsive">
+                    <thead class="table-light">
                         <tr>
                             <th>No</th>
-                            <th>Nomor Produksi</th>
-                            <th>Tanggal Pelaksanaan</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Pegawai</th>
-                            <th>Bahan / Input</th>
-                            <th>Hasil / Output</th>
-                            <th>Hasil Lainnya</th>
+                            <th style="width:10%">Nomor Produksi</th>
+                            <th style="width:5%">Shift</th>
+                            <th style="width:10%">Tanggal</th>
+                            <th style="width:10%">Mesin</th>
+                            <th style="width:20%">Operator</th>
+                            <th style="width:20%">Bahan / Input</th>
+                            <th style="width:20%">Hasil / Output</th>
+                            <th style="width:5%">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if ($data->count() == 0)
                         <tr>
-                            <td colspan="7">Tidak ada data</td>
+                            <td colspan="10">Tidak ada data</td>
                         </tr>
                         @else
                         @foreach($data as $key=> $p)
-                        @if ($p->balance != 0)
-                        @php
-                        $totalTable = $totalTable + $p->total;
-                        @endphp
-                        @if($p->total < 0) <tr style="background-color: #ed6464;">
 
-                            <tr>
-                                @endif
-                                <td>{{ 1 + $key }}</td>
-                                <td>{{ $p->item->name ?? '-' }}</td>
-                                <td>{{ $p->item->type->name ?? '-' }}</td>
-                                <td>{{ number_format($p->debit,0) }}</td>
-                                <td>{{ number_format($p->kredit,0)  }}</td>
-                                <td>{{ number_format($p->balance,0)  }}</td>
-                            </tr>
-                            @endif
-                            @endforeach
-                    <tfoot>
+                        <tr style="background-color: #ed6464;">
+                        <tr>
+                            <td>{{ 1 + $key }}</td>
+                            <td>
+                                <div class="row px-3"><span>{{ $p->sequence }}</span><span><strong>{{ $p->jenis->name }}</strong></span> </div>
+                            </td>
+                            <td>@if ($p->shift == 1) <span>PAGI</span> @else <span>MALAM</span> @endif </td>
+
+                            <td>
+                                <div class="row px-3">
+                                    <span><strong>Pelaksanaan</strong></span><span>{{ date('d F Y', strtotime($p->order_date)) }}</span><span><strong>Selesai</strong></span><span>{{ date('d F Y', strtotime($p->target_date)) }}</span>
+                                </div>
+                            </td>
+                            <td>
+
+                                <ol class="">
+                                    @foreach($p->machine as $key=> $machine)
+                                    <li class=""><span>{{$machine->machine->name}}</span></li>
+                                    @endforeach
+                                </ol>
+                            </td>
+                            <td>
+                                PIC :<span class="fw-bolder"> {{$p->pic_name}}</span>
+                                <ol class="">
+                                    @foreach($p->pegawai as $key=> $pegawai)
+                                    <li class=""><span>{{$pegawai->pegawai->name}}</span></li>
+                                    @endforeach
+                                </ol>
+
+                            </td>
+                            <td>
+                                <ol class="">
+                                    @foreach($p->input as $key=> $input)
+                                    <li class="">
+                                        <div class="">
+
+
+                                            <span class="fw-bolder">{{$input->item->name}}</span> <span>{{$input->real_quantity}}</span> <span>{{$input->item->unit->name}}</span>
+                                        </div>
+                                    </li>
+                                    @endforeach
+                                </ol>
+                            </td>
+
+                            <td>
+                                <ol class="">
+                                    @foreach($p->output as $key=> $output)
+                                    <li class=""><span class="fw-bolder">{{$output->item->name}}</span> <span>{{$input->real_quantity}}</span> <span>{{$input->item->unit->name}}</span></li>
+                                    @endforeach
+                                </ol>
+                            </td>
+                            <td>
+                                <span>{{ $p->status }}</span>
+                            </td>
+                        </tr>
+                        @endforeach
+                        <!-- <tfoot>
                         <tr>
                             <td colspan="2"></td>
                             <td colspan="1" style="background-color: #080000;" class="text-white">TOTAL</td>
                             <td style="background-color: #080000;" class="text-white"> {{number_format($totalTable,0)}}</td>
                             <td style="background-color: #080000;" class="text-white">{{number_format($totalTable,0)}}</td>
                         </tr>
-                    </tfoot>
+                    </tfoot> -->
 
-                    @endif
+                        @endif
 
 
                     </tbody>

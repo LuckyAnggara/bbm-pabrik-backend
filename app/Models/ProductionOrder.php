@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ProductionOrder extends Model
 {
@@ -30,6 +31,18 @@ class ProductionOrder extends Model
         'order_date',
         'target_date',
     ];
+
+
+
+    // public function getShiftAttribute()
+    // {
+    //     return $this->shift;
+    //     // if ($this->shift == 1) {
+    //     //     return 'PAGI';
+    //     // } else if ($this->shift == 2) {
+    //     //     return 'MALAM';
+    //     // }
+    // }
 
     public function input()
     {
