@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <title>Laporan Persediaan Produksi</title>
+    <title>Laporan Persediaan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
@@ -11,19 +11,19 @@
 
 <body>
     <div class="container-fluid container-lg mx-auto mt-5">
-        <span class="fs-1">Laporan Persediaan Produksi</span>
+        <span class="fs-1">Laporan Persediaan</span>
 
-        <form action="{{ route('laporan-persediaan-produksi') }}" method="get">
+        <form action="{{ route('laporan-persediaan') }}" method="get">
             <div class="row my-2 d-print-none">
                 <label for="staticEmail" class="col-sm-2 col-form-label">Tanggal</label>
-                       <div class="form-group col-3">
+                <div class="form-group col-3">
                     <div class="input-group date" id="datetimepicker">
                         <input type="text" class="form-control" name="tanggal" value="{{$tanggal}}" />
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
                     </div>
-                    </div>
+                </div>
                 <div class="col-4">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
@@ -34,19 +34,19 @@
             {{-- <p>Total Semua Persediaan <span class="fw-bold "> Rp. {{number_format($totalSemuaPersediaan,0)}}</span></p> --}}
 
             <div class="row d-print-none my-4">
-                
+
                 <div class="col-1 d-grid float-end">
                     <button type="button" class="btn btn-primary" onclick="window.print(); return false;">Print</button>
                 </div>
             </div>
 
-            
+
             {{-- TABLE --}}
             @php
             $totalTable = 0;
             @endphp
             <div class="my-4">
-            <span class="fs-3" >Data Tanggal {{$tanggal}}</span>
+                <span class="fs-3">Data Tanggal {{$tanggal}}</span>
 
             </div>
             <div>
@@ -75,7 +75,7 @@
                         $totalTable = $totalTable + $p->total;
                         @endphp
                         @if($p->total < 0) <tr style="background-color: #ed6464;">
-                           
+
                             <tr>
                                 @endif
                                 <td>{{ 1 + $key }}</td>
@@ -133,7 +133,7 @@
 <script type="text/javascript">
     $(function() {
         $('#datetimepicker').datetimepicker({
-             format: 'DD MMMM YYYY'
+            format: 'DD MMMM YYYY'
         });
     });
 </script>
