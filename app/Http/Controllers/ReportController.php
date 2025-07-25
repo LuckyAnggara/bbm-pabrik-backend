@@ -270,6 +270,30 @@ class ReportController extends BaseController
         return view('laporan.persediaan', ['data' => $result,  'tanggal' => $tanggal]);
     }
 
+    function reportSales(Request $request)
+    {
+
+        $startDate = $request->input('start-date') ?? $request->input('startDate');
+        $endDate = $request->input('end-date') ?? $request->input('endDate');
+
+        $result = Penjualan::with('pelanggan', 'sales')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->format('Y-m-d 00:00:00');
+                $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->format('Y-m-d 23:59:59');
+                return $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // return $result;
+
+        return view('laporan.penjualan', [
+            'data' => $result,
+            'startDate' => Carbon::parse($startDate)->format('d F Y'),
+            'endDate' => Carbon::parse($endDate)->format('d F Y')
+        ]);
+    }
+
     function bisnisHome(Request $request)
     {
 

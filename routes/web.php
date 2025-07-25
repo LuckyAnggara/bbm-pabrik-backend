@@ -28,7 +28,7 @@ Route::get('/report/produksi', [ReportController::class, 'reportProductions'])->
 Route::get('/report/persediaan', [ReportController::class, 'reportPersediaanProduksi'])->name('laporan-persediaan');
 Route::get('/report/bisnis', [ReportController::class, 'bisnisHome'])->name('bisnis-home');
 Route::get('/report/bisnis/labarugi/harian', [ReportController::class, 'reportLabaRugiHarian'])->name('report-laba-rugi-harian');
-
+Route::get('report/sales', [ReportController::class, 'reportSales'])->name('laporan-penjualan');
 Route::get('/laba-rugi-harian', [LabaRugiController::class, 'generateLabaRugiHarian'])->name('labarugiharian');
 
 Route::get('/migrate', function () {
