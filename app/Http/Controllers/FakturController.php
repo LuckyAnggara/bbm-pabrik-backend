@@ -166,9 +166,11 @@ class FakturController extends BaseController
         $pdf->Cell(196, 3, '', 'B', 1);
         $pdf->Cell(10, 2, '', 0, 1);
 
-        // $pdf->Cell(30, 7, 'Note :', 0, 0);
-        // $pdf->MultiCell(90, 4,'asdasdsad', 0, 'J');
-        // $pdf->Cell(90,6,nl2br($setting_perusahaan['catatan_faktur_cash']),1,0);
+
+        
+        $pdf->Cell(30, 7, 'Note :', 0, 0);
+        $pdf->MultiCell(90, 6,$data->notes, 0, 'J');
+        $pdf->Cell(90,6,nl2br('BCA - 148-098-0570 a/n Aten Aripin'),0,0);
 
         $pdf->Output();
     }
